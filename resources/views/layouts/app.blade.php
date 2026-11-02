@@ -185,25 +185,49 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-header">Kejurnas Kelompok Umur</li>
-                    <li class="sidebar-item {{ request()->is('kejurnas/u16*') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/kejurnas/u16/2026') }}">
-                            <i class="align-middle fa-solid fa-volleyball text-info"></i> <span class="align-middle">Kejurnas U-16 2026</span>
+                    <li class="sidebar-header">Kejuaraan Kelompok Umur</li>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u16*') || request()->is('kejurnas/u16*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u16']) }}">
+                            <i class="align-middle fa-solid fa-volleyball text-info"></i> <span class="align-middle">Kejurnas U-16</span>
                         </a>
                     </li>
-                    <li class="sidebar-item {{ request()->is('kejurnas/u17*') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/kejurnas/u17/2026') }}">
-                            <i class="align-middle fa-solid fa-volleyball text-success"></i> <span class="align-middle">Kejurnas U-17 2026</span>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u17*') || request()->is('kejurnas/u17*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u17']) }}">
+                            <i class="align-middle fa-solid fa-volleyball text-success"></i> <span class="align-middle">Kejurnas U-17</span>
                         </a>
                     </li>
-                    <li class="sidebar-item {{ request()->is('kejurnas/u18*') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/kejurnas/u18/2026') }}">
-                            <i class="align-middle fa-solid fa-volleyball text-warning"></i> <span class="align-middle">Kejurnas U-18 2026</span>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u18*') || request()->is('kejurnas/u18*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u18']) }}">
+                            <i class="align-middle fa-solid fa-volleyball text-warning"></i> <span class="align-middle">Kejurnas U-18</span>
                         </a>
                     </li>
-                    <li class="sidebar-item {{ request()->is('kejurnas/u19*') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ url('/kejurnas/u19/2026') }}">
-                            <i class="align-middle fa-solid fa-volleyball text-danger"></i> <span class="align-middle">Kejurnas U-19 2026</span>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u19*') || request()->is('kejurnas/u19*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u19']) }}">
+                            <i class="align-middle fa-solid fa-volleyball text-danger"></i> <span class="align-middle">Kejurnas U-19</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-header">Liga Voli (Livoli)</li>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-utama*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-utama']) }}">
+                            <i class="align-middle fa-solid fa-trophy text-warning"></i> <span class="align-middle">Livoli Divisi Utama</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-1*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-1']) }}">
+                            <i class="align-middle fa-solid fa-medal text-primary"></i> <span class="align-middle">Livoli Divisi I</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-header">Turnamen Nasional Lainnya</li>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/kapolri-cup*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kapolri-cup']) }}">
+                            <i class="align-middle fa-solid fa-award text-danger"></i> <span class="align-middle">Piala Kapolri (Kapolri Cup)</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->is('kejuaraan/sirkuit-nasional-voli-pantai*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'sirkuit-nasional-voli-pantai']) }}">
+                            <i class="align-middle fa-solid fa-umbrella-beach text-warning"></i> <span class="align-middle">Voli Pantai Nasional</span>
                         </a>
                     </li>
 

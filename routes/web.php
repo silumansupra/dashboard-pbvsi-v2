@@ -3,17 +3,34 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KejurnasController;
+use App\Http\Controllers\KejuaraanController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PersonelController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Sub-Dashboard Kejurnas Umur Dinamis (U-16, U-17, U-18, U-19)
-Route::prefix('kejurnas/{kelompok_umur}/{tahun}')->name('kejurnas.')->group(function () {
-    Route::get('/', [KejurnasController::class, 'show'])->name('panel');
-    Route::get('/tim', [KejurnasController::class, 'teams'])->name('teams');
-    Route::get('/pemain', [KejurnasController::class, 'players'])->name('players');
+// Modul Universal Kompetisi & Kejuaraan Nasional PBVSI
+Route::prefix('kejuaraan')->name('kejuaraan.')->group(function () {
+    Route::get('/{slug}', [KejuaraanController::class, 'show'])->name('index');
+    Route::get('/{slug}/{tahun}', [KejuaraanController::class, 'show'])->name('tahun');
+    Route::post('/{slug}/edisi', [KejuaraanController::class, 'storeEdisi'])->name('edisi.store');
+    Route::get('/{slug}/{tahun}/tim', [KejuaraanController::class, 'teams'])->name('teams');
+    Route::get('/{slug}/{tahun}/pemain', [KejuaraanController::class, 'players'])->name('players');
+});
+
+// Backward compatibility alias redirects
+Route::get('/kejurnas/{kelompok_umur}/{tahun}', function ($kelompok_umur, $tahun) {
+    $slug = 'kejurnas-' . strtolower($kelompok_umur);
+    return redirect()->route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $tahun]);
+});
+Route::get('/kejurnas/{kelompok_umur}/{tahun}/tim', function ($kelompok_umur, $tahun) {
+    $slug = 'kejurnas-' . strtolower($kelompok_umur);
+    return redirect()->route('kejuaraan.teams', ['slug' => $slug, 'tahun' => $tahun]);
+});
+Route::get('/kejurnas/{kelompok_umur}/{tahun}/pemain', function ($kelompok_umur, $tahun) {
+    $slug = 'kejurnas-' . strtolower($kelompok_umur);
+    return redirect()->route('kejuaraan.players', ['slug' => $slug, 'tahun' => $tahun]);
 });
 
 // Modul Pengaturan & Master Data PBVSI Pusat
