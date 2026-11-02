@@ -257,14 +257,9 @@
     </div>
 
     <!-- PAGINATION FOOTER -->
-    @if($wasit->hasPages())
-    <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="small text-muted">
-            Menampilkan <span class="fw-semibold">{{ $wasit->firstItem() }}</span> s/d <span class="fw-semibold">{{ $wasit->lastItem() }}</span> dari total <span class="fw-semibold">{{ number_format($wasit->total()) }}</span> wasit
-        </div>
-        <div>
-            {{ $wasit->links() }}
-        </div>
+    @if($wasit->hasPages() || $wasit->total() > 0)
+    <div class="card-footer p-3 border-top bg-light">
+        {{ $wasit->links('vendor.pagination.bootstrap-5') }}
     </div>
     @endif
 </div>

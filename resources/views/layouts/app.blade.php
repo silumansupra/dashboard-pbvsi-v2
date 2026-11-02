@@ -134,6 +134,35 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             outline: 0;
         }
+        /* Pagination styling & safety */
+        .pagination {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+        }
+        .pagination .page-link {
+            padding: 0.25rem 0.55rem;
+            font-size: 0.8125rem;
+            line-height: 1.4;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination .page-link svg,
+        .pagination .page-item svg {
+            width: 14px !important;
+            height: 14px !important;
+            max-width: 14px !important;
+            max-height: 14px !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+        }
     </style>
     @stack('styles')
 </head>

@@ -263,14 +263,9 @@
     </div>
 
     <!-- PAGINATION FOOTER -->
-    @if($official->hasPages())
-    <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="small text-muted">
-            Menampilkan <span class="fw-semibold">{{ $official->firstItem() }}</span> s/d <span class="fw-semibold">{{ $official->lastItem() }}</span> dari total <span class="fw-semibold">{{ number_format($official->total()) }}</span> official
-        </div>
-        <div>
-            {{ $official->links() }}
-        </div>
+    @if($official->hasPages() || $official->total() > 0)
+    <div class="card-footer p-3 border-top bg-light">
+        {{ $official->links('vendor.pagination.bootstrap-5') }}
     </div>
     @endif
 </div>
