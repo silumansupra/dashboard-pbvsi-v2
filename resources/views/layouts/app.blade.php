@@ -36,6 +36,54 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
+
+        /* Modern Breadcrumb Styling */
+        .breadcrumb-custom {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            border: 1px solid #edf2f7;
+        }
+        .breadcrumb-custom .breadcrumb {
+            margin-bottom: 0;
+            padding: 0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+        }
+        .breadcrumb-custom .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .breadcrumb-custom .breadcrumb-item a {
+            color: #2563eb;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.15s ease-in-out;
+        }
+        .breadcrumb-custom .breadcrumb-item a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+        .breadcrumb-custom .breadcrumb-item.active {
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+            content: "›";
+            color: #94a3b8;
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 0 0.55rem;
+        }
     </style>
     @stack('styles')
 </head>

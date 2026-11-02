@@ -5,14 +5,27 @@
 @section('content')
 <div class="row mb-3" x-data="{ activeTab: 'overview' }">
     <div class="col-12">
-        <!-- BREADCRUMB & HEADER -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">PBVSI Pusat</a></li>
-                <li class="breadcrumb-item">Kejurnas Umur</li>
-                <li class="breadcrumb-item active">{{ $kelompok_umur }} ({{ $tahun }})</li>
-            </ol>
-        </nav>
+        <!-- BREADCRUMB & HEADER BAR -->
+        <div class="breadcrumb-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('dashboard.index') }}">
+                            <i class="fa-solid fa-house fa-sm me-1 text-primary"></i> PBVSI Pusat
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item text-secondary">Kejurnas Kelompok Umur</li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span class="badge bg-primary px-2 py-1">
+                            {{ $kelompok_umur }} - Tahun {{ $tahun }}
+                        </span>
+                    </li>
+                </ol>
+            </nav>
+            <div class="d-none d-md-flex align-items-center text-muted small">
+                <i class="fa-solid fa-volleyball text-warning me-1"></i> Edisi Resmi PP PBVSI {{ $tahun }}
+            </div>
+        </div>
 
         <div class="card shadow-sm border-0 mb-4 bg-primary text-white">
             <div class="card-body p-4">
