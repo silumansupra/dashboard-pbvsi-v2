@@ -1,12 +1,12 @@
 # Graph Report - dashboard-pbvsi-v2  (2026-11-02)
 
 ## Corpus Check
-- 101 files · ~73,662 words
+- 101 files · ~75,516 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .css 3, .map 3)
 
 ## Summary
-- 781 nodes · 2148 edges · 58 communities (27 shown, 31 thin omitted)
+- 788 nodes · 2165 edges · 56 communities (29 shown, 27 thin omitted)
 - Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 353 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -44,13 +44,12 @@
 - Community 30
 - Community 31
 - Community 32
+- Community 33
 - Community 34
 - Community 35
 - Community 36
 - Community 37
 - Community 38
-- Community 39
-- Community 40
 
 ## God Nodes (most connected - your core abstractions)
 1. `t()` - 56 edges
@@ -77,129 +76,137 @@
 ## Import Cycles
 - None detected.
 
-## Communities (58 total, 31 thin omitted)
+## Communities (56 total, 27 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
-Nodes (17): ci(), di(), ei(), fe(), hi(), ii(), ji(), li() (+9 more)
+Nodes (9): ea(), getDataAttributes(), Ne(), Qn(), Re(), Ve(), Vt(), We() (+1 more)
 
 ### Community 1 - "Community 1"
+Cohesion: 0.08
+Nodes (9): en(), findOne(), ka(), on(), one(), parents(), sn(), tn() (+1 more)
+
+### Community 2 - "Community 2"
 Cohesion: 0.04
 Nodes (47): pestphp/pest-plugin, php-http/discovery, autoload, autoload-dev, psr-4, psr-4, config, allow-plugins (+39 more)
 
-### Community 2 - "Community 2"
-Cohesion: 0.08
-Nodes (14): Bn(), find(), focusableChildren(), In(), ka(), n(), Ne(), parents() (+6 more)
-
 ### Community 3 - "Community 3"
 Cohesion: 0.08
-Nodes (23): An(), cn(), dn(), dr(), er(), fn(), fr(), gr() (+15 more)
+Nodes (24): ae(), c(), Ce(), dr(), e(), ee(), fr(), gr() (+16 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.16
-Nodes (35): b(), bl(), Dl(), Jl(), jn(), kl(), l(), M() (+27 more)
+Cohesion: 0.14
+Nodes (37): An(), b(), bl(), cn(), Dl(), Jl(), jn(), kl() (+29 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.09
 Nodes (3): Illuminate\Database\Migrations\Migration, Illuminate\Database\Schema\Blueprint, Illuminate\Support\Facades\Schema
 
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (8): en(), Nt(), on(), one(), qt(), sn(), vi(), yi()
+Cohesion: 0.08
+Nodes (5): Bn(), Dt(), mt(), n(), setDataAttribute()
 
 ### Community 7 - "Community 7"
-Cohesion: 0.10
-Nodes (8): Controller, DashboardController, KejurnasController, Edisi, Pemain, PesertaTim, Turnamen, Illuminate\Support\Facades\Route
-
-### Community 8 - "Community 8"
 Cohesion: 0.12
 Nodes (3): na(), ra(), ua()
 
+### Community 8 - "Community 8"
+Cohesion: 0.10
+Nodes (8): Controller, DashboardController, KejurnasController, Edisi, Pemain, PesertaTim, Turnamen, Illuminate\Support\Facades\Route
+
 ### Community 9 - "Community 9"
-Cohesion: 0.11
-Nodes (7): At(), Dt(), It(), jt(), kt(), St(), Yt()
+Cohesion: 0.14
+Nodes (9): bt(), Da(), find(), getElementFromSelector(), getMultipleElementsFromSelector(), getSelectorFromElement(), Ia(), St() (+1 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.15
-Nodes (24): A(), c(), Ce(), D(), De(), a(), ee(), ge() (+16 more)
+Cohesion: 0.13
+Nodes (26): be(), ca(), Ct(), et(), Ft(), ga(), ha(), Ht() (+18 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.15
-Nodes (25): be(), Ct(), et(), Ft(), g(), ga(), gt(), ha() (+17 more)
+Cohesion: 0.10
+Nodes (5): ei(), focusableChildren(), It(), li(), off()
+
+### Community 12 - "Community 12"
+Cohesion: 0.16
+Nodes (4): ai(), remove(), Ti(), trigger()
 
 ### Community 13 - "Community 13"
-Cohesion: 0.16
-Nodes (7): MasterController, Jabatan, Klub, Pengkot, Pengprov, PosisiPemain, Illuminate\Database\Eloquent\Model
+Cohesion: 0.15
+Nodes (23): D(), De(), a(), ge(), get(), j(), je(), u() (+15 more)
 
-### Community 14 - "Community 14"
+### Community 15 - "Community 15"
+Cohesion: 0.12
+Nodes (6): Klub, Pengkot, Pengprov, PosisiPemain, Roster, Illuminate\Database\Eloquent\Model
+
+### Community 16 - "Community 16"
 Cohesion: 0.10
 Nodes (20): devDependencies, concurrently, laravel-vite-plugin, tailwindcss, @tailwindcss/vite, vite, optionalDependencies, @laravel/multiplex (+12 more)
 
-### Community 15 - "Community 15"
-Cohesion: 0.19
-Nodes (4): ai(), remove(), Ti(), trigger()
-
-### Community 16 - "Community 16"
-Cohesion: 0.21
-Nodes (20): Aa(), ae(), bi(), e(), fi(), Gn(), h(), _i() (+12 more)
-
 ### Community 17 - "Community 17"
+Cohesion: 0.17
+Nodes (5): MasterController, Kabupaten, Provinsi, Role, Illuminate\Http\Request
+
+### Community 18 - "Community 18"
 Cohesion: 0.18
 Nodes (7): DatabaseSeeder, MasterJabatanAndPosisiSeeder, MasterTurnamenSeeder, MasterWilayahSeeder, RolesAndPermissionsSeeder, Illuminate\Database\Seeder, Illuminate\Support\Facades\DB
 
+### Community 19 - "Community 19"
+Cohesion: 0.23
+Nodes (16): At(), F(), fi(), _i(), k(), l(), mi(), Pi() (+8 more)
+
 ### Community 20 - "Community 20"
-Cohesion: 0.17
-Nodes (13): F(), je(), u(), k(), kr(), nn(), Rt(), t() (+5 more)
+Cohesion: 0.25
+Nodes (6): ci(), di(), oi(), removeDataAttribute(), si(), ui()
 
 ### Community 22 - "Community 22"
+Cohesion: 0.23
+Nodes (14): Gi(), h(), ii(), Ki(), nl(), p(), qa(), r() (+6 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.22
+Nodes (13): A(), g(), getDataAttribute(), gt(), Ie(), In(), pt(), tl() (+5 more)
+
+### Community 24 - "Community 24"
 Cohesion: 0.20
 Nodes (6): UserFactory, Illuminate\Database\Eloquent\Factories\Factory, Illuminate\Support\Facades\Hash, Illuminate\Support\Str, Pdo\Mysql, static
 
-### Community 23 - "Community 23"
-Cohesion: 0.26
-Nodes (3): getDataAttribute(), getDataAttributes(), pt()
-
 ### Community 25 - "Community 25"
-Cohesion: 0.36
-Nodes (11): ca(), Gi(), Ki(), La(), p(), pa(), wa(), Zi() (+3 more)
+Cohesion: 0.26
+Nodes (12): Aa(), bi(), dn(), fn(), Gn(), hn(), kn(), ln() (+4 more)
 
-### Community 27 - "Community 27"
-Cohesion: 0.22
-Nodes (5): Role, Illuminate\Foundation\Application, Illuminate\Foundation\Configuration\Exceptions, Illuminate\Foundation\Configuration\Middleware, Illuminate\Http\Request
-
-### Community 28 - "Community 28"
+### Community 26 - "Community 26"
 Cohesion: 0.27
 Nodes (4): User, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Foundation\Auth\User, Illuminate\Notifications\Notifiable
 
-### Community 30 - "Community 30"
-Cohesion: 0.22
-Nodes (7): bt(), getMultipleElementsFromSelector(), Ie(), Ve(), We(), Wt(), xt()
+### Community 28 - "Community 28"
+Cohesion: 0.29
+Nodes (9): fe(), he(), hi(), Me(), nn(), or(), rr(), ue() (+1 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.33
-Nodes (5): findOne(), getElementFromSelector(), getSelectorFromElement(), Ia(), tn()
-
-### Community 35 - "Community 35"
 Cohesion: 0.47
 Nodes (3): Illuminate\Foundation\Testing\TestCase, ExampleTest, TestCase
 
-### Community 37 - "Community 37"
+### Community 33 - "Community 33"
+Cohesion: 0.40
+Nodes (3): Illuminate\Foundation\Application, Illuminate\Foundation\Configuration\Exceptions, Illuminate\Foundation\Configuration\Middleware
+
+### Community 34 - "Community 34"
 Cohesion: 0.40
 Nodes (4): Monolog\Handler\NullHandler, Monolog\Handler\StreamHandler, Monolog\Handler\SyslogUdpHandler, Monolog\Processor\PsrLogMessageProcessor
 
 ## Knowledge Gaps
 - **50 isolated node(s):** `$schema`, `name`, `type`, `description`, `keywords` (+45 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 230 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 231 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ua()` connect `Community 8` to `Community 33`, `Community 3`, `Community 11`, `Community 15`, `Community 18`, `Community 20`, `Community 21`, `Community 23`, `Community 24`, `Community 26`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `sn()` connect `Community 6` to `Community 33`, `Community 2`, `Community 3`, `Community 4`, `Community 12`, `Community 16`, `Community 25`, `Community 31`?**
+- **Why does `ua()` connect `Community 7` to `Community 0`, `Community 3`, `Community 6`, `Community 10`, `Community 21`, `Community 23`, `Community 27`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **Why does `sn()` connect `Community 1` to `Community 3`, `Community 4`, `Community 14`, `Community 22`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `n()` connect `Community 2` to `Community 33`, `Community 3`, `Community 4`, `Community 8`, `Community 11`, `Community 12`, `Community 16`, `Community 18`, `Community 20`, `Community 25`, `Community 30`?**
+- **Why does `n()` connect `Community 6` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 7`, `Community 10`, `Community 12`, `Community 13`, `Community 14`, `Community 19`, `Community 21`, `Community 22`, `Community 23`, `Community 25`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Are the 38 inferred relationships involving `t()` (e.g. with `adminkit/js/app.js` and `A()`) actually correct?**
   _`t()` has 38 INFERRED edges - model-reasoned connections that need verification._

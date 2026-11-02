@@ -13,4 +13,9 @@ class Kabupaten extends Model
     {
         return $this->belongsTo(Provinsi::class, 'provinsi_id');
     }
+
+    public function pengkot()
+    {
+        return $this->hasOne(Pengkot::class, 'kabupaten_id');
+    }
 }
