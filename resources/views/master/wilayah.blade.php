@@ -296,7 +296,7 @@
 <!-- MODAL TAMBAH PROVINSI                      -->
 <!-- ========================================== -->
 <div class="modal fade" id="modalTambahProvinsi" tabindex="-1" aria-labelledby="modalTambahProvinsiLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('master.wilayah.provinsi.store') }}" method="POST">
             @csrf
             <div class="modal-content">
@@ -331,7 +331,7 @@
 <!-- MODAL EDIT PROVINSI (DYNAMIC)              -->
 <!-- ========================================== -->
 <div class="modal fade" id="modalEditProvinsi" tabindex="-1" aria-labelledby="modalEditProvinsiLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form id="formEditProvinsi" action="{{ $activeProvinsi ? route('master.wilayah.provinsi.update', $activeProvinsi->id) : '#' }}" method="POST">
             @csrf
             @method('PUT')
@@ -370,7 +370,7 @@
 <!-- ========================================== -->
 @if($activeProvinsi)
 <div class="modal fade" id="modalTambahKabupaten" tabindex="-1" aria-labelledby="modalTambahKabupatenLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form action="{{ route('master.wilayah.kabupaten.store') }}" method="POST">
             @csrf
             <input type="hidden" name="provinsi_id" value="{{ $activeProvinsi->id }}">
@@ -419,7 +419,7 @@
 <!-- MODAL EDIT KABUPATEN / KOTA (DYNAMIC)      -->
 <!-- ========================================== -->
 <div class="modal fade" id="modalEditKabupaten" tabindex="-1" aria-labelledby="modalEditKabupatenLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form id="formEditKabupaten" action="" method="POST">
             @csrf
             @method('PUT')

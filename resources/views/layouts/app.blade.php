@@ -10,9 +10,10 @@
 
     <link rel="shortcut icon" href="{{ asset('assets/images/logo_pbvsi_64px.png') }}" />
 
-    <!-- Google Fonts & AdminKit CSS -->
+    <!-- Google Fonts & Bootstrap 5 & AdminKit CSS -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/adminkit/css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
@@ -85,12 +86,53 @@
             padding: 0 0.55rem;
         }
 
-        /* Pastikan Modal Bootstrap 5 selalu di atas backdrop dan interaktif */
+        /* Pastikan Modal Bootstrap 5 selalu di atas backdrop dan tersembunyi jika tidak aktif */
         .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
             z-index: 1055 !important;
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            outline: 0;
+        }
+        .modal.show {
+            display: block !important;
         }
         .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
             z-index: 1050 !important;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: 1.75rem auto;
+            max-width: 500px;
+            pointer-events: none;
+        }
+        .modal.show .modal-dialog {
+            transform: none;
+        }
+        .modal-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            background-color: #ffffff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, 0.175);
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            outline: 0;
         }
     </style>
     @stack('styles')
@@ -244,7 +286,8 @@
 
     @stack('modals')
 
-    <!-- AdminKit JS -->
+    <!-- Bootstrap 5 Bundle JS & AdminKit JS -->
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/adminkit/js/app.js') }}"></script>
     <script>
         // Pindahkan semua modal ke direct child <body> agar tidak terperangkap stacking context di .main / .wrapper
