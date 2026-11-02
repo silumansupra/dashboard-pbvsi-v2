@@ -386,6 +386,10 @@
             });
         });
     </script>
+
+    <!-- Global Loading Overlay -->
+    @include('layouts.loading_overlay')
+
     @stack('scripts')
 </body>
 </html>
