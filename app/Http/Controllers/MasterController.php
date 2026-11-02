@@ -13,6 +13,7 @@ use App\Models\PesertaTim;
 use App\Models\OfficialTim;
 use App\Models\User;
 use App\Models\Role;
+use App\Services\SecureId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -478,7 +479,13 @@ class MasterController extends Controller
                 ->with(['provinsi']);
 
             if ($request->filled('pengprov_id')) {
-                $query->where('id', $request->pengprov_id);
+                $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                    ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+                if ($pid) {
+                    $query->where('id', $pid);
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
             }
 
             if ($request->filled('search')) {
@@ -497,7 +504,13 @@ class MasterController extends Controller
                 ->withCount('pesertaTurnamen');
 
             if ($request->filled('pengprov_id')) {
-                $query->where('pengprov_id', $request->pengprov_id);
+                $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                    ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+                if ($pid) {
+                    $query->where('pengprov_id', $pid);
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
             }
 
             if ($request->filled('status_verifikasi')) {
@@ -533,14 +546,47 @@ class MasterController extends Controller
      */
     public function detailTim(Request $request, $tipe, $id)
     {
+        // Guard 1: Validasi tipe
+        if (!in_array($tipe, ['klub', 'pengprov'])) {
+            abort(404, 'Kategori tim atau kontingen tidak valid.');
+        }
+
+        // Guard 2: Jika diakses dengan ID angka mentah (misal /master/klub/klub/118),
+        // lakukan redirect 301 ke URL terenkripsi agar ID database tidak terekspos ke publik.
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            $exists = ($tipe === 'pengprov')
+                ? Pengprov::where('id', $rawId)->exists()
+                : Klub::where('id', $rawId)->exists();
+
+            if (!$exists) {
+                abort(404, 'Data klub atau kontingen tidak ditemukan.');
+            }
+
+            return redirect()->route('master.klub.detail', [
+                'tipe' => $tipe,
+                'id' => SecureId::encrypt($rawId, $tipe),
+            ], 301);
+        }
+
+        // Guard 3: Dekripsi token ID dengan verifikasi konteks dan HMAC
+        $realId = SecureId::decrypt($id, $tipe);
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid, telah dimodifikasi, atau kedaluwarsa.');
+        }
+
         if ($tipe === 'pengprov') {
-            $tim = Pengprov::with(['provinsi'])->findOrFail($id);
+            $tim = Pengprov::with(['provinsi'])->find($realId);
+            if (!$tim) {
+                abort(404, 'Data kontingen pengprov tidak ditemukan.');
+            }
+
             $namaTim = $tim->nama_pengprov;
             $kodeTim = 'PENGPROV-' . ($tim->provinsi_id ?? $tim->id);
             $asalWilayah = $tim->nama_pengprov;
             $isKlub = false;
 
-            $turnamenList = PesertaTim::where('pengprov_id', $id)
+            $turnamenList = PesertaTim::where('pengprov_id', $realId)
                 ->whereNull('klub_id')
                 ->with([
                     'edisi.turnamen',
@@ -550,13 +596,17 @@ class MasterController extends Controller
                 ->get()
                 ->sortByDesc(fn($p) => $p->edisi?->tahun ?? 0);
         } else {
-            $tim = Klub::with(['pengprov', 'pengkot'])->findOrFail($id);
+            $tim = Klub::with(['pengprov', 'pengkot'])->find($realId);
+            if (!$tim) {
+                abort(404, 'Data klub bola voli tidak ditemukan.');
+            }
+
             $namaTim = $tim->nama_klub;
             $kodeTim = $tim->kode_klub ?? ('KLUB-' . str_pad($tim->id, 5, '0', STR_PAD_LEFT));
             $asalWilayah = ($tim->pengprov?->nama_pengprov ?? '-') . ($tim->pengkot ? ' / ' . $tim->pengkot->nama_pengkot : '');
             $isKlub = true;
 
-            $turnamenList = PesertaTim::where('klub_id', $id)
+            $turnamenList = PesertaTim::where('klub_id', $realId)
                 ->with([
                     'edisi.turnamen',
                     'roster.pemain',

@@ -38,7 +38,13 @@ class PersonelController extends Controller
         }
 
         if ($request->filled('pengprov_id')) {
-            $query->where('pengprov_id', $request->pengprov_id);
+            $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+            if ($pid) {
+                $query->where('pengprov_id', $pid);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         if ($request->filled('jenis_kelamin')) {
@@ -174,7 +180,13 @@ class PersonelController extends Controller
         }
 
         if ($request->filled('pengprov_id')) {
-            $query->where('pengprov_id', $request->pengprov_id);
+            $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+            if ($pid) {
+                $query->where('pengprov_id', $pid);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         if ($request->filled('status_aktif')) {
@@ -325,7 +337,13 @@ class PersonelController extends Controller
         }
 
         if ($request->filled('pengprov_id')) {
-            $query->where('pengprov_id', $request->pengprov_id);
+            $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+            if ($pid) {
+                $query->where('pengprov_id', $pid);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         if ($request->filled('status_aktif')) {
@@ -477,7 +495,13 @@ class PersonelController extends Controller
         }
 
         if ($request->filled('pengprov_id')) {
-            $query->where('pengprov_id', $request->pengprov_id);
+            $pid = decrypt_id($request->pengprov_id, 'pengprov')
+                ?? (is_numeric($request->pengprov_id) ? (int)$request->pengprov_id : null);
+            if ($pid) {
+                $query->where('pengprov_id', $pid);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         if ($request->filled('status_aktif')) {

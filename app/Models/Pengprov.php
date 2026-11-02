@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasEncryptedId;
 
 class Pengprov extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'org_pengprov';
+    protected string $encryptionContext = 'pengprov';
+
+    protected $appends = ['encrypted_id'];
     protected $fillable = [
         'provinsi_id',
         'nama_pengprov',

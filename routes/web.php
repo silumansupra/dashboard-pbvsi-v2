@@ -61,8 +61,9 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::get('/klub', [MasterController::class, 'klub'])->name('klub');
     Route::get('/klub/{tipe}/{id}', [MasterController::class, 'detailTim'])->name('klub.detail');
     Route::get('/klub/{id}', function ($id) {
-        return redirect()->route('master.klub.detail', ['tipe' => 'klub', 'id' => $id]);
-    })->whereNumber('id');
+        $token = is_numeric($id) ? \App\Services\SecureId::encrypt($id, 'klub') : $id;
+        return redirect()->route('master.klub.detail', ['tipe' => 'klub', 'id' => $token]);
+    });
     Route::post('/klub', [MasterController::class, 'storeKlub'])->name('klub.store');
     Route::put('/klub/{id}', [MasterController::class, 'updateKlub'])->name('klub.update');
     Route::delete('/klub/{id}', [MasterController::class, 'destroyKlub'])->name('klub.destroy');

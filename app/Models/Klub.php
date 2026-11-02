@@ -3,10 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasEncryptedId;
 
 class Klub extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'org_klub';
+    protected string $encryptionContext = 'klub';
+
     protected $fillable = [
         'pengprov_id',
         'pengkot_id',
@@ -19,7 +24,7 @@ class Klub extends Model
         'status_verifikasi',
     ];
 
-    protected $appends = ['logo_url'];
+    protected $appends = ['logo_url', 'encrypted_id'];
 
     public function getLogoUrlAttribute(): ?string
     {

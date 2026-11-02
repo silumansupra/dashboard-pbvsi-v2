@@ -130,7 +130,7 @@
                 <select name="pengprov_id" class="form-select form-select-sm">
                     <option value="">-- Semua Pengprov --</option>
                     @foreach($pengprovList as $p)
-                        <option value="{{ $p->id }}" {{ request('pengprov_id') == $p->id ? 'selected' : '' }}>{{ $p->nama_pengprov }}</option>
+                        <option value="{{ $p->encrypted_id }}" {{ (request('pengprov_id') === $p->encrypted_id || decrypt_id(request('pengprov_id'), 'pengprov') == $p->id || request('pengprov_id') == $p->id) ? 'selected' : '' }}>{{ $p->nama_pengprov }}</option>
                     @endforeach
                 </select>
             </div>

@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasEncryptedId;
 
 class Provinsi extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'core_wilayah_provinsi';
+    protected string $encryptionContext = 'provinsi';
+
+    protected $appends = ['encrypted_id'];
     protected $fillable = ['kode_provinsi', 'nama_provinsi', 'is_active'];
 
     protected $casts = [

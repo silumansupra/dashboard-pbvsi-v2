@@ -79,7 +79,7 @@
                         <select name="pengprov_id" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Semua Pengprov Induk</option>
                             @foreach($pengprovList as $pp)
-                                <option value="{{ $pp->id }}" {{ request('pengprov_id') == $pp->id ? 'selected' : '' }}>
+                                <option value="{{ $pp->encrypted_id }}" {{ (request('pengprov_id') === $pp->encrypted_id || decrypt_id(request('pengprov_id'), 'pengprov') == $pp->id || request('pengprov_id') == $pp->id) ? 'selected' : '' }}>
                                     {{ $pp->nama_pengprov }}
                                 </option>
                             @endforeach
@@ -178,7 +178,7 @@
                                     <div class="small text-muted"><strong>Sekum:</strong> {{ $p->sekum ?: '-' }}</div>
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('master.klub.detail', ['tipe' => 'pengprov', 'id' => $p->id]) }}" 
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'pengprov', 'id' => $p->encrypted_id]) }}" 
                                        class="btn btn-sm btn-primary shadow-sm" 
                                        title="Lihat Riwayat Turnamen & Roster Pemain">
                                         <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
@@ -265,7 +265,7 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('master.klub.detail', ['tipe' => 'klub', 'id' => $k->id]) }}" 
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'klub', 'id' => $k->encrypted_id]) }}" 
                                        class="btn btn-sm btn-primary me-1 shadow-sm" 
                                        title="Lihat Riwayat Turnamen & Roster">
                                         <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
