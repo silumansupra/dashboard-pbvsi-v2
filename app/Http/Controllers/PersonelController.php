@@ -11,6 +11,7 @@ use App\Models\Klub;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\PosisiPemain;
+use App\Services\BunnyCDNService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -132,7 +133,16 @@ class PersonelController extends Controller
             'status_kewarganegaraan' => 'required|in:WNI_DAERAH,WNI_NASIONAL,WNA_ASING',
             'status_verifikasi' => 'required|in:PENDING,VERIFIED,REJECTED',
             'catatan_verifikasi' => 'nullable|string',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
+
+        if ($request->hasFile('foto_file')) {
+            $bunnyPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/pemain');
+            if ($bunnyPath) {
+                $validated['foto_profil_path'] = $bunnyPath;
+            }
+        }
+        unset($validated['foto_file']);
 
         $maxId = Pemain::max('id') ?? 0;
         $validated['pbvsi_player_id'] = 'PBVSI-' . str_pad($maxId + 1, 6, '0', STR_PAD_LEFT);
@@ -172,7 +182,19 @@ class PersonelController extends Controller
             'status_kewarganegaraan' => 'required|in:WNI_DAERAH,WNI_NASIONAL,WNA_ASING',
             'status_verifikasi' => 'required|in:PENDING,VERIFIED,REJECTED',
             'catatan_verifikasi' => 'nullable|string',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
+
+        if ($request->hasFile('foto_file')) {
+            $bunnyPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/pemain');
+            if ($bunnyPath) {
+                $validated['foto_profil_path'] = $bunnyPath;
+                if ($pemain->user) {
+                    $pemain->user->update(['avatar_path' => $bunnyPath]);
+                }
+            }
+        }
+        unset($validated['foto_file']);
 
         $pemain->update($validated);
 
@@ -313,9 +335,15 @@ class PersonelController extends Controller
             'nomor_lisensi_pelatih' => 'nullable|string|max:100|unique:member_pelatih,nomor_lisensi_pelatih',
             'tingkat_pelatih' => 'required|string|max:50',
             'status_aktif' => 'required|in:0,1',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+
+        $avatarPath = null;
+        if ($request->hasFile('foto_file')) {
+            $avatarPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/pelatih');
+        }
 
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
@@ -324,6 +352,7 @@ class PersonelController extends Controller
             'email' => $validated['email'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'password' => bcrypt('pbvsi12345'),
+            'avatar_path' => $avatarPath,
             'is_active' => $validated['status_aktif'],
             'created_at' => now(),
             'updated_at' => now(),
@@ -372,9 +401,17 @@ class PersonelController extends Controller
             'nomor_lisensi_pelatih' => 'required|string|max:100|unique:member_pelatih,nomor_lisensi_pelatih,' . $pelatih->id,
             'tingkat_pelatih' => 'required|string|max:50',
             'status_aktif' => 'required|in:0,1',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+
+        if ($request->hasFile('foto_file')) {
+            $bunnyPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/pelatih');
+            if ($bunnyPath && $pelatih->user) {
+                $pelatih->user->update(['avatar_path' => $bunnyPath]);
+            }
+        }
 
         if ($pelatih->user) {
             $pelatih->user->update([
@@ -513,9 +550,15 @@ class PersonelController extends Controller
             'tingkat_wasit' => 'required|string|max:50',
             'status_aktif' => 'required|in:0,1',
             'catatan_perwasitan' => 'nullable|string',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+
+        $avatarPath = null;
+        if ($request->hasFile('foto_file')) {
+            $avatarPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/wasit');
+        }
 
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
@@ -524,6 +567,7 @@ class PersonelController extends Controller
             'email' => $validated['email'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'password' => bcrypt('pbvsi12345'),
+            'avatar_path' => $avatarPath,
             'is_active' => $validated['status_aktif'],
             'created_at' => now(),
             'updated_at' => now(),
@@ -576,9 +620,17 @@ class PersonelController extends Controller
             'tingkat_wasit' => 'required|string|max:50',
             'status_aktif' => 'required|in:0,1',
             'catatan_perwasitan' => 'nullable|string',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+
+        if ($request->hasFile('foto_file')) {
+            $bunnyPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/wasit');
+            if ($bunnyPath && $wasit->user) {
+                $wasit->user->update(['avatar_path' => $bunnyPath]);
+            }
+        }
 
         if ($wasit->user) {
             $wasit->user->update([
@@ -726,10 +778,16 @@ class PersonelController extends Controller
             'klub_id' => 'nullable|exists:org_klub,id',
             'nomor_lisensi' => 'nullable|string|max:100',
             'status_aktif' => 'required|in:0,1',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
         $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
+
+        $avatarPath = null;
+        if ($request->hasFile('foto_file')) {
+            $avatarPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/official');
+        }
 
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
@@ -738,6 +796,7 @@ class PersonelController extends Controller
             'email' => $validated['email'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'password' => bcrypt('pbvsi12345'),
+            'avatar_path' => $avatarPath,
             'is_active' => $validated['status_aktif'],
             'created_at' => now(),
             'updated_at' => now(),
@@ -796,10 +855,18 @@ class PersonelController extends Controller
             'klub_id' => 'nullable|exists:org_klub,id',
             'nomor_lisensi' => 'nullable|string|max:100',
             'status_aktif' => 'required|in:0,1',
+            'foto_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
         $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
+
+        if ($request->hasFile('foto_file')) {
+            $bunnyPath = app(BunnyCDNService::class)->upload($request->file('foto_file'), 'uploads/official');
+            if ($bunnyPath && $official->user) {
+                $official->user->update(['avatar_path' => $bunnyPath]);
+            }
+        }
 
         if ($official->user) {
             $official->user->update([

@@ -184,12 +184,8 @@
                         <td class="ps-3 text-muted small">{{ $pemain->firstItem() + $index }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="avatar-sm me-2 bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 38px; height: 38px; font-size: 0.85rem; border: 1px solid #e2e8f0;">
-                                    @if($row->foto_profil_path)
-                                        <img src="{{ asset('storage/' . $row->foto_profil_path) }}" class="rounded-circle" style="width: 38px; height: 38px; object-fit: cover;">
-                                    @else
-                                        {{ strtoupper(substr($row->nama_lengkap, 0, 2)) }}
-                                    @endif
+                                <div class="avatar-sm me-2 rounded-circle flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <img src="{{ $row->foto_url }}" class="rounded-circle border" style="width: 38px; height: 38px; object-fit: cover;" onerror="this.onerror=null;this.src='{{ asset('images/no-user.svg') }}';" alt="{{ $row->nama_lengkap }}">
                                 </div>
                                 <div>
                                     <div class="fw-bold text-dark">{{ $row->nama_lengkap }}</div>

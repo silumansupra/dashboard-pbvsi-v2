@@ -13,7 +13,20 @@ class Pemain extends Model
     protected $table = 'member_pemain';
     protected string $encryptionContext = 'pemain';
 
-    protected $appends = ['encrypted_id'];
+    protected $appends = ['foto_url', 'encrypted_id'];
+
+    public function getFotoUrlAttribute(): string
+    {
+        if (!empty($this->foto_profil_path)) {
+            return app(\App\Services\BunnyCDNService::class)->getUrl($this->foto_profil_path, $this->user_id);
+        }
+
+        if ($this->user && !empty($this->user->avatar_path)) {
+            return $this->user->avatar_url;
+        }
+
+        return asset('images/no-user.svg');
+    }
 
     protected $fillable = [
         'user_id',

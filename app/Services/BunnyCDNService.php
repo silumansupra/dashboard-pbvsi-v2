@@ -117,15 +117,19 @@ class BunnyCDNService
     }
 
     /**
-     * Convert stored logo path to a full BunnyCDN URL.
+     * Convert stored logo / photo path to a full BunnyCDN URL or fallback to default image.
      *
      * @param string|null $path
-     * @return string|null
+     * @param int|null $userId
+     * @param string|null $fallback
+     * @return string
      */
-    public function getUrl(?string $path): ?string
+    public function getUrl(?string $path, ?int $userId = null, ?string $fallback = null): string
     {
+        $defaultFallback = $fallback ?: asset('images/no-user.svg');
+
         if (empty($path)) {
-            return null;
+            return $defaultFallback;
         }
 
         // Already full URL
@@ -135,6 +139,11 @@ class BunnyCDNService
 
         $base = rtrim($this->baseUrl, '/');
         $cleanPath = ltrim($path, '/');
+
+        // If path is just a filename (e.g. hash.jpg/png) without directory and userId is provided
+        if (!str_contains($cleanPath, '/') && $userId) {
+            return "{$base}/pbvsi/uploads/images/profil/{$userId}/{$cleanPath}";
+        }
 
         return "{$base}/{$cleanPath}";
     }

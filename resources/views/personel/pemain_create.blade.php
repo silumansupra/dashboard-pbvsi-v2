@@ -33,7 +33,7 @@
     </a>
 </div>
 
-<form action="{{ route('personel.pemain.store') }}" method="POST">
+<form action="{{ route('personel.pemain.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <div class="row g-4">
         <!-- KOLOM UTAMA: IDENTITAS PEMAIN -->
@@ -148,6 +148,26 @@
 
         <!-- KOLOM KANAN: SPESIFIKASI ATLET & VERIFIKASI -->
         <div class="col-lg-4">
+            <!-- KARTU FOTO PROFIL ATLET -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-camera text-primary me-2"></i> Foto Profil Atlet
+                    </h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <div class="position-relative d-inline-block mb-3">
+                        <img id="fotoPreview" src="{{ asset('images/no-user.svg') }}" alt="Preview Foto Atlet" class="rounded-circle border border-3 border-light shadow-sm" style="width: 130px; height: 130px; object-fit: cover;" onerror="this.onerror=null;this.src='{{ asset('images/no-user.svg') }}';">
+                    </div>
+                    <div class="text-start">
+                        <label class="form-label fw-semibold small text-muted mb-1">Unggah Pas Foto (BunnyCDN)</label>
+                        <input type="file" name="foto_file" id="fotoFileInput" class="form-control form-control-sm @error('foto_file') is-invalid @enderror" accept="image/jpeg,image/png,image/jpg,image/webp" onchange="previewImage(this)">
+                        @error('foto_file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <small class="text-muted d-block mt-1" style="font-size: 0.78rem;">Format: JPG, PNG, WEBP. Maks 3MB.</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- KARTU SPESIFIKASI ATLET -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white py-3 border-bottom">
@@ -212,4 +232,18 @@
         </div>
     </div>
 </form>
+
+@push('scripts')
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('fotoPreview').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+@endpush
 @endsection

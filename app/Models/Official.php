@@ -13,7 +13,16 @@ class Official extends Model
     protected $table = 'member_official';
     protected string $encryptionContext = 'official';
 
-    protected $appends = ['encrypted_id'];
+    protected $appends = ['foto_url', 'encrypted_id'];
+
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->user && !empty($this->user->avatar_path)) {
+            return $this->user->avatar_url;
+        }
+
+        return asset('images/no-user.svg');
+    }
 
     protected $fillable = [
         'user_id',

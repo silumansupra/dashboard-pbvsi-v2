@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     protected string $encryptionContext = 'user';
 
-    protected $appends = ['encrypted_id'];
+    protected $appends = ['encrypted_id', 'avatar_url'];
 
     protected $table = 'core_users';
 
@@ -50,6 +50,11 @@ class User extends Authenticatable
         return Attribute::make(
             set: fn ($value) => strtoupper(trim($value)),
         );
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return app(\App\Services\BunnyCDNService::class)->getUrl($this->avatar_path, $this->id);
     }
 
     public function profile()

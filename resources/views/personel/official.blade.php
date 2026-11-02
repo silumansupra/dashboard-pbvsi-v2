@@ -191,8 +191,15 @@
                             </span>
                         </td>
                         <td>
-                            <div class="fw-bold text-dark">{{ $row->nama_lengkap }}</div>
-                            <div class="small text-muted font-monospace">{{ $row->nik ?? ($row->user?->username ?? '-') }}</div>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2 rounded-circle flex-shrink-0" style="width: 36px; height: 36px;">
+                                    <img src="{{ $row->foto_url }}" class="rounded-circle border" style="width: 36px; height: 36px; object-fit: cover;" onerror="this.onerror=null;this.src='{{ asset('images/no-user.svg') }}';" alt="{{ $row->nama_lengkap }}">
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ $row->nama_lengkap }}</div>
+                                    <div class="small text-muted font-monospace">{{ $row->nik ?? ($row->user?->username ?? '-') }}</div>
+                                </div>
+                            </div>
                         </td>
                         <td>
                             @if(str_contains($row->jabatan_official, 'MANAGER'))
