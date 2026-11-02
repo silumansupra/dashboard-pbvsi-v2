@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Official extends Model
 {
@@ -23,6 +24,23 @@ class Official extends Model
     protected $casts = [
         'status_aktif' => 'boolean',
     ];
+
+    /**
+     * Mutator otomatis untuk standarisasi UPPERCASE
+     */
+    protected function namaLengkap(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtoupper(trim($value)),
+        );
+    }
+
+    protected function jabatanOfficial(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtoupper(trim($value)),
+        );
+    }
 
     public function user()
     {

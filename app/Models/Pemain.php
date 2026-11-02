@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Pemain extends Model
 {
@@ -33,6 +34,30 @@ class Pemain extends Model
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
+
+    /**
+     * Mutator otomatis untuk standarisasi UPPERCASE nama & identitas
+     */
+    protected function namaLengkap(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtoupper(trim($value)),
+        );
+    }
+
+    protected function namaPunggung(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value ? strtoupper(trim($value)) : null,
+        );
+    }
+
+    protected function tempatLahir(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value ? strtoupper(trim($value)) : null,
+        );
+    }
 
     public function user()
     {

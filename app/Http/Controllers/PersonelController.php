@@ -210,6 +210,11 @@ class PersonelController extends Controller
             'status_aktif' => 'required|in:0,1',
         ]);
 
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
+
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
             'username' => '#plt' . rand(1000000, 9999999),
@@ -257,6 +262,8 @@ class PersonelController extends Controller
             'tingkat_pelatih' => 'required|string|max:50',
             'status_aktif' => 'required|in:0,1',
         ]);
+
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
 
         if ($pelatih->user) {
             $pelatih->user->update([
@@ -354,6 +361,9 @@ class PersonelController extends Controller
             'catatan_perwasitan' => 'nullable|string',
         ]);
 
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
+
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
             'username' => '#ref' . rand(1000000, 9999999),
@@ -405,6 +415,8 @@ class PersonelController extends Controller
             'status_aktif' => 'required|in:0,1',
             'catatan_perwasitan' => 'nullable|string',
         ]);
+
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
 
         if ($wasit->user) {
             $wasit->user->update([
@@ -506,6 +518,9 @@ class PersonelController extends Controller
             'status_aktif' => 'required|in:0,1',
         ]);
 
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
+
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
             'username' => '#off' . rand(1000000, 9999999),
@@ -560,6 +575,9 @@ class PersonelController extends Controller
             'nomor_lisensi' => 'nullable|string|max:100',
             'status_aktif' => 'required|in:0,1',
         ]);
+
+        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
+        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
 
         if ($official->user) {
             $official->user->update([

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -34,6 +35,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Mutator otomatis untuk standarisasi nama akun user ke UPPERCASE
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtoupper(trim($value)),
+        );
     }
 
     public function profile()
