@@ -1,7 +1,7 @@
 # Graph Report - dashboard-pbvsi-v2  (2026-11-02)
 
 ## Corpus Check
-- 101 files · ~75,516 words
+- 101 files · ~75,683 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 27 file(s) not represented in the graph (top: (none) 18, .css 3, .map 3)
 

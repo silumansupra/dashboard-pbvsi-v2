@@ -84,6 +84,14 @@
             line-height: 1;
             padding: 0 0.55rem;
         }
+
+        /* Pastikan Modal Bootstrap 5 selalu di atas backdrop dan interaktif */
+        .modal {
+            z-index: 1055 !important;
+        }
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -234,8 +242,20 @@
         </div>
     </div>
 
+    @stack('modals')
+
     <!-- AdminKit JS -->
     <script src="{{ asset('assets/adminkit/js/app.js') }}"></script>
+    <script>
+        // Pindahkan semua modal ke direct child <body> agar tidak terperangkap stacking context di .main / .wrapper
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                if (modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

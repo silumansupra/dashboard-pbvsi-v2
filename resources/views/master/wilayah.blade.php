@@ -136,7 +136,14 @@
 
                 <!-- AKSI PROVINSI & TAMBAH KABUPATEN -->
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditProvinsi">
+                    <button type="button" 
+                            class="btn btn-sm btn-outline-primary btn-edit-provinsi" 
+                            data-id="{{ $activeProvinsi->id }}"
+                            data-nama="{{ $activeProvinsi->nama_provinsi }}"
+                            data-kode="{{ $activeProvinsi->kode_provinsi }}"
+                            data-active="{{ $activeProvinsi->is_active ? '1' : '0' }}"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalEditProvinsi">
                         <i class="fa-solid fa-pen-to-square me-1"></i> Edit Provinsi
                     </button>
                     
@@ -282,7 +289,9 @@
         @endif
     </div>
 </div>
+@endsection
 
+@push('modals')
 <!-- ========================================== -->
 <!-- MODAL TAMBAH PROVINSI                      -->
 <!-- ========================================== -->
@@ -319,12 +328,11 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODAL EDIT PROVINSI                        -->
+<!-- MODAL EDIT PROVINSI (DYNAMIC)              -->
 <!-- ========================================== -->
-@if($activeProvinsi)
 <div class="modal fade" id="modalEditProvinsi" tabindex="-1" aria-labelledby="modalEditProvinsiLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="{{ route('master.wilayah.provinsi.update', $activeProvinsi->id) }}" method="POST">
+        <form id="formEditProvinsi" action="{{ $activeProvinsi ? route('master.wilayah.provinsi.update', $activeProvinsi->id) : '#' }}" method="POST">
             @csrf
             @method('PUT')
             <div class="modal-content">
@@ -337,14 +345,14 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Nama Provinsi <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_provinsi" class="form-control" value="{{ $activeProvinsi->nama_provinsi }}" required>
+                        <input type="text" name="nama_provinsi" id="edit_nama_provinsi" class="form-control" value="{{ $activeProvinsi?->nama_provinsi }}" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Kode Provinsi</label>
-                        <input type="text" name="kode_provinsi" class="form-control" value="{{ $activeProvinsi->kode_provinsi }}">
+                        <input type="text" name="kode_provinsi" id="edit_kode_provinsi" class="form-control" value="{{ $activeProvinsi?->kode_provinsi }}">
                     </div>
                     <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="is_active" id="edit_is_active" value="1" {{ $activeProvinsi->is_active ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" role="switch" name="is_active" id="edit_is_active" value="1" {{ $activeProvinsi?->is_active ? 'checked' : '' }}>
                         <label class="form-check-label fw-semibold" for="edit_is_active">Status Wilayah Aktif</label>
                     </div>
                 </div>
@@ -356,7 +364,6 @@
         </form>
     </div>
 </div>
-@endif
 
 <!-- ========================================== -->
 <!-- MODAL TAMBAH KABUPATEN / KOTA              -->
@@ -450,15 +457,38 @@
         </form>
     </div>
 </div>
-@endsection
+@endpush
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditKabupaten');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
+    // 1. Handler Modal Edit Provinsi
+    const editProvModal = document.getElementById('modalEditProvinsi');
+    if (editProvModal) {
+        editProvModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
+            if (!button) return;
+            const id = button.getAttribute('data-id');
+            const nama = button.getAttribute('data-nama');
+            const kode = button.getAttribute('data-kode');
+            const active = button.getAttribute('data-active');
+
+            if (id) {
+                const form = document.getElementById('formEditProvinsi');
+                form.action = "{{ url('master/wilayah/provinsi') }}/" + id;
+                if (nama) document.getElementById('edit_nama_provinsi').value = nama;
+                if (kode !== null) document.getElementById('edit_kode_provinsi').value = kode || '';
+                document.getElementById('edit_is_active').checked = (active === '1');
+            }
+        });
+    }
+
+    // 2. Handler Modal Edit Kabupaten
+    const editKabModal = document.getElementById('modalEditKabupaten');
+    if (editKabModal) {
+        editKabModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            if (!button) return;
             const id = button.getAttribute('data-id');
             const nama = button.getAttribute('data-nama');
             const tipe = button.getAttribute('data-tipe');
