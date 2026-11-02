@@ -128,25 +128,40 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-header">Master & Anggota</li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="#!">
-                            <i class="align-middle fa-solid fa-users"></i> <span class="align-middle">Bank Pemain Nasional</span>
+                    <li class="sidebar-header">Pengaturan & Master Data</li>
+                    <li class="sidebar-item {{ request()->routeIs('master.wilayah') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.wilayah') }}">
+                            <i class="align-middle fa-solid fa-map-location-dot"></i> <span class="align-middle">Master Wilayah</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="#!">
-                            <i class="align-middle fa-solid fa-map-location-dot"></i> <span class="align-middle">Pengprov & Pengkot</span>
+                    <li class="sidebar-item {{ request()->routeIs('master.pengprov') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.pengprov') }}">
+                            <i class="align-middle fa-solid fa-building-flag"></i> <span class="align-middle">Data Pengprov</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="#!">
-                            <i class="align-middle fa-solid fa-shield-halved"></i> <span class="align-middle">Klub Resmi PBVSI</span>
+                    <li class="sidebar-item {{ request()->routeIs('master.pengkot') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.pengkot') }}">
+                            <i class="align-middle fa-solid fa-city"></i> <span class="align-middle">Data Pengkot/Pengkab</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="#!">
-                            <i class="align-middle fa-solid fa-whistle"></i> <span class="align-middle">Wasit & Pelatih</span>
+                    <li class="sidebar-item {{ request()->routeIs('master.klub') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.klub') }}">
+                            <i class="align-middle fa-solid fa-shield-halved"></i> <span class="align-middle">Data Tim / Klub</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('master.jabatan') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.jabatan') }}">
+                            <i class="align-middle fa-solid fa-user-tag"></i> <span class="align-middle">Master Jabatan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('master.posisi') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.posisi') }}">
+                            <i class="align-middle fa-solid fa-arrows-down-to-people"></i> <span class="align-middle">Posisi Pemain</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('master.users') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('master.users') }}">
+                            <i class="align-middle fa-solid fa-user-shield"></i> <span class="align-middle">User & RBAC</span>
                         </a>
                     </li>
 

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             MasterWilayahSeeder::class,
             MasterTurnamenSeeder::class,
+            MasterJabatanAndPosisiSeeder::class,
         ]);
     }
 }
