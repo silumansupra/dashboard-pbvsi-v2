@@ -1,12 +1,12 @@
 # Graph Report - dashboard-pbvsi-v2  (2026-11-02)
 
 ## Corpus Check
-- 102 files · ~77,009 words
+- 111 files · ~78,534 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 28 file(s) not represented in the graph (top: (none) 18, .css 4, .map 3)
 
 ## Summary
-- 1130 nodes · 3002 edges · 67 communities (33 shown, 34 thin omitted)
+- 1139 nodes · 3002 edges · 76 communities (33 shown, 43 thin omitted)
 - Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 410 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -89,7 +89,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (67 total, 34 thin omitted)
+## Communities (76 total, 43 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
@@ -225,16 +225,16 @@ Nodes (4): Monolog\Handler\NullHandler, Monolog\Handler\StreamHandler, Monolog\H
 
 ## Knowledge Gaps
 - **50 isolated node(s):** `$schema`, `name`, `type`, `description`, `keywords` (+45 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 311 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 320 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `t()` connect `Community 15` to `Community 0`, `Community 1`, `Community 34`, `Community 2`, `Community 5`, `Community 37`, `Community 7`, `Community 40`, `Community 10`, `Community 16`, `Community 23`, `Community 28`, `Community 29`?**
-  _High betweenness centrality (0.127) - this node is a cross-community bridge._
+  _High betweenness centrality (0.124) - this node is a cross-community bridge._
 - **Why does `ua()` connect `Community 12` to `Community 37`, `Community 5`, `Community 6`, `Community 16`, `Community 20`, `Community 25`, `Community 28`, `Community 31`?**
-  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Why does `on()` connect `Community 24` to `Community 1`, `Community 33`, `Community 3`, `Community 38`, `Community 8`, `Community 22`?**
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Are the 39 inferred relationships involving `t()` (e.g. with `adminkit/js/app.js` and `A()`) actually correct?**

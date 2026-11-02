@@ -42,8 +42,13 @@ class MasterController extends Controller
             $kabQuery->where('tipe', $request->tipe);
         }
 
+        $perPage = (int) $request->get('per_page', 15);
+        if (!in_array($perPage, [10, 15, 25, 50, 100])) {
+            $perPage = 15;
+        }
+
         $kabupaten = $kabQuery->orderBy('nama_kabupaten')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
 
         return view('master.wilayah', compact('provinsi', 'kabupaten', 'selectedProvId', 'activeProvinsi'));

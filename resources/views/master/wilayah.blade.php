@@ -171,14 +171,14 @@
                         <input type="hidden" name="search_prov" value="{{ request('search_prov') }}">
                     @endif
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
                             <input type="text" name="search_kab" class="form-control" placeholder="Cari nama / kode kota & kab..." value="{{ request('search_kab') }}">
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select name="tipe" class="form-select form-select-sm">
                             <option value="">Semua Tipe Wilayah</option>
                             <option value="KABUPATEN" {{ request('tipe') == 'KABUPATEN' ? 'selected' : '' }}>KABUPATEN</option>
@@ -186,11 +186,20 @@
                         </select>
                     </div>
 
+                    <div class="col-md-2">
+                        <select name="per_page" class="form-select form-select-sm" title="Jumlah data per halaman" onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 / hal</option>
+                            <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15 / hal</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 / hal</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 / hal</option>
+                        </select>
+                    </div>
+
                     <div class="col-md-3 d-flex gap-1">
                         <button type="submit" class="btn btn-sm btn-primary flex-fill">
                             <i class="fa-solid fa-filter me-1"></i> Filter
                         </button>
-                        @if(request('search_kab') || request('tipe'))
+                        @if(request('search_kab') || request('tipe') || request('per_page'))
                             <a href="{{ route('master.wilayah', ['provinsi_id' => $selectedProvId]) }}" class="btn btn-sm btn-outline-secondary" title="Reset Filter">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </a>
@@ -266,14 +275,9 @@
                     </table>
                 </div>
 
-                @if($kabupaten->hasPages())
-                <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
-                    <div class="small text-muted">
-                        Menampilkan {{ $kabupaten->firstItem() ?? 0 }} - {{ $kabupaten->lastItem() ?? 0 }} dari total {{ $kabupaten->total() }} daerah
-                    </div>
-                    <div>
-                        {{ $kabupaten->links('pagination::bootstrap-5') }}
-                    </div>
+                @if($kabupaten->hasPages() || $kabupaten->total() > 0)
+                <div class="p-3 border-top bg-light">
+                    {{ $kabupaten->links('vendor.pagination.bootstrap-5') }}
                 </div>
                 @endif
             </div>
