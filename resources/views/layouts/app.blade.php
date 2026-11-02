@@ -178,6 +178,40 @@
                         </a>
                     </li>
 
+                    <li class="sidebar-header">Database Personel PBVSI</li>
+                    <li class="sidebar-item {{ request()->routeIs('personel.pemain*') ? 'active' : '' }}">
+                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.pemain') }}">
+                            <div>
+                                <i class="align-middle fa-solid fa-id-card-clip text-primary"></i> <span class="align-middle">Bank Pemain</span>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">7.5k</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('personel.pelatih*') ? 'active' : '' }}">
+                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.pelatih') }}">
+                            <div>
+                                <i class="align-middle fa-solid fa-chalkboard-user text-warning"></i> <span class="align-middle">Data Pelatih</span>
+                            </div>
+                            <span class="badge bg-warning text-dark rounded-pill">222</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('personel.wasit*') ? 'active' : '' }}">
+                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.wasit') }}">
+                            <div>
+                                <i class="align-middle fa-solid fa-flag text-danger"></i> <span class="align-middle">Data Wasit</span>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">119</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('personel.official*') ? 'active' : '' }}">
+                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.official') }}">
+                            <div>
+                                <i class="align-middle fa-solid fa-user-tie text-info"></i> <span class="align-middle">Official Tim</span>
+                            </div>
+                            <span class="badge bg-info text-dark rounded-pill">594</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-header">Pengaturan & Master Data</li>
                     <li class="sidebar-item {{ request()->routeIs('master.wilayah') ? 'active' : '' }}">
                         <a class="sidebar-link" href="{{ route('master.wilayah') }}">

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KejurnasController;
 use App\Http\Controllers\MasterController;
+use App\Http\Controllers\PersonelController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -63,3 +64,37 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::put('/users/{id}', [MasterController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [MasterController::class, 'destroyUser'])->name('users.destroy');
 });
+
+// Modul Database Personel & Anggota PBVSI Pusat
+Route::prefix('personel')->name('personel.')->group(function () {
+    // 1. Bank Pemain
+    Route::get('/pemain', [PersonelController::class, 'pemain'])->name('pemain');
+    Route::post('/pemain', [PersonelController::class, 'storePemain'])->name('pemain.store');
+    Route::put('/pemain/{id}', [PersonelController::class, 'updatePemain'])->name('pemain.update');
+    Route::delete('/pemain/{id}', [PersonelController::class, 'destroyPemain'])->name('pemain.destroy');
+    Route::post('/pemain/{id}/verifikasi', [PersonelController::class, 'verifikasiPemain'])->name('pemain.verifikasi');
+
+    // 2. Data Pelatih
+    Route::get('/pelatih', [PersonelController::class, 'pelatih'])->name('pelatih');
+    Route::post('/pelatih', [PersonelController::class, 'storePelatih'])->name('pelatih.store');
+    Route::put('/pelatih/{id}', [PersonelController::class, 'updatePelatih'])->name('pelatih.update');
+    Route::delete('/pelatih/{id}', [PersonelController::class, 'destroyPelatih'])->name('pelatih.destroy');
+
+    // 3. Data Wasit
+    Route::get('/wasit', [PersonelController::class, 'wasit'])->name('wasit');
+    Route::post('/wasit', [PersonelController::class, 'storeWasit'])->name('wasit.store');
+    Route::put('/wasit/{id}', [PersonelController::class, 'updateWasit'])->name('wasit.update');
+    Route::delete('/wasit/{id}', [PersonelController::class, 'destroyWasit'])->name('wasit.destroy');
+
+    // 4. Data Official
+    Route::get('/official', [PersonelController::class, 'official'])->name('official');
+    Route::post('/official', [PersonelController::class, 'storeOfficial'])->name('official.store');
+    Route::put('/official/{id}', [PersonelController::class, 'updateOfficial'])->name('official.update');
+    Route::delete('/official/{id}', [PersonelController::class, 'destroyOfficial'])->name('official.destroy');
+});
+
+// Shortcut alias redirects
+Route::redirect('/pemain', '/personel/pemain');
+Route::redirect('/pelatih', '/personel/pelatih');
+Route::redirect('/wasit', '/personel/wasit');
+Route::redirect('/official', '/personel/official');

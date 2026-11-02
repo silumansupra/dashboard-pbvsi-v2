@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Pemain extends Model
 {
     protected $table = 'member_pemain';
+
     protected $fillable = [
         'user_id',
         'klub_id',
@@ -29,9 +30,23 @@ class Pemain extends Model
         'catatan_verifikasi',
     ];
 
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function pengprov()
+    {
+        return $this->belongsTo(Pengprov::class, 'pengprov_id');
+    }
+
+    public function klub()
+    {
+        return $this->belongsTo(Klub::class, 'klub_id');
     }
 
     public function rosters()
