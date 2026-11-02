@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_pengkot_email').value = button.getAttribute('data-email') || '';
             document.getElementById('edit_pengkot_no_telp').value = button.getAttribute('data-no-telp') || '';
             document.getElementById('edit_pengkot_alamat').value = button.getAttribute('data-alamat') || '';
-            document.getElementById('edit_pengkot_status').value = button.getAttribute('data-status') || 'AKTIF';
+            document.getElementById('edit_pengkot_status').value = button.getAttribute('data-status') || '1';
 
             loadKabupaten(pengprovId, 'edit_pengkot_kabupaten_id', kabId);
         });

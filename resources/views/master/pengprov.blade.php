@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_pengprov_no_telp').value = button.getAttribute('data-no-telp') || '';
             document.getElementById('edit_pengprov_website').value = button.getAttribute('data-website') || '';
             document.getElementById('edit_pengprov_alamat').value = button.getAttribute('data-alamat') || '';
-            document.getElementById('edit_pengprov_status').value = button.getAttribute('data-status') || 'AKTIF';
+            document.getElementById('edit_pengprov_status').value = button.getAttribute('data-status') || '1';
         });
     }
 });

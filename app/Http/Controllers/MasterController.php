@@ -350,7 +350,7 @@ class MasterController extends Controller
         }
 
         $pengkot = $query->orderBy('nama_pengkot')->paginate($perPage)->withQueryString();
-        $pengprovList = Pengprov::where('status_aktif', 'AKTIF')->orderBy('nama_pengprov')->get();
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get();
 
         return view('master.pengkot', compact('pengkot', 'pengprovList'));
     }
@@ -368,6 +368,10 @@ class MasterController extends Controller
 
     public function storePengkot(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+
         $request->validate([
             'pengprov_id' => 'required|exists:org_pengprov,id',
             'kabupaten_id' => 'required|exists:core_wilayah_kabupaten,id|unique:org_pengkot,kabupaten_id',
@@ -406,6 +410,10 @@ class MasterController extends Controller
     public function updatePengkot(Request $request, $id)
     {
         $pengkot = Pengkot::findOrFail($id);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
 
         $request->validate([
             'pengprov_id' => 'required|exists:org_pengprov,id',
@@ -469,7 +477,7 @@ class MasterController extends Controller
             $perPage = 15;
         }
 
-        $pengprovList = Pengprov::where('status_aktif', 'AKTIF')->orderBy('nama_pengprov')->get();
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get();
         $totalKlubCount = Klub::count();
         $totalPengprovCount = Pengprov::whereHas('pesertaKontingen')->count();
 
@@ -637,6 +645,10 @@ class MasterController extends Controller
 
     public function storeKlub(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+
         $request->validate([
             'nama_klub' => 'required|string|max:150',
             'kode_klub' => 'nullable|string|max:50|unique:org_klub,kode_klub',
@@ -685,6 +697,10 @@ class MasterController extends Controller
     public function updateKlub(Request $request, $id)
     {
         $klub = Klub::findOrFail($id);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
 
         $request->validate([
             'nama_klub' => 'required|string|max:150',
