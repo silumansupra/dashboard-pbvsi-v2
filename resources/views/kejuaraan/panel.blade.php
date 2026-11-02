@@ -316,7 +316,7 @@
                                             <span class="badge bg-danger-subtle text-danger border px-2"><i class="fa-solid fa-venus me-1"></i>Putri (PI)</span>
                                         @endif
                                     </td>
-                                    <td>{{ $tim->pengprov?->nama_pengprov ?? '-' }}</td>
+                                    <td>{{ $tim->pengprov?->nama_pengprov ?? $tim->klub?->pengprov?->nama_pengprov ?? '-' }}</td>
                                     <td>
                                         <span class="badge bg-light text-dark border">{{ $tim->roster->count() }} Atlet</span>
                                     </td>
@@ -342,12 +342,77 @@
         <!-- TAB CONTENT: ROSTER -->
         <div x-show="activeTab === 'roster'" x-transition>
             <div class="card shadow-sm border-0">
-                <div class="card-body text-center py-5">
-                    <i class="fa-solid fa-users fa-3x text-primary mb-3 d-block opacity-50"></i>
-                    <h5 class="fw-bold text-dark">Roster Atlet Edisi {{ $tahun }}</h5>
-                    <p class="text-muted col-md-6 mx-auto">
-                        Daftar atlet pemain yang terdaftar pada tim peserta edisi {{ $tahun }}.
-                    </p>
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0">Roster Atlet Peserta Edisi {{ $tahun }}</h5>
+                    <span class="badge bg-primary">
+                        {{ $edisi->timPeserta->sum(fn($t) => $t->roster->count()) }} Atlet Terdaftar
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-muted small text-uppercase sticky-top">
+                                <tr>
+                                    <th class="ps-3 text-center" style="width: 70px;">Jersey</th>
+                                    <th>Nama Pemain</th>
+                                    <th>Tim / Klub</th>
+                                    <th>Gender</th>
+                                    <th>Posisi</th>
+                                    <th>Fisik (TB/BB)</th>
+                                    <th>Spike / Block</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $totalRosterShown = 0; @endphp
+                                @foreach($edisi->timPeserta as $tim)
+                                    @foreach($tim->roster as $r)
+                                    @php $totalRosterShown++; @endphp
+                                    <tr>
+                                        <td class="ps-3 text-center">
+                                            <span class="badge bg-primary fs-6 px-2 py-1">{{ $r->nomor_punggung }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">{{ $r->pemain?->nama_lengkap ?? '-' }}</div>
+                                            <div class="small text-muted">ID: {{ $r->pemain?->pbvsi_player_id ?? '-' }} @if($r->nama_jersey) &bull; Jersey: {{ $r->nama_jersey }} @endif</div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-dark">{{ $tim->nama_tim }}</span>
+                                        </td>
+                                        <td>
+                                            @if($tim->kategori_gender == 'PA')
+                                                <span class="badge bg-info-subtle text-info border">Putra</span>
+                                            @else
+                                                <span class="badge bg-danger-subtle text-danger border">Putri</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary px-2">{{ $r->posisi_bermain }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="small">{{ $r->tinggi_cm ? $r->tinggi_cm . ' cm' : '-' }} / {{ $r->berat_kg ? $r->berat_kg . ' kg' : '-' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="small text-muted">{{ $r->spike_reach_cm ? $r->spike_reach_cm . ' cm' : '-' }} / {{ $r->block_reach_cm ? $r->block_reach_cm . ' cm' : '-' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success-subtle text-success"><i class="fa-solid fa-check me-1"></i>Verified</span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @endforeach
+
+                                @if($totalRosterShown === 0)
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="fa-solid fa-users-slash fa-3x text-secondary mb-3 d-block opacity-50"></i>
+                                        <div class="fw-bold text-muted">Belum ada roster atlet terdaftar pada edisi {{ $tahun }} ini.</div>
+                                    </td>
+                                </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

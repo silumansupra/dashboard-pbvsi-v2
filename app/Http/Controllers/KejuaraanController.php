@@ -32,7 +32,7 @@ class KejuaraanController extends Controller
 
         $edisi = Edisi::where('turnamen_id', $turnamen->id)
             ->where('tahun', $tahun)
-            ->with(['timPeserta.pengprov', 'timPeserta.roster.pemain'])
+            ->with(['timPeserta.pengprov', 'timPeserta.klub', 'timPeserta.roster.pemain'])
             ->first();
 
         $timPutra = collect();
