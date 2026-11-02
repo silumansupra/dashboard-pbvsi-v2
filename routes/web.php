@@ -26,10 +26,40 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::put('/wilayah/kabupaten/{id}', [MasterController::class, 'updateKabupaten'])->name('wilayah.kabupaten.update');
     Route::delete('/wilayah/kabupaten/{id}', [MasterController::class, 'destroyKabupaten'])->name('wilayah.kabupaten.destroy');
 
-    Route::get('/jabatan', [MasterController::class, 'jabatan'])->name('jabatan');
-    Route::get('/posisi', [MasterController::class, 'posisi'])->name('posisi');
+    // 2. Master Pengprov
     Route::get('/pengprov', [MasterController::class, 'pengprov'])->name('pengprov');
+    Route::post('/pengprov', [MasterController::class, 'storePengprov'])->name('pengprov.store');
+    Route::put('/pengprov/{id}', [MasterController::class, 'updatePengprov'])->name('pengprov.update');
+    Route::delete('/pengprov/{id}', [MasterController::class, 'destroyPengprov'])->name('pengprov.destroy');
+
+    // 3. Master Pengkot / Pengkab
     Route::get('/pengkot', [MasterController::class, 'pengkot'])->name('pengkot');
+    Route::post('/pengkot', [MasterController::class, 'storePengkot'])->name('pengkot.store');
+    Route::put('/pengkot/{id}', [MasterController::class, 'updatePengkot'])->name('pengkot.update');
+    Route::delete('/pengkot/{id}', [MasterController::class, 'destroyPengkot'])->name('pengkot.destroy');
+    Route::get('/api/kabupaten-by-pengprov/{pengprovId}', [MasterController::class, 'apiKabupatenByPengprov'])->name('api.kabupaten_by_pengprov');
+
+    // 4. Master Klub / Tim
     Route::get('/klub', [MasterController::class, 'klub'])->name('klub');
+    Route::post('/klub', [MasterController::class, 'storeKlub'])->name('klub.store');
+    Route::put('/klub/{id}', [MasterController::class, 'updateKlub'])->name('klub.update');
+    Route::delete('/klub/{id}', [MasterController::class, 'destroyKlub'])->name('klub.destroy');
+
+    // 5. Master Jabatan
+    Route::get('/jabatan', [MasterController::class, 'jabatan'])->name('jabatan');
+    Route::post('/jabatan', [MasterController::class, 'storeJabatan'])->name('jabatan.store');
+    Route::put('/jabatan/{id}', [MasterController::class, 'updateJabatan'])->name('jabatan.update');
+    Route::delete('/jabatan/{id}', [MasterController::class, 'destroyJabatan'])->name('jabatan.destroy');
+
+    // 6. Master Posisi Pemain
+    Route::get('/posisi', [MasterController::class, 'posisi'])->name('posisi');
+    Route::post('/posisi', [MasterController::class, 'storePosisi'])->name('posisi.store');
+    Route::put('/posisi/{id}', [MasterController::class, 'updatePosisi'])->name('posisi.update');
+    Route::delete('/posisi/{id}', [MasterController::class, 'destroyPosisi'])->name('posisi.destroy');
+
+    // 7. Master User & RBAC
     Route::get('/users', [MasterController::class, 'users'])->name('users');
+    Route::post('/users', [MasterController::class, 'storeUser'])->name('users.store');
+    Route::put('/users/{id}', [MasterController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{id}', [MasterController::class, 'destroyUser'])->name('users.destroy');
 });

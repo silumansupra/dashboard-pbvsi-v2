@@ -21,6 +21,10 @@ class Pengkot extends Model
         'status_aktif',
     ];
 
+    protected $casts = [
+        'status_aktif' => 'boolean',
+    ];
+
     public function pengprov()
     {
         return $this->belongsTo(Pengprov::class, 'pengprov_id');
@@ -29,5 +33,10 @@ class Pengkot extends Model
     public function kabupaten()
     {
         return $this->belongsTo(Kabupaten::class, 'kabupaten_id');
+    }
+
+    public function klub()
+    {
+        return $this->hasMany(Klub::class, 'pengkot_id');
     }
 }

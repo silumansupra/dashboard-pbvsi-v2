@@ -20,4 +20,23 @@ class Pengprov extends Model
         'alamat',
         'status_aktif',
     ];
+
+    protected $casts = [
+        'status_aktif' => 'boolean',
+    ];
+
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class, 'provinsi_id');
+    }
+
+    public function pengkot()
+    {
+        return $this->hasMany(Pengkot::class, 'pengprov_id');
+    }
+
+    public function klub()
+    {
+        return $this->hasMany(Klub::class, 'pengprov_id');
+    }
 }
