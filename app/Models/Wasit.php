@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasEncryptedId;
 
 class Wasit extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'member_wasit';
+    protected string $encryptionContext = 'wasit';
+
+    protected $appends = ['encrypted_id'];
 
     protected $fillable = [
         'user_id',

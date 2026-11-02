@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\HasEncryptedId;
 
 class Pemain extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'member_pemain';
+    protected string $encryptionContext = 'pemain';
+
+    protected $appends = ['encrypted_id'];
 
     protected $fillable = [
         'user_id',

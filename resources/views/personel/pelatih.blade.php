@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahPelatih">
-            <i class="fa-solid fa-user-plus me-1"></i> Tambah Pelatih Baru
-        </button>
+        <a href="{{ route('personel.pelatih.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Tambah Pelatih Baru
+        </a>
     </div>
 </div>
 
@@ -216,20 +216,11 @@
                         </td>
                         <td class="text-end pe-3">
                             <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-primary btn-sm btn-edit"
-                                    data-id="{{ $row->id }}"
-                                    data-nama="{{ $row->user?->name }}"
-                                    data-email="{{ $row->user?->email }}"
-                                    data-phone="{{ $row->user?->phone }}"
-                                    data-lisensi="{{ $row->nomor_lisensi_pelatih }}"
-                                    data-tingkat="{{ $row->tingkat_pelatih }}"
-                                    data-pengprov-id="{{ $row->pengprov_id }}"
-                                    data-status="{{ $row->status_aktif ? 1 : 0 }}"
-                                    title="Edit Pelatih">
+                                <a href="{{ route('personel.pelatih.edit', $row->encrypted_id) }}" class="btn btn-outline-primary btn-sm" title="Edit Pelatih">
                                     <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                </a>
                                 <button type="button" class="btn btn-outline-danger btn-sm btn-delete"
-                                    data-id="{{ $row->id }}"
+                                    data-id="{{ $row->encrypted_id }}"
                                     data-nama="{{ $row->user?->name }}"
                                     title="Hapus Pelatih">
                                     <i class="fa-solid fa-trash-can"></i>
@@ -260,134 +251,7 @@
 @endsection
 
 @push('modals')
-<!-- 1. MODAL TAMBAH PELATIH -->
-<div class="modal fade" id="modalTambahPelatih" tabindex="-1" aria-labelledby="modalTambahPelatihLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('personel.pelatih.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalTambahPelatihLabel">
-                        <i class="fa-solid fa-chalkboard-user me-1"></i> Tambah Pelatih Resmi PBVSI
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Pelatih <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: Li Qiujiang">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="pelatih@pbvsi.or.id">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" class="form-control" placeholder="0812...">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tingkat Lisensi <span class="text-danger">*</span></label>
-                            <select name="tingkat_pelatih" class="form-select" required>
-                                <option value="Nasional A">Nasional A</option>
-                                <option value="Nasional B" selected>Nasional B</option>
-                                <option value="Nasional C">Nasional C</option>
-                                <option value="FIVB Level 1">FIVB Level 1</option>
-                                <option value="FIVB Level 2">FIVB Level 2</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi (Opsional)</label>
-                            <input type="text" name="nomor_lisensi_pelatih" class="form-control" placeholder="Auto-generate jika kosong">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Asal Pengprov</label>
-                        <select name="pengprov_id" class="form-select">
-                            <option value="">-- Pengurus Pusat PBVSI --</option>
-                            @foreach($pengprovList as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="tambah_status_aktif" value="1" checked>
-                        <label class="form-check-label fw-semibold" for="tambah_status_aktif">Status Pelatih Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Pelatih</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 2. MODAL EDIT PELATIH -->
-<div class="modal fade" id="modalEditPelatih" tabindex="-1" aria-labelledby="modalEditPelatihLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form id="formEditPelatih" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalEditPelatihLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data Pelatih
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Pelatih <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" id="edit_nama" class="form-control" required>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" id="edit_email" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" id="edit_phone" class="form-control">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tingkat Lisensi <span class="text-danger">*</span></label>
-                            <input type="text" name="tingkat_pelatih" id="edit_tingkat" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi <span class="text-danger">*</span></label>
-                            <input type="text" name="nomor_lisensi_pelatih" id="edit_lisensi" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Asal Pengprov</label>
-                        <select name="pengprov_id" id="edit_pengprov_id" class="form-select">
-                            <option value="">-- Pengurus Pusat PBVSI --</option>
-                            @foreach($pengprovList as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="edit_status_aktif" value="1">
-                        <label class="form-check-label fw-semibold" for="edit_status_aktif">Status Pelatih Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Data</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 3. MODAL HAPUS PELATIH -->
+<!-- 1. MODAL HAPUS PELATIH -->
 <div class="modal fade" id="modalHapusPelatih" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form id="formHapusPelatih" action="" method="POST">
@@ -418,25 +282,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Edit Modal Handler
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            document.getElementById('edit_nama').value = this.getAttribute('data-nama') || '';
-            document.getElementById('edit_email').value = this.getAttribute('data-email') || '';
-            document.getElementById('edit_phone').value = this.getAttribute('data-phone') || '';
-            document.getElementById('edit_lisensi').value = this.getAttribute('data-lisensi') || '';
-            document.getElementById('edit_tingkat').value = this.getAttribute('data-tingkat') || '';
-            document.getElementById('edit_pengprov_id').value = this.getAttribute('data-pengprov-id') || '';
-            document.getElementById('edit_status_aktif').checked = this.getAttribute('data-status') === '1';
-
-            document.getElementById('formEditPelatih').action = "{{ url('personel/pelatih') }}/" + id;
-
-            const modal = new bootstrap.Modal(document.getElementById('modalEditPelatih'));
-            modal.show();
-        });
-    });
-
     // Delete Modal Handler
     document.querySelectorAll('.btn-delete').forEach(button => {
         button.addEventListener('click', function () {

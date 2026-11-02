@@ -1,0 +1,129 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Data Pelatih: ' . ($pelatih->user?->name ?? 'Pelatih') . ' - PBVSI')
+
+@section('content')
+@if($errors->any())
+<div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+    <div class="d-flex align-items-center mb-1">
+        <i class="fa-solid fa-triangle-exclamation fa-lg me-2 text-danger"></i>
+        <strong>Terdapat kesalahan pengisian formulir:</strong>
+    </div>
+    <ul class="mb-0 ps-4 small">
+        @foreach($errors->all() as $err)
+            <li>{{ $err }}</li>
+        @endforeach
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+<div class="breadcrumb-custom d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"><i class="fa-solid fa-house fa-sm me-1 text-primary"></i> PBVSI Pusat</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('personel.pelatih') }}">Data Pelatih</a></li>
+            <li class="breadcrumb-item active"><span class="badge bg-primary px-2 py-1">Edit Pelatih</span></li>
+        </ol>
+    </nav>
+    <a href="{{ route('personel.pelatih') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm">
+        <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar Pelatih
+    </a>
+</div>
+
+<form action="{{ route('personel.pelatih.update', $pelatih->encrypted_id) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chalkboard-user text-primary me-2"></i> Perbarui Data & Lisensi Pelatih
+                    </h5>
+                    <small class="text-muted">Lisensi: <span class="badge bg-warning text-dark border px-2 py-1">{{ $pelatih->nomor_lisensi_pelatih }}</span></small>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Nama Lengkap Pelatih <span class="text-danger">*</span></label>
+                            <input type="text" name="nama_lengkap" class="form-control text-uppercase @error('nama_lengkap') is-invalid @enderror" value="{{ old('nama_lengkap', $pelatih->user?->name) }}" required autofocus>
+                            @error('nama_lengkap')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $pelatih->user?->email) }}">
+                            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
+                            <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $pelatih->user?->phone) }}">
+                            @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Tingkat Lisensi <span class="text-danger">*</span></label>
+                            <input type="text" name="tingkat_pelatih" class="form-control text-uppercase @error('tingkat_pelatih') is-invalid @enderror" value="{{ old('tingkat_pelatih', $pelatih->tingkat_pelatih) }}" required>
+                            @error('tingkat_pelatih')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nomor Lisensi Pelatih <span class="text-danger">*</span></label>
+                            <input type="text" name="nomor_lisensi_pelatih" class="form-control text-uppercase @error('nomor_lisensi_pelatih') is-invalid @enderror" value="{{ old('nomor_lisensi_pelatih', $pelatih->nomor_lisensi_pelatih) }}" required>
+                            @error('nomor_lisensi_pelatih')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Asal Pengurus Provinsi (Pengprov)</label>
+                            <select name="pengprov_id" class="form-select @error('pengprov_id') is-invalid @enderror">
+                                <option value="">-- Pengurus Pusat PBVSI (Nasional) --</option>
+                                @foreach($pengprovList as $p)
+                                    <option value="{{ $p->id }}" {{ old('pengprov_id', $pelatih->pengprov_id) == $p->id ? 'selected' : '' }}>
+                                        {{ $p->nama_pengprov }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('pengprov_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="card-title fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-toggle-on text-primary me-2"></i> Status Keanggotaan
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status Pelatih <span class="text-danger">*</span></label>
+                        <select name="status_aktif" class="form-select @error('status_aktif') is-invalid @enderror" required>
+                            <option value="1" {{ old('status_aktif', $pelatih->status_aktif ? '1' : '0') == '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ old('status_aktif', $pelatih->status_aktif ? '1' : '0') == '0' ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                        @error('status_aktif')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-2 fw-semibold">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Data Pelatih
+                        </button>
+                        <a href="{{ route('personel.pelatih') }}" class="btn btn-outline-secondary py-2">
+                            <i class="fa-solid fa-xmark me-1"></i> Batal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@endsection

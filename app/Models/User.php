@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\HasEncryptedId;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasEncryptedId;
+
+    protected string $encryptionContext = 'user';
+
+    protected $appends = ['encrypted_id'];
 
     protected $table = 'core_users';
 

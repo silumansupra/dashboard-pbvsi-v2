@@ -70,15 +70,54 @@ class PersonelController extends Controller
             'pi' => Pemain::where('jenis_kelamin', 'PI')->count(),
         ];
 
-        $pengprovList = Pengprov::orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
         $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
         $posisiList = PosisiPemain::orderBy('kode_posisi')->get();
 
         return view('personel.pemain', compact('pemain', 'stats', 'pengprovList', 'klubList', 'posisiList'));
     }
 
+    public function createPemain()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
+        $posisiList = PosisiPemain::where('is_active', 1)->orderBy('kode_posisi')->get();
+
+        return view('personel.pemain_create', compact('pengprovList', 'klubList', 'posisiList'));
+    }
+
+    public function editPemain($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Pemain::where('id', $rawId)->exists()) {
+                abort(404, 'Data pemain tidak ditemukan.');
+            }
+            return redirect()->route('personel.pemain.edit', ['id' => encrypt_id($rawId, 'pemain')], 301);
+        }
+
+        $realId = decrypt_id($id, 'pemain');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $pemain = Pemain::findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
+        $posisiList = PosisiPemain::where('is_active', 1)->orderBy('kode_posisi')->get();
+
+        return view('personel.pemain_edit', compact('pemain', 'pengprovList', 'klubList', 'posisiList'));
+    }
+
     public function storePemain(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+        if ($request->filled('klub_id') && !is_numeric($request->klub_id)) {
+            $request->merge(['klub_id' => decrypt_id($request->klub_id, 'klub')]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
             'nama_punggung' => 'nullable|string|max:100',
@@ -105,7 +144,19 @@ class PersonelController extends Controller
 
     public function updatePemain(Request $request, $id)
     {
-        $pemain = Pemain::findOrFail($id);
+        $realId = decrypt_id($id, 'pemain') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data pemain tidak valid.');
+        }
+
+        $pemain = Pemain::findOrFail($realId);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+        if ($request->filled('klub_id') && !is_numeric($request->klub_id)) {
+            $request->merge(['klub_id' => decrypt_id($request->klub_id, 'klub')]);
+        }
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
@@ -125,12 +176,17 @@ class PersonelController extends Controller
 
         $pemain->update($validated);
 
-        return redirect()->back()->with('success', 'Data Pemain ' . $pemain->nama_lengkap . ' berhasil diperbarui!');
+        return redirect()->route('personel.pemain')->with('success', 'Data Pemain ' . $pemain->nama_lengkap . ' berhasil diperbarui!');
     }
 
     public function verifikasiPemain(Request $request, $id)
     {
-        $pemain = Pemain::findOrFail($id);
+        $realId = decrypt_id($id, 'pemain') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data pemain tidak valid.');
+        }
+
+        $pemain = Pemain::findOrFail($realId);
         $status = $request->validate([
             'status' => 'required|in:VERIFIED,REJECTED,PENDING',
             'catatan' => 'nullable|string'
@@ -146,11 +202,16 @@ class PersonelController extends Controller
 
     public function destroyPemain($id)
     {
-        $pemain = Pemain::findOrFail($id);
+        $realId = decrypt_id($id, 'pemain') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data pemain tidak valid.');
+        }
+
+        $pemain = Pemain::findOrFail($realId);
         $nama = $pemain->nama_lengkap;
         $pemain->delete();
 
-        return redirect()->back()->with('success', "Pemain {$nama} berhasil dihapus dari Bank Pemain.");
+        return redirect()->route('personel.pemain')->with('success', "Pemain {$nama} berhasil dihapus dari Bank Pemain.");
     }
 
     /**
@@ -205,13 +266,45 @@ class PersonelController extends Controller
             'nasional_c' => Pelatih::where('tingkat_pelatih', 'like', '%C%')->count(),
         ];
 
-        $pengprovList = Pengprov::orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
 
         return view('personel.pelatih', compact('pelatih', 'stats', 'pengprovList'));
     }
 
+    public function createPelatih()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+
+        return view('personel.pelatih_create', compact('pengprovList'));
+    }
+
+    public function editPelatih($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Pelatih::where('id', $rawId)->exists()) {
+                abort(404, 'Data pelatih tidak ditemukan.');
+            }
+            return redirect()->route('personel.pelatih.edit', ['id' => encrypt_id($rawId, 'pelatih')], 301);
+        }
+
+        $realId = decrypt_id($id, 'pelatih');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $pelatih = Pelatih::with('user')->findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+
+        return view('personel.pelatih_edit', compact('pelatih', 'pengprovList'));
+    }
+
     public function storePelatih(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
             'email' => 'nullable|email|max:150',
@@ -223,9 +316,6 @@ class PersonelController extends Controller
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
-
-        $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
-        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
 
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
@@ -263,7 +353,16 @@ class PersonelController extends Controller
 
     public function updatePelatih(Request $request, $id)
     {
-        $pelatih = Pelatih::with('user')->findOrFail($id);
+        $realId = decrypt_id($id, 'pelatih') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data pelatih tidak valid.');
+        }
+
+        $pelatih = Pelatih::with('user')->findOrFail($realId);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
@@ -293,16 +392,21 @@ class PersonelController extends Controller
             'status_aktif' => (bool) $validated['status_aktif'],
         ]);
 
-        return redirect()->back()->with('success', "Data Pelatih {$validated['nama_lengkap']} berhasil diperbarui!");
+        return redirect()->route('personel.pelatih')->with('success', "Data Pelatih {$validated['nama_lengkap']} berhasil diperbarui!");
     }
 
     public function destroyPelatih($id)
     {
-        $pelatih = Pelatih::with('user')->findOrFail($id);
+        $realId = decrypt_id($id, 'pelatih') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data pelatih tidak valid.');
+        }
+
+        $pelatih = Pelatih::with('user')->findOrFail($realId);
         $nama = $pelatih->user?->name ?? 'Pelatih #' . $pelatih->id;
         $pelatih->delete();
 
-        return redirect()->back()->with('success', "Data Pelatih {$nama} berhasil dihapus.");
+        return redirect()->route('personel.pelatih')->with('success', "Data Pelatih {$nama} berhasil dihapus.");
     }
 
     /**
@@ -360,13 +464,45 @@ class PersonelController extends Controller
             'aktif' => Wasit::where('status_aktif', 1)->count(),
         ];
 
-        $pengprovList = Pengprov::orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
 
         return view('personel.wasit', compact('wasit', 'stats', 'pengprovList'));
     }
 
+    public function createWasit()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+
+        return view('personel.wasit_create', compact('pengprovList'));
+    }
+
+    public function editWasit($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Wasit::where('id', $rawId)->exists()) {
+                abort(404, 'Data wasit tidak ditemukan.');
+            }
+            return redirect()->route('personel.wasit.edit', ['id' => encrypt_id($rawId, 'wasit')], 301);
+        }
+
+        $realId = decrypt_id($id, 'wasit');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $wasit = Wasit::with('user')->findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+
+        return view('personel.wasit_edit', compact('wasit', 'pengprovList'));
+    }
+
     public function storeWasit(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
             'email' => 'nullable|email|max:150',
@@ -380,7 +516,6 @@ class PersonelController extends Controller
         ]);
 
         $validated['nama_lengkap'] = strtoupper(trim($validated['nama_lengkap']));
-        $validated['jabatan_official'] = strtoupper(trim($validated['jabatan_official']));
 
         $userId = DB::table('core_users')->insertGetId([
             'uuid' => (string) Str::uuid(),
@@ -420,7 +555,16 @@ class PersonelController extends Controller
 
     public function updateWasit(Request $request, $id)
     {
-        $wasit = Wasit::with('user')->findOrFail($id);
+        $realId = decrypt_id($id, 'wasit') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data wasit tidak valid.');
+        }
+
+        $wasit = Wasit::with('user')->findOrFail($realId);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
@@ -454,16 +598,21 @@ class PersonelController extends Controller
             'catatan_perwasitan' => $validated['catatan_perwasitan'] ?? null,
         ]);
 
-        return redirect()->back()->with('success', "Data Wasit {$validated['nama_lengkap']} berhasil diperbarui!");
+        return redirect()->route('personel.wasit')->with('success', "Data Wasit {$validated['nama_lengkap']} berhasil diperbarui!");
     }
 
     public function destroyWasit($id)
     {
-        $wasit = Wasit::with('user')->findOrFail($id);
+        $realId = decrypt_id($id, 'wasit') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data wasit tidak valid.');
+        }
+
+        $wasit = Wasit::with('user')->findOrFail($realId);
         $nama = $wasit->user?->name ?? 'Wasit #' . $wasit->id;
         $wasit->delete();
 
-        return redirect()->back()->with('success', "Data Wasit {$nama} berhasil dihapus.");
+        return redirect()->route('personel.wasit')->with('success', "Data Wasit {$nama} berhasil dihapus.");
     }
 
     /**
@@ -521,14 +670,51 @@ class PersonelController extends Controller
             'aktif' => Official::where('status_aktif', 1)->count(),
         ];
 
-        $pengprovList = Pengprov::orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
         $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
 
         return view('personel.official', compact('official', 'stats', 'pengprovList', 'klubList'));
     }
 
+    public function createOfficial()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
+
+        return view('personel.official_create', compact('pengprovList', 'klubList'));
+    }
+
+    public function editOfficial($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Official::where('id', $rawId)->exists()) {
+                abort(404, 'Data official tidak ditemukan.');
+            }
+            return redirect()->route('personel.official.edit', ['id' => encrypt_id($rawId, 'official')], 301);
+        }
+
+        $realId = decrypt_id($id, 'official');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $official = Official::with('user')->findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $klubList = Klub::orderBy('nama_klub')->get(['id', 'nama_klub']);
+
+        return view('personel.official_edit', compact('official', 'pengprovList', 'klubList'));
+    }
+
     public function storeOfficial(Request $request)
     {
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+        if ($request->filled('klub_id') && !is_numeric($request->klub_id)) {
+            $request->merge(['klub_id' => decrypt_id($request->klub_id, 'klub')]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
             'nik' => 'nullable|string|max:30',
@@ -585,7 +771,19 @@ class PersonelController extends Controller
 
     public function updateOfficial(Request $request, $id)
     {
-        $official = Official::with('user')->findOrFail($id);
+        $realId = decrypt_id($id, 'official') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data official tidak valid.');
+        }
+
+        $official = Official::with('user')->findOrFail($realId);
+
+        if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
+            $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+        if ($request->filled('klub_id') && !is_numeric($request->klub_id)) {
+            $request->merge(['klub_id' => decrypt_id($request->klub_id, 'klub')]);
+        }
 
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:150',
@@ -623,15 +821,20 @@ class PersonelController extends Controller
             'status_aktif' => (bool) $validated['status_aktif'],
         ]);
 
-        return redirect()->back()->with('success', "Data Official {$validated['nama_lengkap']} berhasil diperbarui!");
+        return redirect()->route('personel.official')->with('success', "Data Official {$validated['nama_lengkap']} berhasil diperbarui!");
     }
 
     public function destroyOfficial($id)
     {
-        $official = Official::findOrFail($id);
+        $realId = decrypt_id($id, 'official') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data official tidak valid.');
+        }
+
+        $official = Official::findOrFail($realId);
         $nama = $official->nama_lengkap;
         $official->delete();
 
-        return redirect()->back()->with('success', "Data Official {$nama} berhasil dihapus.");
+        return redirect()->route('personel.official')->with('success', "Data Official {$nama} berhasil dihapus.");
     }
 }

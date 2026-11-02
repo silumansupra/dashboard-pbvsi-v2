@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahPosisi">
+        <a href="{{ route('master.posisi.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Tambah Posisi Baru
-        </button>
+        </a>
     </div>
 </div>
 
@@ -112,20 +112,13 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary btn-edit-posisi me-1" 
-                                            data-id="{{ $pos->id }}"
-                                            data-kode="{{ $pos->kode_posisi }}"
-                                            data-nama="{{ $pos->nama_posisi }}"
-                                            data-deskripsi="{{ $pos->deskripsi }}"
-                                            data-active="{{ $pos->is_active ? '1' : '0' }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalEditPosisi"
-                                            title="Edit Posisi">
+                                    <a href="{{ route('master.posisi.edit', $pos->encrypted_id) }}" 
+                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                       title="Edit Posisi">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    </a>
 
-                                    <form action="{{ route('master.posisi.destroy', $pos->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus posisi {{ $pos->kode_posisi }}?');">
+                                    <form action="{{ route('master.posisi.destroy', $pos->encrypted_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus posisi {{ $pos->kode_posisi }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Posisi">
@@ -150,117 +143,3 @@
     </div>
 </div>
 @endsection
-
-@push('modals')
-<!-- ========================================== -->
-<!-- MODAL TAMBAH POSISI                        -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalTambahPosisi" tabindex="-1" aria-labelledby="modalTambahPosisiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('master.posisi.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalTambahPosisiLabel">
-                        <i class="fa-solid fa-plus-circle me-1"></i> Tambah Posisi Pemain
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Kode Posisi <span class="text-danger">*</span></label>
-                        <input type="text" name="kode_posisi" class="form-control text-uppercase" placeholder="Contoh: OH, OP, MB, S, L" required maxlength="10">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Posisi <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_posisi" class="form-control" placeholder="Contoh: Outside Hitter / Pemukul Sayap" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Deskripsi & Peran</label>
-                        <textarea name="deskripsi" class="form-control" rows="2" placeholder="Penjelasan tugas posisi ini di lapangan..."></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Status Aktif <span class="text-danger">*</span></label>
-                        <select name="is_active" class="form-select" required>
-                            <option value="1" selected>Aktif</option>
-                            <option value="0">Nonaktif</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Posisi</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL EDIT POSISI (DYNAMIC)                -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalEditPosisi" tabindex="-1" aria-labelledby="modalEditPosisiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form id="formEditPosisi" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalEditPosisiLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Posisi Pemain
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Kode Posisi <span class="text-danger">*</span></label>
-                        <input type="text" name="kode_posisi" id="edit_posisi_kode" class="form-control text-uppercase" required maxlength="10">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Posisi <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_posisi" id="edit_posisi_nama" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Deskripsi & Peran</label>
-                        <textarea name="deskripsi" id="edit_posisi_deskripsi" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Status Aktif <span class="text-danger">*</span></label>
-                        <select name="is_active" id="edit_posisi_active" class="form-select" required>
-                            <option value="1">Aktif</option>
-                            <option value="0">Nonaktif</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Posisi</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditPosisi');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            if (!button) return;
-
-            const id = button.getAttribute('data-id');
-            const form = document.getElementById('formEditPosisi');
-            form.action = "{{ url('master/posisi') }}/" + id;
-
-            document.getElementById('edit_posisi_kode').value = button.getAttribute('data-kode') || '';
-            document.getElementById('edit_posisi_nama').value = button.getAttribute('data-nama') || '';
-            document.getElementById('edit_posisi_deskripsi').value = button.getAttribute('data-deskripsi') || '';
-            document.getElementById('edit_posisi_active').value = button.getAttribute('data-active') || '1';
-        });
-    }
-});
-</script>
-@endpush

@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahOfficial">
+        <a href="{{ route('personel.official.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-user-plus me-1"></i> Tambah Official Baru
-        </button>
+        </a>
     </div>
 </div>
 
@@ -226,22 +226,11 @@
                         </td>
                         <td class="text-end pe-3">
                             <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-primary btn-sm btn-edit"
-                                    data-id="{{ $row->id }}"
-                                    data-nama="{{ $row->nama_lengkap }}"
-                                    data-nik="{{ $row->nik }}"
-                                    data-email="{{ $row->user?->email }}"
-                                    data-phone="{{ $row->user?->phone }}"
-                                    data-jk="{{ $row->jenis_kelamin }}"
-                                    data-jabatan="{{ $row->jabatan_official }}"
-                                    data-lisensi="{{ $row->nomor_lisensi }}"
-                                    data-pengprov-id="{{ $row->pengprov_id }}"
-                                    data-status="{{ $row->status_aktif ? 1 : 0 }}"
-                                    title="Edit Official">
+                                <a href="{{ route('personel.official.edit', $row->encrypted_id) }}" class="btn btn-outline-primary btn-sm" title="Edit Official">
                                     <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                </a>
                                 <button type="button" class="btn btn-outline-danger btn-sm btn-delete"
-                                    data-id="{{ $row->id }}"
+                                    data-id="{{ $row->encrypted_id }}"
                                     data-nama="{{ $row->nama_lengkap }}"
                                     title="Hapus Official">
                                     <i class="fa-solid fa-trash-can"></i>
@@ -272,167 +261,6 @@
 @endsection
 
 @push('modals')
-<!-- 1. MODAL TAMBAH OFFICIAL -->
-<div class="modal fade" id="modalTambahOfficial" tabindex="-1" aria-labelledby="modalTambahOfficialLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('personel.official.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalTambahOfficialLabel">
-                        <i class="fa-solid fa-user-tie me-1"></i> Tambah Official Tim Baru
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Official <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: Budi Santoso, S.Pd.">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">NIK (KTP)</label>
-                            <input type="text" name="nik" class="form-control" maxlength="16" placeholder="16 digit NIK">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
-                            <select name="jenis_kelamin" class="form-select" required>
-                                <option value="L">Laki-laki (L)</option>
-                                <option value="P">Perempuan (P)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="official@pbvsi.or.id">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" class="form-control" placeholder="0812...">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Jabatan Official <span class="text-danger">*</span></label>
-                            <select name="jabatan_official" class="form-select" required>
-                                <option value="MANAGER">Team Manager</option>
-                                <option value="ASST_MANAGER">Assistant Manager</option>
-                                <option value="THERAPIST">Therapist</option>
-                                <option value="MEDIS">Medis / Dokter</option>
-                                <option value="MASSEUR">Masseur</option>
-                                <option value="TRANSLATOR">Translator</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi (Opsional)</label>
-                            <input type="text" name="nomor_lisensi" class="form-control" placeholder="Auto-generate jika kosong">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Asal Pengprov</label>
-                        <select name="pengprov_id" class="form-select">
-                            <option value="">-- PBVSI Pusat / Nasional --</option>
-                            @foreach($pengprovList as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="tambah_status_aktif_off" value="1" checked>
-                        <label class="form-check-label fw-semibold" for="tambah_status_aktif_off">Status Official Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Official</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 2. MODAL EDIT OFFICIAL -->
-<div class="modal fade" id="modalEditOfficial" tabindex="-1" aria-labelledby="modalEditOfficialLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form id="formEditOfficial" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalEditOfficialLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data Official Tim
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Official <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" id="edit_nama_off" class="form-control" required>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">NIK (KTP)</label>
-                            <input type="text" name="nik" id="edit_nik_off" class="form-control" maxlength="16">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
-                            <select name="jenis_kelamin" id="edit_jk_off" class="form-select" required>
-                                <option value="L">Laki-laki (L)</option>
-                                <option value="P">Perempuan (P)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" id="edit_email_off" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" id="edit_phone_off" class="form-control">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Jabatan Official <span class="text-danger">*</span></label>
-                            <select name="jabatan_official" id="edit_jabatan_off" class="form-select" required>
-                                <option value="MANAGER">Team Manager</option>
-                                <option value="ASST_MANAGER">Assistant Manager</option>
-                                <option value="THERAPIST">Therapist</option>
-                                <option value="MEDIS">Medis / Dokter</option>
-                                <option value="MASSEUR">Masseur</option>
-                                <option value="TRANSLATOR">Translator</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi</label>
-                            <input type="text" name="nomor_lisensi" id="edit_lisensi_off" class="form-control">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Asal Pengprov</label>
-                        <select name="pengprov_id" id="edit_pengprov_id_off" class="form-select">
-                            <option value="">-- PBVSI Pusat / Nasional --</option>
-                            @foreach($pengprovList as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="edit_status_aktif_off" value="1">
-                        <label class="form-check-label fw-semibold" for="edit_status_aktif_off">Status Official Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Official</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- 3. MODAL HAPUS OFFICIAL -->
 <div class="modal fade" id="modalHapusOfficial" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -464,27 +292,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Edit Modal Handler
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            document.getElementById('edit_nama_off').value = this.getAttribute('data-nama') || '';
-            document.getElementById('edit_nik_off').value = this.getAttribute('data-nik') || '';
-            document.getElementById('edit_email_off').value = this.getAttribute('data-email') || '';
-            document.getElementById('edit_phone_off').value = this.getAttribute('data-phone') || '';
-            document.getElementById('edit_jk_off').value = this.getAttribute('data-jk') || 'L';
-            document.getElementById('edit_jabatan_off').value = this.getAttribute('data-jabatan') || 'MANAGER';
-            document.getElementById('edit_lisensi_off').value = this.getAttribute('data-lisensi') || '';
-            document.getElementById('edit_pengprov_id_off').value = this.getAttribute('data-pengprov-id') || '';
-            document.getElementById('edit_status_aktif_off').checked = this.getAttribute('data-status') === '1';
-
-            document.getElementById('formEditOfficial').action = "{{ url('personel/official') }}/" + id;
-
-            const modal = new bootstrap.Modal(document.getElementById('modalEditOfficial'));
-            modal.show();
-        });
-    });
-
     // Delete Modal Handler
     document.querySelectorAll('.btn-delete').forEach(button => {
         button.addEventListener('click', function () {

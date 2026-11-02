@@ -46,9 +46,9 @@
     </nav>
     <div class="d-flex gap-2 align-items-center">
         @if($tipe === 'klub')
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahKlub">
+        <a href="{{ route('master.klub.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Tambah Klub Baru
-        </button>
+        </a>
         @endif
     </div>
 </div>
@@ -271,25 +271,13 @@
                                         <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
                                     </a>
 
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary btn-edit-klub me-1" 
-                                            data-id="{{ $k->id }}"
-                                            data-kode="{{ $k->kode_klub }}"
-                                            data-nama="{{ $k->nama_klub }}"
-                                            data-pengprov-id="{{ $k->pengprov_id }}"
-                                            data-pengkot-id="{{ $k->pengkot_id }}"
-                                            data-pemilik="{{ $k->pemilik_klub }}"
-                                            data-sekretaris="{{ $k->sekretaris_klub }}"
-                                            data-alamat="{{ $k->alamat }}"
-                                            data-verifikasi="{{ $k->status_verifikasi }}"
-                                            data-logo-url="{{ $k->logo_url }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalEditKlub"
-                                            title="Edit Data Klub">
+                                    <a href="{{ route('master.klub.edit', $k->encrypted_id) }}" 
+                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                       title="Edit Data Klub">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    </a>
 
-                                    <form action="{{ route('master.klub.destroy', $k->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus klub {{ $k->nama_klub }}?');">
+                                    <form action="{{ route('master.klub.destroy', $k->encrypted_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus klub {{ $k->nama_klub }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Klub">
@@ -325,227 +313,3 @@
     </div>
 </div>
 @endsection
-
-@push('modals')
-<!-- ========================================== -->
-<!-- MODAL TAMBAH KLUB                          -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalTambahKlub" tabindex="-1" aria-labelledby="modalTambahKlubLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form action="{{ route('master.klub.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalTambahKlubLabel">
-                        <i class="fa-solid fa-plus-circle me-1"></i> Tambah Tim / Klub Baru
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Klub / Tim <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_klub" class="form-control" placeholder="Contoh: BINA REMAJA VOLLEYBALL CLUB" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Kode Unik Klub</label>
-                            <input type="text" name="kode_klub" class="form-control text-uppercase" placeholder="Otomatis jika dikosongkan (e.g. KLB-XXXXXX)">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pengprov Induk <span class="text-danger">*</span></label>
-                            <select name="pengprov_id" class="form-select" required>
-                                <option value="">-- Pilih Pengprov Asal --</option>
-                                @foreach($pengprovList as $pp)
-                                    <option value="{{ $pp->id }}" {{ request('pengprov_id') == $pp->id ? 'selected' : '' }}>
-                                        {{ $pp->nama_pengprov }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
-                            <select name="status_verifikasi" class="form-select" required>
-                                <option value="VERIFIED" selected>VERIFIED (Terverifikasi)</option>
-                                <option value="PENDING">PENDING (Menunggu Verifikasi)</option>
-                                <option value="REJECTED">REJECTED (Ditolak)</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pemilik / Manajer Klub</label>
-                            <input type="text" name="pemilik_klub" class="form-control" placeholder="Nama pemilik klub">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Sekretaris Tim</label>
-                            <input type="text" name="sekretaris_klub" class="form-control" placeholder="Nama sekretaris tim">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Upload Logo Klub (BunnyCDN)</label>
-                            <input type="file" name="logo_file" class="form-control" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
-                            <small class="text-muted"><i class="fa-solid fa-cloud-arrow-up text-primary me-1"></i>Format: PNG, JPG, JPEG, WEBP. Maksimal 3 MB. File akan langsung diunggah ke storage BunnyCDN.</small>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Alamat Basecamp / Lapangan Klub</label>
-                            <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat basecamp atau GOR klub..."></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Klub</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL EDIT KLUB (DYNAMIC)                  -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalEditKlub" tabindex="-1" aria-labelledby="modalEditKlubLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form id="formEditKlub" action="" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalEditKlubLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data Tim / Klub
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Klub / Tim <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_klub" id="edit_klub_nama" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Kode Unik Klub</label>
-                            <input type="text" name="kode_klub" id="edit_klub_kode" class="form-control text-uppercase" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pengprov Induk <span class="text-danger">*</span></label>
-                            <select name="pengprov_id" id="edit_klub_pengprov_id" class="form-select" required>
-                                <option value="">-- Pilih Pengprov Asal --</option>
-                                @foreach($pengprovList as $pp)
-                                    <option value="{{ $pp->id }}">{{ $pp->nama_pengprov }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Verifikasi <span class="text-danger">*</span></label>
-                            <select name="status_verifikasi" id="edit_klub_verifikasi" class="form-select" required>
-                                <option value="VERIFIED">VERIFIED (Terverifikasi)</option>
-                                <option value="PENDING">PENDING (Menunggu Verifikasi)</option>
-                                <option value="REJECTED">REJECTED (Ditolak)</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pemilik / Manajer Klub</label>
-                            <input type="text" name="pemilik_klub" id="edit_klub_pemilik" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Sekretaris Tim</label>
-                            <input type="text" name="sekretaris_klub" id="edit_klub_sekretaris" class="form-control">
-                        </div>
-
-                        <!-- LOGO SECTION (BUNNYCDN) -->
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Logo Klub (BunnyCDN)</label>
-                            <div class="d-flex align-items-center gap-3 p-2 bg-light border rounded">
-                                <div id="edit_logo_preview_container" class="border rounded p-1 bg-white d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px; min-width: 60px;">
-                                    <img id="edit_logo_preview" src="" alt="Logo" class="img-fluid object-fit-contain d-none" style="max-height: 52px; max-width: 52px;">
-                                    <i id="edit_logo_placeholder" class="fa-solid fa-shield-halved text-muted fa-2x"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <input type="file" name="logo_file" id="edit_logo_file" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
-                                    <small class="text-muted"><i class="fa-solid fa-cloud-arrow-up text-primary me-1"></i>Pilih gambar baru untuk mengganti logo di BunnyCDN (PNG, JPG, WEBP, maks 3 MB). Kosongkan jika tetap.</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Alamat Basecamp / Lapangan Klub</label>
-                            <textarea name="alamat" id="edit_klub_alamat" class="form-control" rows="2"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Klub</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditKlub');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            if (!button) return;
-
-            const id = button.getAttribute('data-id');
-            const form = document.getElementById('formEditKlub');
-            form.action = "{{ url('master/klub') }}/" + id;
-
-            document.getElementById('edit_klub_nama').value = button.getAttribute('data-nama') || '';
-            document.getElementById('edit_klub_kode').value = button.getAttribute('data-kode') || '';
-            document.getElementById('edit_klub_pengprov_id').value = button.getAttribute('data-pengprov-id') || '';
-            document.getElementById('edit_klub_verifikasi').value = button.getAttribute('data-verifikasi') || 'VERIFIED';
-            document.getElementById('edit_klub_pemilik').value = button.getAttribute('data-pemilik') || '';
-            document.getElementById('edit_klub_sekretaris').value = button.getAttribute('data-sekretaris') || '';
-            document.getElementById('edit_klub_alamat').value = button.getAttribute('data-alamat') || '';
-
-            // Handle logo preview
-            const logoUrl = button.getAttribute('data-logo-url');
-            const previewImg = document.getElementById('edit_logo_preview');
-            const placeholderIcon = document.getElementById('edit_logo_placeholder');
-            const fileInput = document.getElementById('edit_logo_file');
-            if (fileInput) fileInput.value = '';
-
-            if (logoUrl && logoUrl.trim() !== '') {
-                previewImg.src = logoUrl;
-                previewImg.classList.remove('d-none');
-                placeholderIcon.classList.add('d-none');
-            } else {
-                previewImg.src = '';
-                previewImg.classList.add('d-none');
-                placeholderIcon.classList.remove('d-none');
-            }
-        });
-
-        // Instant local preview when file chosen
-        const fileInput = document.getElementById('edit_logo_file');
-        if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(evt) {
-                        const previewImg = document.getElementById('edit_logo_preview');
-                        const placeholderIcon = document.getElementById('edit_logo_placeholder');
-                        previewImg.src = evt.target.result;
-                        previewImg.classList.remove('d-none');
-                        placeholderIcon.classList.add('d-none');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    }
-});
-</script>
-@endpush

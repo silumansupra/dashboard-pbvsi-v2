@@ -228,6 +228,33 @@ class MasterController extends Controller
         return view('master.pengprov', compact('pengprov', 'provinces'));
     }
 
+    public function createPengprov()
+    {
+        $provinces = Provinsi::where('is_active', true)->orderBy('nama_provinsi')->get();
+        return view('master.pengprov_create', compact('provinces'));
+    }
+
+    public function editPengprov($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Pengprov::where('id', $rawId)->exists()) {
+                abort(404, 'Data Pengprov tidak ditemukan.');
+            }
+            return redirect()->route('master.pengprov.edit', ['id' => encrypt_id($rawId, 'pengprov')], 301);
+        }
+
+        $realId = decrypt_id($id, 'pengprov');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $pengprov = Pengprov::findOrFail($realId);
+        $provinces = Provinsi::where('is_active', true)->orderBy('nama_provinsi')->get();
+
+        return view('master.pengprov_edit', compact('pengprov', 'provinces'));
+    }
+
     public function storePengprov(Request $request)
     {
         $request->validate([
@@ -267,10 +294,15 @@ class MasterController extends Controller
 
     public function updatePengprov(Request $request, $id)
     {
-        $pengprov = Pengprov::findOrFail($id);
+        $realId = decrypt_id($id, 'pengprov') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengprov tidak valid.');
+        }
+
+        $pengprov = Pengprov::findOrFail($realId);
 
         $request->validate([
-            'provinsi_id' => 'required|exists:core_wilayah_provinsi,id|unique:org_pengprov,provinsi_id,' . $id,
+            'provinsi_id' => 'required|exists:core_wilayah_provinsi,id|unique:org_pengprov,provinsi_id,' . $pengprov->id,
             'nama_pengprov' => 'required|string|max:150',
             'ketum' => 'nullable|string|max:150',
             'sekum' => 'nullable|string|max:150',
@@ -303,7 +335,12 @@ class MasterController extends Controller
 
     public function destroyPengprov($id)
     {
-        $pengprov = Pengprov::withCount(['pengkot', 'klub'])->findOrFail($id);
+        $realId = decrypt_id($id, 'pengprov') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengprov tidak valid.');
+        }
+
+        $pengprov = Pengprov::withCount(['pengkot', 'klub'])->findOrFail($realId);
 
         if ($pengprov->pengkot_count > 0 || $pengprov->klub_count > 0) {
             return redirect()->route('master.pengprov')
@@ -355,15 +392,62 @@ class MasterController extends Controller
         return view('master.pengkot', compact('pengkot', 'pengprovList'));
     }
 
+    public function createPengkot()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get();
+        return view('master.pengkot_create', compact('pengprovList'));
+    }
+
+    public function editPengkot($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Pengkot::where('id', $rawId)->exists()) {
+                abort(404, 'Data Pengkot tidak ditemukan.');
+            }
+            return redirect()->route('master.pengkot.edit', ['id' => encrypt_id($rawId, 'pengkot')], 301);
+        }
+
+        $realId = decrypt_id($id, 'pengkot');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $pengkot = Pengkot::with('pengprov')->findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get();
+        $kabupatenList = Kabupaten::where('provinsi_id', $pengkot->pengprov?->provinsi_id)->orderBy('nama_kabupaten')->get();
+
+        return view('master.pengkot_edit', compact('pengkot', 'pengprovList', 'kabupatenList'));
+    }
+
     public function apiKabupatenByPengprov($pengprovId)
     {
-        $pengprov = Pengprov::findOrFail($pengprovId);
+        $realId = decrypt_id($pengprovId, 'pengprov') ?? (is_numeric($pengprovId) ? (int)$pengprovId : null);
+        if (!$realId) {
+            return response()->json([]);
+        }
+        $pengprov = Pengprov::findOrFail($realId);
         $kabupaten = Kabupaten::where('provinsi_id', $pengprov->provinsi_id)
             ->orderBy('nama_kabupaten')
             ->select('id', 'nama_kabupaten', 'tipe')
             ->get();
 
         return response()->json($kabupaten);
+    }
+
+    public function apiPengkotByPengprov($pengprovId)
+    {
+        $realId = decrypt_id($pengprovId, 'pengprov') ?? (is_numeric($pengprovId) ? (int)$pengprovId : null);
+        if (!$realId) {
+            return response()->json([]);
+        }
+        $pengkot = Pengkot::where('pengprov_id', $realId)
+            ->where('status_aktif', 1)
+            ->orderBy('nama_pengkot')
+            ->select('id', 'nama_pengkot')
+            ->get();
+
+        return response()->json($pengkot);
     }
 
     public function storePengkot(Request $request)
@@ -409,7 +493,12 @@ class MasterController extends Controller
 
     public function updatePengkot(Request $request, $id)
     {
-        $pengkot = Pengkot::findOrFail($id);
+        $realId = decrypt_id($id, 'pengkot') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengkot tidak valid.');
+        }
+
+        $pengkot = Pengkot::findOrFail($realId);
 
         if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
             $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
@@ -417,7 +506,7 @@ class MasterController extends Controller
 
         $request->validate([
             'pengprov_id' => 'required|exists:org_pengprov,id',
-            'kabupaten_id' => 'required|exists:core_wilayah_kabupaten,id|unique:org_pengkot,kabupaten_id,' . $id,
+            'kabupaten_id' => 'required|exists:core_wilayah_kabupaten,id|unique:org_pengkot,kabupaten_id,' . $pengkot->id,
             'nama_pengkot' => 'required|string|max:150',
             'ketum' => 'nullable|string|max:150',
             'sekum' => 'nullable|string|max:150',
@@ -449,7 +538,12 @@ class MasterController extends Controller
 
     public function destroyPengkot($id)
     {
-        $pengkot = Pengkot::withCount('klub')->findOrFail($id);
+        $realId = decrypt_id($id, 'pengkot') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengkot tidak valid.');
+        }
+
+        $pengkot = Pengkot::withCount('klub')->findOrFail($realId);
 
         if ($pengkot->klub_count > 0) {
             return redirect()->route('master.pengkot', ['pengprov_id' => $pengkot->pengprov_id])
@@ -643,10 +737,41 @@ class MasterController extends Controller
         ));
     }
 
+    public function createKlub()
+    {
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        return view('master.klub_create', compact('pengprovList'));
+    }
+
+    public function editKlub($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Klub::where('id', $rawId)->exists()) {
+                abort(404, 'Data Klub tidak ditemukan.');
+            }
+            return redirect()->route('master.klub.edit', ['id' => encrypt_id($rawId, 'klub')], 301);
+        }
+
+        $realId = decrypt_id($id, 'klub');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $klub = Klub::with(['pengprov', 'pengkot'])->findOrFail($realId);
+        $pengprovList = Pengprov::where('status_aktif', 1)->orderBy('nama_pengprov')->get(['id', 'nama_pengprov']);
+        $pengkotList = Pengkot::where('pengprov_id', $klub->pengprov_id)->where('status_aktif', 1)->orderBy('nama_pengkot')->get(['id', 'nama_pengkot']);
+
+        return view('master.klub_edit', compact('klub', 'pengprovList', 'pengkotList'));
+    }
+
     public function storeKlub(Request $request)
     {
         if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
             $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
+        }
+        if ($request->filled('pengkot_id') && !is_numeric($request->pengkot_id)) {
+            $request->merge(['pengkot_id' => decrypt_id($request->pengkot_id, 'pengkot')]);
         }
 
         $request->validate([
@@ -696,15 +821,23 @@ class MasterController extends Controller
 
     public function updateKlub(Request $request, $id)
     {
-        $klub = Klub::findOrFail($id);
+        $realId = decrypt_id($id, 'klub') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Klub tidak valid.');
+        }
+
+        $klub = Klub::findOrFail($realId);
 
         if ($request->filled('pengprov_id') && !is_numeric($request->pengprov_id)) {
             $request->merge(['pengprov_id' => decrypt_id($request->pengprov_id, 'pengprov')]);
         }
+        if ($request->filled('pengkot_id') && !is_numeric($request->pengkot_id)) {
+            $request->merge(['pengkot_id' => decrypt_id($request->pengkot_id, 'pengkot')]);
+        }
 
         $request->validate([
             'nama_klub' => 'required|string|max:150',
-            'kode_klub' => 'nullable|string|max:50|unique:org_klub,kode_klub,' . $id,
+            'kode_klub' => 'nullable|string|max:50|unique:org_klub,kode_klub,' . $klub->id,
             'pengprov_id' => 'required|exists:org_pengprov,id',
             'pengkot_id' => 'nullable|exists:org_pengkot,id',
             'pemilik_klub' => 'nullable|string|max:150',
@@ -748,7 +881,12 @@ class MasterController extends Controller
 
     public function destroyKlub($id)
     {
-        $klub = Klub::findOrFail($id);
+        $realId = decrypt_id($id, 'klub') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Klub tidak valid.');
+        }
+
+        $klub = Klub::findOrFail($realId);
         $nama = $klub->nama_klub;
         $klub->delete();
 
@@ -787,6 +925,31 @@ class MasterController extends Controller
         return view('master.jabatan', compact('jabatan'));
     }
 
+    public function createJabatan()
+    {
+        return view('master.jabatan_create');
+    }
+
+    public function editJabatan($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!Jabatan::where('id', $rawId)->exists()) {
+                abort(404, 'Data Jabatan tidak ditemukan.');
+            }
+            return redirect()->route('master.jabatan.edit', ['id' => encrypt_id($rawId, 'jabatan')], 301);
+        }
+
+        $realId = decrypt_id($id, 'jabatan');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $jabatan = Jabatan::findOrFail($realId);
+
+        return view('master.jabatan_edit', compact('jabatan'));
+    }
+
     public function storeJabatan(Request $request)
     {
         $request->validate([
@@ -810,10 +973,15 @@ class MasterController extends Controller
 
     public function updateJabatan(Request $request, $id)
     {
-        $jab = Jabatan::findOrFail($id);
+        $realId = decrypt_id($id, 'jabatan') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Jabatan tidak valid.');
+        }
+
+        $jab = Jabatan::findOrFail($realId);
 
         $request->validate([
-            'nama_jabatan' => 'required|string|max:100|unique:core_master_jabatan,nama_jabatan,' . $id,
+            'nama_jabatan' => 'required|string|max:100|unique:core_master_jabatan,nama_jabatan,' . $jab->id,
             'is_official_tim' => 'required|in:0,1',
             'is_active' => 'required|in:0,1',
         ]);
@@ -830,7 +998,12 @@ class MasterController extends Controller
 
     public function destroyJabatan($id)
     {
-        $jab = Jabatan::findOrFail($id);
+        $realId = decrypt_id($id, 'jabatan') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Jabatan tidak valid.');
+        }
+
+        $jab = Jabatan::findOrFail($realId);
         $nama = $jab->nama_jabatan;
         $jab->delete();
 
@@ -861,6 +1034,31 @@ class MasterController extends Controller
         return view('master.posisi', compact('posisi'));
     }
 
+    public function createPosisi()
+    {
+        return view('master.posisi_create');
+    }
+
+    public function editPosisi($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!PosisiPemain::where('id', $rawId)->exists()) {
+                abort(404, 'Data Posisi tidak ditemukan.');
+            }
+            return redirect()->route('master.posisi.edit', ['id' => encrypt_id($rawId, 'posisi')], 301);
+        }
+
+        $realId = decrypt_id($id, 'posisi');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $posisi = PosisiPemain::findOrFail($realId);
+
+        return view('master.posisi_edit', compact('posisi'));
+    }
+
     public function storePosisi(Request $request)
     {
         $request->validate([
@@ -887,10 +1085,15 @@ class MasterController extends Controller
 
     public function updatePosisi(Request $request, $id)
     {
-        $pos = PosisiPemain::findOrFail($id);
+        $realId = decrypt_id($id, 'posisi') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Posisi tidak valid.');
+        }
+
+        $pos = PosisiPemain::findOrFail($realId);
 
         $request->validate([
-            'kode_posisi' => 'required|string|max:10|unique:core_master_posisi_pemain,kode_posisi,' . $id,
+            'kode_posisi' => 'required|string|max:10|unique:core_master_posisi_pemain,kode_posisi,' . $pos->id,
             'nama_posisi' => 'required|string|max:50',
             'deskripsi' => 'nullable|string|max:255',
             'is_active' => 'required|in:0,1',
@@ -909,7 +1112,12 @@ class MasterController extends Controller
 
     public function destroyPosisi($id)
     {
-        $pos = PosisiPemain::findOrFail($id);
+        $realId = decrypt_id($id, 'posisi') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Posisi tidak valid.');
+        }
+
+        $pos = PosisiPemain::findOrFail($realId);
         $nama = $pos->nama_posisi;
         $pos->delete();
 
@@ -957,6 +1165,33 @@ class MasterController extends Controller
         return view('master.users', compact('users', 'roles'));
     }
 
+    public function createUser()
+    {
+        $roles = Role::orderBy('name')->get();
+        return view('master.users_create', compact('roles'));
+    }
+
+    public function editUser($id)
+    {
+        if (is_numeric($id)) {
+            $rawId = (int) $id;
+            if (!User::where('id', $rawId)->exists()) {
+                abort(404, 'Data Pengguna tidak ditemukan.');
+            }
+            return redirect()->route('master.users.edit', ['id' => encrypt_id($rawId, 'user')], 301);
+        }
+
+        $realId = decrypt_id($id, 'user');
+        if ($realId === null) {
+            abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
+        }
+
+        $user = User::with('roles')->findOrFail($realId);
+        $roles = Role::orderBy('name')->get();
+
+        return view('master.users_edit', compact('user', 'roles'));
+    }
+
     public function storeUser(Request $request)
     {
         $request->validate([
@@ -1000,12 +1235,17 @@ class MasterController extends Controller
 
     public function updateUser(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $realId = decrypt_id($id, 'user') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengguna tidak valid.');
+        }
+
+        $user = User::findOrFail($realId);
 
         $request->validate([
             'name' => 'required|string|max:150',
-            'username' => 'required|string|max:50|unique:core_users,username,' . $id,
-            'email' => 'required|email|max:100|unique:core_users,email,' . $id,
+            'username' => 'required|string|max:50|unique:core_users,username,' . $user->id,
+            'email' => 'required|email|max:100|unique:core_users,email,' . $user->id,
             'phone' => 'nullable|string|max:30',
             'password' => 'nullable|string|min:6',
             'roles' => 'required|array|min:1',
@@ -1047,12 +1287,17 @@ class MasterController extends Controller
 
     public function destroyUser($id)
     {
-        if ($id == 1) {
+        $realId = decrypt_id($id, 'user') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            abort(404, 'Data Pengguna tidak valid.');
+        }
+
+        if ($realId == 1) {
             return redirect()->route('master.users')
                 ->with('error', 'Superadmin utama (ID 1) tidak dapat dihapus demi keamanan sistem.');
         }
 
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($realId);
         $name = $user->name;
 
         DB::table('core_model_has_roles')

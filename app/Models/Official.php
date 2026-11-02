@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\HasEncryptedId;
 
 class Official extends Model
 {
+    use HasEncryptedId;
+
     protected $table = 'member_official';
+    protected string $encryptionContext = 'official';
+
+    protected $appends = ['encrypted_id'];
 
     protected $fillable = [
         'user_id',

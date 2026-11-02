@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahPemain">
+        <a href="{{ route('personel.pemain.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-user-plus me-1"></i> Registrasi Pemain Baru
-        </button>
+        </a>
     </div>
 </div>
 
@@ -261,26 +261,11 @@
                                     title="Detail Lengkap">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
-                                <button type="button" class="btn btn-outline-primary btn-sm btn-edit"
-                                    data-id="{{ $row->id }}"
-                                    data-nama="{{ $row->nama_lengkap }}"
-                                    data-punggung="{{ $row->nama_punggung }}"
-                                    data-jk="{{ $row->jenis_kelamin }}"
-                                    data-nik="{{ $row->nik }}"
-                                    data-nisn="{{ $row->nisn }}"
-                                    data-tempat-lahir="{{ $row->tempat_lahir }}"
-                                    data-tgl-lahir="{{ $row->tanggal_lahir ? $row->tanggal_lahir->format('Y-m-d') : '' }}"
-                                    data-posisi="{{ $row->posisi_utama }}"
-                                    data-pengprov-id="{{ $row->pengprov_id }}"
-                                    data-klub-id="{{ $row->klub_id }}"
-                                    data-kewarganegaraan="{{ $row->status_kewarganegaraan }}"
-                                    data-status="{{ $row->status_verifikasi }}"
-                                    data-catatan="{{ $row->catatan_verifikasi }}"
-                                    title="Edit Pemain">
+                                <a href="{{ route('personel.pemain.edit', $row->encrypted_id) }}" class="btn btn-outline-primary btn-sm" title="Edit Pemain">
                                     <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                </a>
                                 <button type="button" class="btn btn-outline-danger btn-sm btn-delete"
-                                    data-id="{{ $row->id }}"
+                                    data-id="{{ $row->encrypted_id }}"
                                     data-nama="{{ $row->nama_lengkap }}"
                                     title="Hapus Pemain">
                                     <i class="fa-solid fa-trash-can"></i>
@@ -311,196 +296,7 @@
 @endsection
 
 @push('modals')
-<!-- 1. MODAL TAMBAH PEMAIN -->
-<div class="modal fade" id="modalTambahPemain" tabindex="-1" aria-labelledby="modalTambahPemainLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form action="{{ route('personel.pemain.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalTambahPemainLabel">
-                        <i class="fa-solid fa-user-plus me-1"></i> Registrasi Pemain Baru ke Bank Pemain
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label fw-semibold">Nama Lengkap Atlet <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: Farhan Halim">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Nama Punggung Jersey</label>
-                            <input type="text" name="nama_punggung" class="form-control" placeholder="Contoh: FARHAN">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
-                            <select name="jenis_kelamin" class="form-select" required>
-                                <option value="PA">Putra (PA)</option>
-                                <option value="PI">Putri (PI)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">NIK (Nomor KTP)</label>
-                            <input type="text" name="nik" class="form-control" maxlength="16" placeholder="16 digit NIK">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">NISN Pelajar</label>
-                            <input type="text" name="nisn" class="form-control" placeholder="10 digit NISN">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir" class="form-control" placeholder="Kota/Kabupaten lahir">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Posisi Utama</label>
-                            <select name="posisi_utama" class="form-select">
-                                <option value="">-- Pilih Posisi --</option>
-                                @foreach($posisiList as $pos)
-                                    <option value="{{ $pos->kode_posisi }}">{{ $pos->kode_posisi }} - {{ $pos->nama_posisi }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Asal Pengprov</label>
-                            <select name="pengprov_id" class="form-select">
-                                <option value="">-- Tanpa Pengprov --</option>
-                                @foreach($pengprovList as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Kewarganegaraan</label>
-                            <select name="status_kewarganegaraan" class="form-select">
-                                <option value="WNI_DAERAH">WNI Daerah</option>
-                                <option value="WNI_NASIONAL">WNI Nasional</option>
-                                <option value="WNA_ASING">WNA Asing</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Verifikasi</label>
-                            <select name="status_verifikasi" class="form-select">
-                                <option value="PENDING">PENDING (Menunggu Berkas)</option>
-                                <option value="VERIFIED">VERIFIED (Sah Terverifikasi)</option>
-                                <option value="REJECTED">REJECTED (Ditolak)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Catatan Verifikasi</label>
-                            <input type="text" name="catatan_verifikasi" class="form-control" placeholder="Catatan keabsahan dokumen">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan ke Bank Pemain</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 2. MODAL EDIT PEMAIN DENGAN DYNAMIC ACTION -->
-<div class="modal fade" id="modalEditPemain" tabindex="-1" aria-labelledby="modalEditPemainLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <form id="formEditPemain" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modalEditPemainLabel">
-                        <i class="fa-solid fa-user-pen me-1"></i> Perbarui Data Pemain
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label fw-semibold">Nama Lengkap Atlet <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_lengkap" id="edit_nama" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Nama Punggung Jersey</label>
-                            <input type="text" name="nama_punggung" id="edit_punggung" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
-                            <select name="jenis_kelamin" id="edit_jk" class="form-select" required>
-                                <option value="PA">Putra (PA)</option>
-                                <option value="PI">Putri (PI)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">NIK (Nomor KTP)</label>
-                            <input type="text" name="nik" id="edit_nik" class="form-control" maxlength="16">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">NISN Pelajar</label>
-                            <input type="text" name="nisn" id="edit_nisn" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir" id="edit_tempat_lahir" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" id="edit_tgl_lahir" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Posisi Utama</label>
-                            <select name="posisi_utama" id="edit_posisi" class="form-select">
-                                <option value="">-- Pilih Posisi --</option>
-                                @foreach($posisiList as $pos)
-                                    <option value="{{ $pos->kode_posisi }}">{{ $pos->kode_posisi }} - {{ $pos->nama_posisi }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Asal Pengprov</label>
-                            <select name="pengprov_id" id="edit_pengprov_id" class="form-select">
-                                <option value="">-- Tanpa Pengprov --</option>
-                                @foreach($pengprovList as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Kewarganegaraan</label>
-                            <select name="status_kewarganegaraan" id="edit_kewarganegaraan" class="form-select">
-                                <option value="WNI_DAERAH">WNI Daerah</option>
-                                <option value="WNI_NASIONAL">WNI Nasional</option>
-                                <option value="WNA_ASING">WNA Asing</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Verifikasi</label>
-                            <select name="status_verifikasi" id="edit_status" class="form-select">
-                                <option value="PENDING">PENDING</option>
-                                <option value="VERIFIED">VERIFIED</option>
-                                <option value="REJECTED">REJECTED</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Catatan Verifikasi</label>
-                            <input type="text" name="catatan_verifikasi" id="edit_catatan" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Data</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 3. MODAL DETAIL LENGKAP PEMAIN -->
+<!-- 1. MODAL DETAIL LENGKAP PEMAIN -->
 <div class="modal fade" id="modalDetailPemain" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
@@ -620,30 +416,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detail_catatan').innerText = this.getAttribute('data-catatan') || 'Tidak ada catatan khusus';
 
             const modal = new bootstrap.Modal(document.getElementById('modalDetailPemain'));
-            modal.show();
-        });
-    });
-
-    // Edit Modal Handler
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            document.getElementById('edit_nama').value = this.getAttribute('data-nama');
-            document.getElementById('edit_punggung').value = this.getAttribute('data-punggung');
-            document.getElementById('edit_jk').value = this.getAttribute('data-jk');
-            document.getElementById('edit_nik').value = this.getAttribute('data-nik');
-            document.getElementById('edit_nisn').value = this.getAttribute('data-nisn');
-            document.getElementById('edit_tempat_lahir').value = this.getAttribute('data-tempat-lahir');
-            document.getElementById('edit_tgl_lahir').value = this.getAttribute('data-tgl-lahir');
-            document.getElementById('edit_posisi').value = this.getAttribute('data-posisi');
-            document.getElementById('edit_pengprov_id').value = this.getAttribute('data-pengprov-id');
-            document.getElementById('edit_kewarganegaraan').value = this.getAttribute('data-kewarganegaraan');
-            document.getElementById('edit_status').value = this.getAttribute('data-status');
-            document.getElementById('edit_catatan').value = this.getAttribute('data-catatan');
-
-            document.getElementById('formEditPemain').action = "{{ url('personel/pemain') }}/" + id;
-
-            const modal = new bootstrap.Modal(document.getElementById('modalEditPemain'));
             modal.show();
         });
     });

@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahJabatan">
+        <a href="{{ route('master.jabatan.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Tambah Jabatan Baru
-        </button>
+        </a>
     </div>
 </div>
 
@@ -145,19 +145,13 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary btn-edit-jabatan me-1" 
-                                            data-id="{{ $j->id }}"
-                                            data-nama="{{ $j->nama_jabatan }}"
-                                            data-official="{{ $j->is_official_tim ? '1' : '0' }}"
-                                            data-active="{{ $j->is_active ? '1' : '0' }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalEditJabatan"
-                                            title="Edit Jabatan">
+                                    <a href="{{ route('master.jabatan.edit', $j->encrypted_id) }}" 
+                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                       title="Edit Jabatan">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    </a>
 
-                                    <form action="{{ route('master.jabatan.destroy', $j->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jabatan {{ $j->nama_jabatan }}?');">
+                                    <form action="{{ route('master.jabatan.destroy', $j->encrypted_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jabatan {{ $j->nama_jabatan }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Jabatan">
@@ -188,114 +182,3 @@
     </div>
 </div>
 @endsection
-
-@push('modals')
-<!-- ========================================== -->
-<!-- MODAL TAMBAH JABATAN                       -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalTambahJabatan" tabindex="-1" aria-labelledby="modalTambahJabatanLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('master.jabatan.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalTambahJabatanLabel">
-                        <i class="fa-solid fa-plus-circle me-1"></i> Tambah Jabatan Baru
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Jabatan <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_jabatan" class="form-control" placeholder="Contoh: HEAD COACH / PELATIH KEPALA" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Kategori Penugasan <span class="text-danger">*</span></label>
-                        <select name="is_official_tim" class="form-select" required>
-                            <option value="1" selected>Official Tim & Pelatih</option>
-                            <option value="0">Pengurus PBVSI / Panitia</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Status Aktif <span class="text-danger">*</span></label>
-                        <select name="is_active" class="form-select" required>
-                            <option value="1" selected>Aktif</option>
-                            <option value="0">Nonaktif</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Jabatan</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL EDIT JABATAN (DYNAMIC)               -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalEditJabatan" tabindex="-1" aria-labelledby="modalEditJabatanLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form id="formEditJabatan" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalEditJabatanLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Jabatan
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Jabatan <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_jabatan" id="edit_jabatan_nama" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Kategori Penugasan <span class="text-danger">*</span></label>
-                        <select name="is_official_tim" id="edit_jabatan_official" class="form-select" required>
-                            <option value="1">Official Tim & Pelatih</option>
-                            <option value="0">Pengurus PBVSI / Panitia</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Status Aktif <span class="text-danger">*</span></label>
-                        <select name="is_active" id="edit_jabatan_active" class="form-select" required>
-                            <option value="1">Aktif</option>
-                            <option value="0">Nonaktif</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Jabatan</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditJabatan');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            if (!button) return;
-
-            const id = button.getAttribute('data-id');
-            const form = document.getElementById('formEditJabatan');
-            form.action = "{{ url('master/jabatan') }}/" + id;
-
-            document.getElementById('edit_jabatan_nama').value = button.getAttribute('data-nama') || '';
-            document.getElementById('edit_jabatan_official').value = button.getAttribute('data-official') || '1';
-            document.getElementById('edit_jabatan_active').value = button.getAttribute('data-active') || '1';
-        });
-    }
-});
-</script>
-@endpush

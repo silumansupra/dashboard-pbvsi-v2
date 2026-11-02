@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahPengprov">
+        <a href="{{ route('master.pengprov.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Tambah Pengprov
-        </button>
+        </a>
     </div>
 </div>
 
@@ -161,27 +161,13 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary btn-edit-pengprov me-1" 
-                                            data-id="{{ $p->id }}"
-                                            data-provinsi-id="{{ $p->provinsi_id }}"
-                                            data-nama="{{ $p->nama_pengprov }}"
-                                            data-ketum="{{ $p->ketum }}"
-                                            data-sekum="{{ $p->sekum }}"
-                                            data-nohp-ketum="{{ $p->nohp_ketum }}"
-                                            data-nohp-sekum="{{ $p->nohp_sekum }}"
-                                            data-email="{{ $p->email }}"
-                                            data-no-telp="{{ $p->no_telp }}"
-                                            data-website="{{ $p->website }}"
-                                            data-alamat="{{ $p->alamat }}"
-                                            data-status="{{ $p->status_aktif ? '1' : '0' }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalEditPengprov"
-                                            title="Edit Data Pengprov">
+                                    <a href="{{ route('master.pengprov.edit', $p->encrypted_id) }}" 
+                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                       title="Edit Data Pengprov">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    </a>
 
-                                    <form action="{{ route('master.pengprov.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data Pengprov {{ $p->nama_pengprov }}?');">
+                                    <form action="{{ route('master.pengprov.destroy', $p->encrypted_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data Pengprov {{ $p->nama_pengprov }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" {{ ($p->pengkot_count > 0 || $p->klub_count > 0) ? 'disabled title="Tidak bisa dihapus karena memiliki Pengkot atau Klub binaan"' : 'title="Hapus Pengprov"' }}>
@@ -212,204 +198,3 @@
     </div>
 </div>
 @endsection
-
-@push('modals')
-<!-- ========================================== -->
-<!-- MODAL TAMBAH PENGPROV                      -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalTambahPengprov" tabindex="-1" aria-labelledby="modalTambahPengprovLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form action="{{ route('master.pengprov.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalTambahPengprovLabel">
-                        <i class="fa-solid fa-plus-circle me-1"></i> Tambah Pengurus Provinsi (Pengprov)
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Provinsi Wilayah <span class="text-danger">*</span></label>
-                            <select name="provinsi_id" class="form-select" required>
-                                <option value="">-- Pilih Provinsi --</option>
-                                @foreach($provinces as $prov)
-                                    <option value="{{ $prov->id }}">{{ $prov->kode_provinsi }} - {{ $prov->nama_provinsi }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Resmi Pengprov <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_pengprov" class="form-control" placeholder="Contoh: PENGPROV PBVSI JAWA TIMUR" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Ketua Umum (Ketum)</label>
-                            <input type="text" name="ketum" class="form-control" placeholder="Nama lengkap Ketum">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Sekretaris Umum (Sekum)</label>
-                            <input type="text" name="sekum" class="form-control" placeholder="Nama lengkap Sekum">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WA Ketum</label>
-                            <input type="text" name="nohp_ketum" class="form-control" placeholder="08xxxxxxxxxx">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WA Sekum</label>
-                            <input type="text" name="nohp_sekum" class="form-control" placeholder="08xxxxxxxxxx">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Email Resmi</label>
-                            <input type="email" name="email" class="form-control" placeholder="pengprov@pbvsi.or.id">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">No. Telepon Kantor</label>
-                            <input type="text" name="no_telp" class="form-control" placeholder="(031) xxxxxxx">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Status Organisasi <span class="text-danger">*</span></label>
-                            <select name="status_aktif" class="form-select" required>
-                                <option value="1" selected>Aktif</option>
-                                <option value="0">Nonaktif</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Website / Portal Resmi</label>
-                            <input type="text" name="website" class="form-control" placeholder="https://jatim.pbvsi.or.id">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Alamat Kantor / Sekretariat</label>
-                            <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat lengkap sekretariat pengprov..."></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Pengprov</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL EDIT PENGPROV (DYNAMIC)              -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalEditPengprov" tabindex="-1" aria-labelledby="modalEditPengprovLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form id="formEditPengprov" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalEditPengprovLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data Pengurus Provinsi (Pengprov)
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Provinsi Wilayah <span class="text-danger">*</span></label>
-                            <select name="provinsi_id" id="edit_pengprov_provinsi_id" class="form-select" required>
-                                <option value="">-- Pilih Provinsi --</option>
-                                @foreach($provinces as $prov)
-                                    <option value="{{ $prov->id }}">{{ $prov->kode_provinsi }} - {{ $prov->nama_provinsi }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Resmi Pengprov <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_pengprov" id="edit_pengprov_nama" class="form-control" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Ketua Umum (Ketum)</label>
-                            <input type="text" name="ketum" id="edit_pengprov_ketum" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Sekretaris Umum (Sekum)</label>
-                            <input type="text" name="sekum" id="edit_pengprov_sekum" class="form-control">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WA Ketum</label>
-                            <input type="text" name="nohp_ketum" id="edit_pengprov_nohp_ketum" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WA Sekum</label>
-                            <input type="text" name="nohp_sekum" id="edit_pengprov_nohp_sekum" class="form-control">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Email Resmi</label>
-                            <input type="email" name="email" id="edit_pengprov_email" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">No. Telepon Kantor</label>
-                            <input type="text" name="no_telp" id="edit_pengprov_no_telp" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Status Organisasi <span class="text-danger">*</span></label>
-                            <select name="status_aktif" id="edit_pengprov_status" class="form-select" required>
-                                <option value="1">Aktif</option>
-                                <option value="0">Nonaktif</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Website / Portal Resmi</label>
-                            <input type="text" name="website" id="edit_pengprov_website" class="form-control">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Alamat Kantor / Sekretariat</label>
-                            <textarea name="alamat" id="edit_pengprov_alamat" class="form-control" rows="2"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Pengprov</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditPengprov');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            if (!button) return;
-
-            const id = button.getAttribute('data-id');
-            const form = document.getElementById('formEditPengprov');
-            form.action = "{{ url('master/pengprov') }}/" + id;
-
-            document.getElementById('edit_pengprov_provinsi_id').value = button.getAttribute('data-provinsi-id') || '';
-            document.getElementById('edit_pengprov_nama').value = button.getAttribute('data-nama') || '';
-            document.getElementById('edit_pengprov_ketum').value = button.getAttribute('data-ketum') || '';
-            document.getElementById('edit_pengprov_sekum').value = button.getAttribute('data-sekum') || '';
-            document.getElementById('edit_pengprov_nohp_ketum').value = button.getAttribute('data-nohp-ketum') || '';
-            document.getElementById('edit_pengprov_nohp_sekum').value = button.getAttribute('data-nohp-sekum') || '';
-            document.getElementById('edit_pengprov_email').value = button.getAttribute('data-email') || '';
-            document.getElementById('edit_pengprov_no_telp').value = button.getAttribute('data-no-telp') || '';
-            document.getElementById('edit_pengprov_website').value = button.getAttribute('data-website') || '';
-            document.getElementById('edit_pengprov_alamat').value = button.getAttribute('data-alamat') || '';
-            document.getElementById('edit_pengprov_status').value = button.getAttribute('data-status') || '1';
-        });
-    }
-});
-</script>
-@endpush

@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahWasit">
-            <i class="fa-solid fa-user-plus me-1"></i> Tambah Wasit Baru
-        </button>
+        <a href="{{ route('personel.wasit.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Tambah Wasit Baru
+        </a>
     </div>
 </div>
 
@@ -220,22 +220,11 @@
                         </td>
                         <td class="text-end pe-3">
                             <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-primary btn-sm btn-edit"
-                                    data-id="{{ $row->id }}"
-                                    data-nama="{{ $row->user?->name }}"
-                                    data-email="{{ $row->user?->email }}"
-                                    data-phone="{{ $row->user?->phone }}"
-                                    data-lisensi="{{ $row->nomor_lisensi_wasit }}"
-                                    data-kategori="{{ $row->kategori_wasit }}"
-                                    data-tingkat="{{ $row->tingkat_wasit }}"
-                                    data-pengprov-id="{{ $row->pengprov_id }}"
-                                    data-status="{{ $row->status_aktif ? 1 : 0 }}"
-                                    data-catatan="{{ $row->catatan_perwasitan }}"
-                                    title="Edit Wasit">
+                                <a href="{{ route('personel.wasit.edit', $row->encrypted_id) }}" class="btn btn-outline-danger btn-sm" title="Edit Wasit">
                                     <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
+                                </a>
                                 <button type="button" class="btn btn-outline-danger btn-sm btn-delete"
-                                    data-id="{{ $row->id }}"
+                                    data-id="{{ $row->encrypted_id }}"
                                     data-nama="{{ $row->user?->name }}"
                                     title="Hapus Wasit">
                                     <i class="fa-solid fa-trash-can"></i>
@@ -266,159 +255,6 @@
 @endsection
 
 @push('modals')
-<!-- 1. MODAL TAMBAH WASIT -->
-<div class="modal fade" id="modalTambahWasit" tabindex="-1" aria-labelledby="modalTambahWasitLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form action="{{ route('personel.wasit.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fw-bold" id="modalTambahWasitLabel">
-                        <i class="fa-solid fa-flag me-1"></i> Tambah Wasit Resmi PBVSI
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Wasit <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: Agus Setiyono">
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="wasit@pbvsi.or.id">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" class="form-control" placeholder="0812...">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Kategori Wasit <span class="text-danger">*</span></label>
-                            <select name="kategori_wasit" class="form-select" required>
-                                <option value="INDOOR">Indoor</option>
-                                <option value="VOLI_PANTAI">Voli Pantai</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tingkat Wasit <span class="text-danger">*</span></label>
-                            <select name="tingkat_wasit" class="form-select" required>
-                                <option value="Nasional">Nasional</option>
-                                <option value="Nasional A">Nasional A</option>
-                                <option value="Nasional B">Nasional B</option>
-                                <option value="Nasional C">Nasional C</option>
-                                <option value="Internasional">Internasional (FIVB)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi (Opsional)</label>
-                            <input type="text" name="nomor_lisensi_wasit" class="form-control" placeholder="Auto-generate jika kosong">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Asal Pengprov</label>
-                            <select name="pengprov_id" class="form-select">
-                                <option value="">-- PBVSI Pusat --</option>
-                                @foreach($pengprovList as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Catatan Perwasitan</label>
-                        <input type="text" name="catatan_perwasitan" class="form-control" placeholder="Catatan sertifikasi / kejuaraan">
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="tambah_status_aktif_wasit" value="1" checked>
-                        <label class="form-check-label fw-semibold" for="tambah_status_aktif_wasit">Status Wasit Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Data Wasit</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- 2. MODAL EDIT WASIT -->
-<div class="modal fade" id="modalEditWasit" tabindex="-1" aria-labelledby="modalEditWasitLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <form id="formEditWasit" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow-lg border-0">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fw-bold" id="modalEditWasitLabel">
-                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit Data Wasit
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap Wasit <span class="text-danger">*</span></label>
-                        <input type="text" name="nama_lengkap" id="edit_nama_wasit" class="form-control" required>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" id="edit_email_wasit" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">No. HP / WhatsApp</label>
-                            <input type="text" name="phone" id="edit_phone_wasit" class="form-control">
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Kategori Wasit <span class="text-danger">*</span></label>
-                            <select name="kategori_wasit" id="edit_kategori_wasit" class="form-select" required>
-                                <option value="INDOOR">Indoor</option>
-                                <option value="VOLI_PANTAI">Voli Pantai</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Tingkat Wasit <span class="text-danger">*</span></label>
-                            <input type="text" name="tingkat_wasit" id="edit_tingkat_wasit" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Lisensi <span class="text-danger">*</span></label>
-                            <input type="text" name="nomor_lisensi_wasit" id="edit_lisensi_wasit" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Asal Pengprov</label>
-                            <select name="pengprov_id" id="edit_pengprov_id_wasit" class="form-select">
-                                <option value="">-- PBVSI Pusat --</option>
-                                @foreach($pengprovList as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pengprov }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Catatan Perwasitan</label>
-                        <input type="text" name="catatan_perwasitan" id="edit_catatan_wasit" class="form-control">
-                    </div>
-                    <div class="form-check form-switch mb-2">
-                        <input class="form-check-input" type="checkbox" role="switch" name="status_aktif" id="edit_status_aktif_wasit" value="1">
-                        <label class="form-check-label fw-semibold" for="edit_status_aktif_wasit">Status Wasit Aktif</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Data Wasit</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- 3. MODAL HAPUS WASIT -->
 <div class="modal fade" id="modalHapusWasit" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -450,27 +286,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Edit Modal Handler
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            document.getElementById('edit_nama_wasit').value = this.getAttribute('data-nama') || '';
-            document.getElementById('edit_email_wasit').value = this.getAttribute('data-email') || '';
-            document.getElementById('edit_phone_wasit').value = this.getAttribute('data-phone') || '';
-            document.getElementById('edit_lisensi_wasit').value = this.getAttribute('data-lisensi') || '';
-            document.getElementById('edit_kategori_wasit').value = this.getAttribute('data-kategori') || 'INDOOR';
-            document.getElementById('edit_tingkat_wasit').value = this.getAttribute('data-tingkat') || '';
-            document.getElementById('edit_pengprov_id_wasit').value = this.getAttribute('data-pengprov-id') || '';
-            document.getElementById('edit_catatan_wasit').value = this.getAttribute('data-catatan') || '';
-            document.getElementById('edit_status_aktif_wasit').checked = this.getAttribute('data-status') === '1';
-
-            document.getElementById('formEditWasit').action = "{{ url('personel/wasit') }}/" + id;
-
-            const modal = new bootstrap.Modal(document.getElementById('modalEditWasit'));
-            modal.show();
-        });
-    });
-
     // Delete Modal Handler
     document.querySelectorAll('.btn-delete').forEach(button => {
         button.addEventListener('click', function () {

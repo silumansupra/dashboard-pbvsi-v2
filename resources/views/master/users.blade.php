@@ -45,9 +45,9 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahUser">
+        <a href="{{ route('master.users.create') }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-user-plus me-1"></i> Tambah Pengguna Baru
-        </button>
+        </a>
     </div>
 </div>
 
@@ -171,23 +171,14 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <button type="button" 
-                                            class="btn btn-sm btn-outline-secondary btn-edit-user me-1" 
-                                            data-id="{{ $u->id }}"
-                                            data-name="{{ $u->name }}"
-                                            data-username="{{ $u->username }}"
-                                            data-email="{{ $u->email }}"
-                                            data-phone="{{ $u->phone }}"
-                                            data-active="{{ $u->is_active ? '1' : '0' }}"
-                                            data-roles="{{ $u->roles->pluck('id')->join(',') }}"
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalEditUser"
-                                            title="Edit User">
+                                    <a href="{{ route('master.users.edit', $u->encrypted_id) }}" 
+                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                       title="Edit User">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                    </a>
 
                                     @if($u->id != 1)
-                                    <form action="{{ route('master.users.destroy', $u->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $u->name }}?');">
+                                    <form action="{{ route('master.users.destroy', $u->encrypted_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ $u->name }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus User">
@@ -219,188 +210,3 @@
     </div>
 </div>
 @endsection
-
-@push('modals')
-<!-- ========================================== -->
-<!-- MODAL TAMBAH USER                          -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalTambahUser" tabindex="-1" aria-labelledby="modalTambahUserLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form action="{{ route('master.users.store') }}" method="POST">
-            @csrf
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalTambahUserLabel">
-                        <i class="fa-solid fa-user-plus me-1"></i> Tambah Pengguna & Hak Akses
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" placeholder="Nama lengkap pengguna" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Username Login <span class="text-danger">*</span></label>
-                            <input type="text" name="username" class="form-control" placeholder="username_login (tanpa spasi)" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" placeholder="user@pbvsi.or.id" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Handphone / WhatsApp</label>
-                            <input type="text" name="phone" class="form-control" placeholder="08xxxxxxxxxx">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Akun <span class="text-danger">*</span></label>
-                            <select name="is_active" class="form-select" required>
-                                <option value="1" selected>Aktif (Bisa Login)</option>
-                                <option value="0">Nonaktif (Blokir)</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Pilih Peran / Hak Akses (RBAC) <span class="text-danger">*</span></label>
-                            <div class="row g-2 p-3 bg-light rounded border">
-                                @foreach($roles as $r)
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="roles[]" value="{{ $r->id }}" id="role_add_{{ $r->id }}">
-                                        <label class="form-check-label" for="role_add_{{ $r->id }}">
-                                            <strong>{{ $r->display_name ?: ucfirst(str_replace('_', ' ', $r->name)) }}</strong>
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Simpan Pengguna</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL EDIT USER (DYNAMIC)                  -->
-<!-- ========================================== -->
-<div class="modal fade" id="modalEditUser" tabindex="-1" aria-labelledby="modalEditUserLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form id="formEditUser" action="" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="modal-content shadow border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold text-white" id="modalEditUserLabel">
-                        <i class="fa-solid fa-user-pen me-1"></i> Edit Data Pengguna & Hak Akses
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" name="name" id="edit_user_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Username Login <span class="text-danger">*</span></label>
-                            <input type="text" name="username" id="edit_user_username" class="form-control" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Alamat Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" id="edit_user_email" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Nomor Handphone / WhatsApp</label>
-                            <input type="text" name="phone" id="edit_user_phone" class="form-control">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Password Baru</label>
-                            <input type="password" name="password" class="form-control" placeholder="Kosongkan jika password tidak diubah" minlength="6">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Status Akun <span class="text-danger">*</span></label>
-                            <select name="is_active" id="edit_user_active" class="form-select" required>
-                                <option value="1">Aktif (Bisa Login)</option>
-                                <option value="0">Nonaktif (Blokir)</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Pilih Peran / Hak Akses (RBAC) <span class="text-danger">*</span></label>
-                            <div class="row g-2 p-3 bg-light rounded border">
-                                @foreach($roles as $r)
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input edit-role-checkbox" type="checkbox" name="roles[]" value="{{ $r->id }}" id="role_edit_{{ $r->id }}">
-                                        <label class="form-check-label" for="role_edit_{{ $r->id }}">
-                                            <strong>{{ $r->display_name ?: ucfirst(str_replace('_', ' ', $r->name)) }}</strong>
-                                        </label>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Perbarui Pengguna</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('modalEditUser');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            if (!button) return;
-
-            const id = button.getAttribute('data-id');
-            const form = document.getElementById('formEditUser');
-            form.action = "{{ url('master/users') }}/" + id;
-
-            document.getElementById('edit_user_name').value = button.getAttribute('data-name') || '';
-            document.getElementById('edit_user_username').value = button.getAttribute('data-username') || '';
-            document.getElementById('edit_user_email').value = button.getAttribute('data-email') || '';
-            document.getElementById('edit_user_phone').value = button.getAttribute('data-phone') || '';
-            document.getElementById('edit_user_active').value = button.getAttribute('data-active') || '1';
-
-            // Reset all role checkboxes first
-            const roleCheckboxes = document.querySelectorAll('.edit-role-checkbox');
-            roleCheckboxes.forEach(cb => cb.checked = false);
-
-            // Check roles assigned to this user
-            const userRolesStr = button.getAttribute('data-roles') || '';
-            if (userRolesStr) {
-                const roleIds = userRolesStr.split(',');
-                roleIds.forEach(roleId => {
-                    const cb = document.getElementById('role_edit_' + roleId.trim());
-                    if (cb) cb.checked = true;
-                });
-            }
-        });
-    }
-});
-</script>
-@endpush
