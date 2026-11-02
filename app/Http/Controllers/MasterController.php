@@ -596,15 +596,24 @@ class MasterController extends Controller
             'sekretaris_klub' => 'nullable|string|max:150',
             'alamat' => 'nullable|string',
             'status_verifikasi' => 'required|in:PENDING,VERIFIED,REJECTED',
+            'logo_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:3072',
         ], [
             'nama_klub.required' => 'Nama klub wajib diisi.',
             'pengprov_id.required' => 'Pengprov induk wajib dipilih.',
             'kode_klub.unique' => 'Kode klub sudah terdaftar.',
+            'logo_file.image' => 'File logo harus berupa gambar yang valid (JPG, PNG, WEBP, SVG).',
+            'logo_file.max' => 'Ukuran file logo maksimal 3 MB.',
         ]);
 
         $kodeKlub = $request->kode_klub;
         if (empty($kodeKlub)) {
             $kodeKlub = 'KLB-' . strtoupper(Str::random(6));
+        }
+
+        $logoPath = null;
+        if ($request->hasFile('logo_file')) {
+            $bunnyService = app(\App\Services\BunnyCDNService::class);
+            $logoPath = $bunnyService->upload($request->file('logo_file'), 'uploads/klub');
         }
 
         $klub = Klub::create([
@@ -615,6 +624,7 @@ class MasterController extends Controller
             'pemilik_klub' => $request->pemilik_klub,
             'sekretaris_klub' => $request->sekretaris_klub,
             'alamat' => $request->alamat,
+            'logo_path' => $logoPath,
             'status_verifikasi' => $request->status_verifikasi,
         ]);
 
@@ -635,9 +645,13 @@ class MasterController extends Controller
             'sekretaris_klub' => 'nullable|string|max:150',
             'alamat' => 'nullable|string',
             'status_verifikasi' => 'required|in:PENDING,VERIFIED,REJECTED',
+            'logo_file' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:3072',
+        ], [
+            'logo_file.image' => 'File logo harus berupa gambar yang valid (JPG, PNG, WEBP, SVG).',
+            'logo_file.max' => 'Ukuran file logo maksimal 3 MB.',
         ]);
 
-        $klub->update([
+        $dataToUpdate = [
             'kode_klub' => strtoupper(trim($request->kode_klub)),
             'nama_klub' => strtoupper(trim($request->nama_klub)),
             'pengprov_id' => $request->pengprov_id,
@@ -646,7 +660,21 @@ class MasterController extends Controller
             'sekretaris_klub' => $request->sekretaris_klub,
             'alamat' => $request->alamat,
             'status_verifikasi' => $request->status_verifikasi,
-        ]);
+        ];
+
+        if ($request->hasFile('logo_file')) {
+            $bunnyService = app(\App\Services\BunnyCDNService::class);
+            $uploadedPath = $bunnyService->upload($request->file('logo_file'), 'uploads/klub');
+            if ($uploadedPath) {
+                // Delete old logo if it was uploaded to uploads/klub
+                if ($klub->logo_path && str_starts_with($klub->logo_path, 'uploads/klub/')) {
+                    $bunnyService->delete($klub->logo_path);
+                }
+                $dataToUpdate['logo_path'] = $uploadedPath;
+            }
+        }
+
+        $klub->update($dataToUpdate);
 
         return redirect()->route('master.klub')
             ->with('success', "Data klub {$klub->nama_klub} berhasil diperbarui!");

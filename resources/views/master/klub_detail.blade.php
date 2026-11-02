@@ -24,8 +24,10 @@
     <div class="card-body p-4 text-white" style="background: linear-gradient(135deg, #0d6efd 0%, #084298 100%);">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="avatar-lg bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 70px; height: 70px; min-width: 70px;">
-                    @if($isKlub)
+                <div class="avatar-lg bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm overflow-hidden p-1" style="width: 70px; height: 70px; min-width: 70px;">
+                    @if($isKlub && $tim->logo_url)
+                        <img src="{{ $tim->logo_url }}" alt="{{ $namaTim }}" class="img-fluid object-fit-contain" style="max-height: 60px; max-width: 60px;" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-shield-halved fa-2x text-primary\'></i>';">
+                    @elseif($isKlub)
                         <i class="fa-solid fa-shield-halved fa-2x"></i>
                     @else
                         <i class="fa-solid fa-flag fa-2x"></i>
@@ -98,9 +100,15 @@
     <!-- HEADER PARTISIPASI TURNAMEN -->
     <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div class="d-flex align-items-center gap-3">
-            <div class="avatar-md bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center p-2" style="width: 48px; height: 48px;">
-                <i class="fa-solid fa-trophy fa-lg"></i>
-            </div>
+            @if($partisipasi->logo_url)
+                <div class="avatar-md bg-white border rounded-3 p-1 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
+                    <img src="{{ $partisipasi->logo_url }}" alt="{{ $partisipasi->nama_tim }}" class="img-fluid object-fit-contain" style="max-height: 40px; max-width: 40px;" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-trophy fa-lg text-primary\'></i>';">
+                </div>
+            @else
+                <div class="avatar-md bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center p-2" style="width: 48px; height: 48px;">
+                    <i class="fa-solid fa-trophy fa-lg"></i>
+                </div>
+            @endif
             <div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <h5 class="fw-bold text-dark mb-0">

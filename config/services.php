@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'bunnycdn' => [
+        'storage_zone' => env('BUNNYCDN_STORAGE_ZONE', 'pbvsi'),
+        'access_key'   => env('BUNNYCDN_ACCESS_KEY', '6f8b3df9-5063-4a9c-bdb7dec01911-1a05-418e'),
+        'hostname'     => env('BUNNYCDN_HOSTNAME', 'storage.bunnycdn.com'),
+        'base_url'     => env('BUNNYCDN_BASE_URL', 'https://cdn.pbvsi.or.id/'),
+    ],
+
 ];

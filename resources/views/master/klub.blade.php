@@ -221,9 +221,15 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
-                                            <i class="fa-solid fa-shield-halved"></i>
-                                        </div>
+                                        @if($k->logo_url)
+                                            <div class="rounded border p-1 bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                                <img src="{{ $k->logo_url }}" alt="{{ $k->nama_klub }}" class="img-fluid object-fit-contain" style="max-height: 32px; max-width: 32px;" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-shield-halved text-primary\'></i>';">
+                                            </div>
+                                        @else
+                                            <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                                <i class="fa-solid fa-shield-halved"></i>
+                                            </div>
+                                        @endif
                                         <div>
                                             <strong class="text-dark">{{ $k->nama_klub }}</strong><br>
                                             <small class="text-muted">{{ $k->alamat ? Str::limit($k->alamat, 35) : 'Alamat belum diatur' }}</small>
@@ -276,6 +282,7 @@
                                             data-sekretaris="{{ $k->sekretaris_klub }}"
                                             data-alamat="{{ $k->alamat }}"
                                             data-verifikasi="{{ $k->status_verifikasi }}"
+                                            data-logo-url="{{ $k->logo_url }}"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modalEditKlub"
                                             title="Edit Data Klub">
@@ -325,7 +332,7 @@
 <!-- ========================================== -->
 <div class="modal fade" id="modalTambahKlub" tabindex="-1" aria-labelledby="modalTambahKlubLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form action="{{ route('master.klub.store') }}" method="POST">
+        <form action="{{ route('master.klub.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-content shadow border-0">
                 <div class="modal-header bg-primary text-white">
@@ -376,6 +383,12 @@
                         </div>
 
                         <div class="col-12">
+                            <label class="form-label fw-semibold">Upload Logo Klub (BunnyCDN)</label>
+                            <input type="file" name="logo_file" class="form-control" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
+                            <small class="text-muted"><i class="fa-solid fa-cloud-arrow-up text-primary me-1"></i>Format: PNG, JPG, JPEG, WEBP. Maksimal 3 MB. File akan langsung diunggah ke storage BunnyCDN.</small>
+                        </div>
+
+                        <div class="col-12">
                             <label class="form-label fw-semibold">Alamat Basecamp / Lapangan Klub</label>
                             <textarea name="alamat" class="form-control" rows="2" placeholder="Alamat basecamp atau GOR klub..."></textarea>
                         </div>
@@ -395,7 +408,7 @@
 <!-- ========================================== -->
 <div class="modal fade" id="modalEditKlub" tabindex="-1" aria-labelledby="modalEditKlubLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form id="formEditKlub" action="" method="POST">
+        <form id="formEditKlub" action="" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="modal-content shadow border-0">
@@ -444,6 +457,21 @@
                             <input type="text" name="sekretaris_klub" id="edit_klub_sekretaris" class="form-control">
                         </div>
 
+                        <!-- LOGO SECTION (BUNNYCDN) -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Logo Klub (BunnyCDN)</label>
+                            <div class="d-flex align-items-center gap-3 p-2 bg-light border rounded">
+                                <div id="edit_logo_preview_container" class="border rounded p-1 bg-white d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px; min-width: 60px;">
+                                    <img id="edit_logo_preview" src="" alt="Logo" class="img-fluid object-fit-contain d-none" style="max-height: 52px; max-width: 52px;">
+                                    <i id="edit_logo_placeholder" class="fa-solid fa-shield-halved text-muted fa-2x"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="file" name="logo_file" id="edit_logo_file" class="form-control form-control-sm" accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml">
+                                    <small class="text-muted"><i class="fa-solid fa-cloud-arrow-up text-primary me-1"></i>Pilih gambar baru untuk mengganti logo di BunnyCDN (PNG, JPG, WEBP, maks 3 MB). Kosongkan jika tetap.</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label fw-semibold">Alamat Basecamp / Lapangan Klub</label>
                             <textarea name="alamat" id="edit_klub_alamat" class="form-control" rows="2"></textarea>
@@ -480,7 +508,43 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit_klub_pemilik').value = button.getAttribute('data-pemilik') || '';
             document.getElementById('edit_klub_sekretaris').value = button.getAttribute('data-sekretaris') || '';
             document.getElementById('edit_klub_alamat').value = button.getAttribute('data-alamat') || '';
+
+            // Handle logo preview
+            const logoUrl = button.getAttribute('data-logo-url');
+            const previewImg = document.getElementById('edit_logo_preview');
+            const placeholderIcon = document.getElementById('edit_logo_placeholder');
+            const fileInput = document.getElementById('edit_logo_file');
+            if (fileInput) fileInput.value = '';
+
+            if (logoUrl && logoUrl.trim() !== '') {
+                previewImg.src = logoUrl;
+                previewImg.classList.remove('d-none');
+                placeholderIcon.classList.add('d-none');
+            } else {
+                previewImg.src = '';
+                previewImg.classList.add('d-none');
+                placeholderIcon.classList.remove('d-none');
+            }
         });
+
+        // Instant local preview when file chosen
+        const fileInput = document.getElementById('edit_logo_file');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        const previewImg = document.getElementById('edit_logo_preview');
+                        const placeholderIcon = document.getElementById('edit_logo_placeholder');
+                        previewImg.src = evt.target.result;
+                        previewImg.classList.remove('d-none');
+                        placeholderIcon.classList.add('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     }
 });
 </script>

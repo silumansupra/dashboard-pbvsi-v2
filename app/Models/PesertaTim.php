@@ -53,4 +53,14 @@ class PesertaTim extends Model
     {
         return $this->belongsTo(Pengprov::class, 'pengprov_id');
     }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        $path = $this->logo_tim_path ?: ($this->klub ? $this->klub->logo_path : null);
+        if (empty($path)) {
+            return null;
+        }
+
+        return app(\App\Services\BunnyCDNService::class)->getUrl($path);
+    }
 }

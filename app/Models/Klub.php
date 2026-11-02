@@ -19,6 +19,17 @@ class Klub extends Model
         'status_verifikasi',
     ];
 
+    protected $appends = ['logo_url'];
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        if (empty($this->logo_path)) {
+            return null;
+        }
+
+        return app(\App\Services\BunnyCDNService::class)->getUrl($this->logo_path);
+    }
+
     public function pengprov()
     {
         return $this->belongsTo(Pengprov::class, 'pengprov_id');
