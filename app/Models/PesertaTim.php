@@ -39,6 +39,11 @@ class PesertaTim extends Model
         return $this->hasMany(Roster::class, 'peserta_tim_id');
     }
 
+    public function officials()
+    {
+        return $this->hasMany(OfficialTim::class, 'peserta_tim_id');
+    }
+
     public function klub()
     {
         return $this->belongsTo(Klub::class, 'klub_id');

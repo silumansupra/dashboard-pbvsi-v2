@@ -59,6 +59,10 @@ Route::prefix('master')->name('master.')->group(function () {
 
     // 4. Master Klub / Tim
     Route::get('/klub', [MasterController::class, 'klub'])->name('klub');
+    Route::get('/klub/{tipe}/{id}', [MasterController::class, 'detailTim'])->name('klub.detail');
+    Route::get('/klub/{id}', function ($id) {
+        return redirect()->route('master.klub.detail', ['tipe' => 'klub', 'id' => $id]);
+    })->whereNumber('id');
     Route::post('/klub', [MasterController::class, 'storeKlub'])->name('klub.store');
     Route::put('/klub/{id}', [MasterController::class, 'updateKlub'])->name('klub.update');
     Route::delete('/klub/{id}', [MasterController::class, 'destroyKlub'])->name('klub.destroy');

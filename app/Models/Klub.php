@@ -28,4 +28,9 @@ class Klub extends Model
     {
         return $this->belongsTo(Pengkot::class, 'pengkot_id');
     }
+
+    public function pesertaTurnamen()
+    {
+        return $this->hasMany(PesertaTim::class, 'klub_id');
+    }
 }

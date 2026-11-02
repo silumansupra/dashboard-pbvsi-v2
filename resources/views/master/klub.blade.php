@@ -45,10 +45,26 @@
         </ol>
     </nav>
     <div class="d-flex gap-2 align-items-center">
+        @if($tipe === 'klub')
         <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahKlub">
             <i class="fa-solid fa-plus me-1"></i> Tambah Klub Baru
         </button>
+        @endif
     </div>
+</div>
+
+<!-- TOGGLE TIPE: KLUB VS KONTINGEN PENGPROV -->
+<div class="d-flex gap-2 mb-3">
+    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'klub'])) }}" 
+       class="btn btn-sm rounded-pill px-3 py-2 {{ $tipe === 'klub' ? 'btn-primary shadow-sm' : 'btn-outline-secondary bg-white' }}">
+        <i class="fa-solid fa-shield-halved me-1"></i> Klub Bola Voli PBVSI 
+        <span class="badge {{ $tipe === 'klub' ? 'bg-white text-primary' : 'bg-secondary' }} ms-1">{{ $totalKlubCount }} Klub</span>
+    </a>
+    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'pengprov'])) }}" 
+       class="btn btn-sm rounded-pill px-3 py-2 {{ $tipe === 'pengprov' ? 'btn-primary shadow-sm' : 'btn-outline-secondary bg-white' }}">
+        <i class="fa-solid fa-flag me-1"></i> Kontingen Daerah (Pengprov)
+        <span class="badge {{ $tipe === 'pengprov' ? 'bg-white text-primary' : 'bg-secondary' }} ms-1">{{ $totalPengprovCount }} Provinsi</span>
+    </a>
 </div>
 
 <div class="row">
@@ -57,6 +73,8 @@
             <!-- FILTER TOOLBAR -->
             <div class="card-header bg-white py-3 border-bottom">
                 <form action="{{ route('master.klub') }}" method="GET" class="row g-2 align-items-center">
+                    <input type="hidden" name="tipe" value="{{ $tipe }}">
+                    
                     <div class="col-md-4">
                         <select name="pengprov_id" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Semua Pengprov Induk</option>
@@ -71,10 +89,11 @@
                     <div class="col-md-3">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                            <input type="text" name="search" class="form-control" placeholder="Cari nama klub, kode, pemilik..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="form-control" placeholder="Cari nama tim, kode, pengurus..." value="{{ request('search') }}">
                         </div>
                     </div>
 
+                    @if($tipe === 'klub')
                     <div class="col-md-2">
                         <select name="status_verifikasi" class="form-select form-select-sm">
                             <option value="">Semua Verifikasi</option>
@@ -83,6 +102,9 @@
                             <option value="REJECTED" {{ request('status_verifikasi') == 'REJECTED' ? 'selected' : '' }}>REJECTED</option>
                         </select>
                     </div>
+                    @else
+                    <div class="col-md-2"></div>
+                    @endif
 
                     <div class="col-md-1">
                         <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -98,7 +120,7 @@
                             <i class="fa-solid fa-filter me-1"></i> Filter
                         </button>
                         @if(request('pengprov_id') || request('search') || request('status_verifikasi') || request('per_page'))
-                            <a href="{{ route('master.klub') }}" class="btn btn-sm btn-outline-secondary" title="Reset filter">
+                            <a href="{{ route('master.klub', ['tipe' => $tipe]) }}" class="btn btn-sm btn-outline-secondary" title="Reset filter">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </a>
                         @endif
@@ -106,9 +128,75 @@
                 </form>
             </div>
 
-            <!-- TABEL DAFTAR KLUB -->
+            <!-- TABEL DAFTAR TIM / KLUB -->
             <div class="card-body p-0">
                 <div class="table-responsive">
+                    @if($tipe === 'pengprov')
+                    <!-- TABEL KONTINGEN PENGPROV -->
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;" class="text-center">#</th>
+                                <th style="width: 140px;">Kode</th>
+                                <th>Nama Kontingen Daerah</th>
+                                <th>Wilayah Provinsi</th>
+                                <th>Turnamen Diikuti</th>
+                                <th>Ketua Umum & Sekum</th>
+                                <th class="text-end" style="width: 170px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($pengprovTeams as $idx => $p)
+                            <tr>
+                                <td class="text-center text-muted">{{ $pengprovTeams->firstItem() + $idx }}</td>
+                                <td>
+                                    <span class="badge bg-warning-subtle text-dark border font-monospace">
+                                        PENGPROV-{{ $p->provinsi_id ?? $p->id }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm bg-warning-subtle text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                                            <i class="fa-solid fa-flag"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="text-dark">{{ $p->nama_pengprov }}</strong><br>
+                                            <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i>Kontingen PBVSI Resmi</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ $p->provinsi?->nama_provinsi ?? $p->nama_pengprov }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border px-2 py-1">
+                                        <i class="fa-solid fa-trophy me-1"></i> {{ $p->peserta_kontingen_count }} Kejuaraan
+                                    </span>
+                                </td>
+                                <td>
+                                    <div><strong>Ketum:</strong> {{ $p->ketum ?: '-' }}</div>
+                                    <div class="small text-muted"><strong>Sekum:</strong> {{ $p->sekum ?: '-' }}</div>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'pengprov', 'id' => $p->id]) }}" 
+                                       class="btn btn-sm btn-primary shadow-sm" 
+                                       title="Lihat Riwayat Turnamen & Roster Pemain">
+                                        <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-flag fa-2x mb-2 text-secondary"></i>
+                                    <p class="mb-0">Tidak ada data Kontingen Pengprov yang sesuai filter.</p>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    @else
+                    <!-- TABEL KLUB BOLA VOLI PBVSI -->
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
@@ -116,9 +204,10 @@
                                 <th style="width: 140px;">Kode Klub</th>
                                 <th>Nama Tim / Klub</th>
                                 <th>Pengprov / Pengkot Asal</th>
+                                <th>Turnamen Diikuti</th>
                                 <th>Pemilik & Sekretaris</th>
                                 <th class="text-center" style="width: 130px;">Verifikasi</th>
-                                <th class="text-end" style="width: 120px;">Aksi</th>
+                                <th class="text-end" style="width: 200px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,6 +235,11 @@
                                     <small class="text-muted">{{ $k->pengkot?->nama_pengkot ?? 'Pengkot/Pengkab belum ditentukan' }}</small>
                                 </td>
                                 <td>
+                                    <span class="badge bg-primary-subtle text-primary border px-2 py-1">
+                                        <i class="fa-solid fa-trophy me-1"></i> {{ $k->peserta_turnamen_count }} Kejuaraan
+                                    </span>
+                                </td>
+                                <td>
                                     <div><strong>Pemilik:</strong> {{ $k->pemilik_klub ?: '-' }}</div>
                                     <div class="small text-muted"><strong>Sekretaris:</strong> {{ $k->sekretaris_klub ?: '-' }}</div>
                                 </td>
@@ -165,6 +259,12 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'klub', 'id' => $k->id]) }}" 
+                                       class="btn btn-sm btn-primary me-1 shadow-sm" 
+                                       title="Lihat Riwayat Turnamen & Roster">
+                                        <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
+                                    </a>
+
                                     <button type="button" 
                                             class="btn btn-sm btn-outline-secondary btn-edit-klub me-1" 
                                             data-id="{{ $k->id }}"
@@ -193,7 +293,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="8" class="text-center py-5 text-muted">
                                     <i class="fa-solid fa-shield-halved fa-2x mb-2 text-secondary"></i>
                                     <p class="mb-0">Tidak ada data Klub yang ditemukan sesuai kriteria pencarian.</p>
                                 </td>
@@ -201,9 +301,14 @@
                             @endforelse
                         </tbody>
                     </table>
+                    @endif
                 </div>
 
-                @if($klub->hasPages() || $klub->total() > 0)
+                @if($tipe === 'pengprov' && $pengprovTeams && ($pengprovTeams->hasPages() || $pengprovTeams->total() > 0))
+                <div class="p-3 border-top bg-light">
+                    {{ $pengprovTeams->links('vendor.pagination.bootstrap-5') }}
+                </div>
+                @elseif($tipe === 'klub' && $klub && ($klub->hasPages() || $klub->total() > 0))
                 <div class="p-3 border-top bg-light">
                     {{ $klub->links('vendor.pagination.bootstrap-5') }}
                 </div>

@@ -39,4 +39,9 @@ class Pengprov extends Model
     {
         return $this->hasMany(Klub::class, 'pengprov_id');
     }
+
+    public function pesertaKontingen()
+    {
+        return $this->hasMany(PesertaTim::class, 'pengprov_id')->whereNull('klub_id');
+    }
 }

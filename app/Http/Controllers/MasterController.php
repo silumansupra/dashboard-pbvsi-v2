@@ -9,6 +9,8 @@ use App\Models\PosisiPemain;
 use App\Models\Pengprov;
 use App\Models\Pengkot;
 use App\Models\Klub;
+use App\Models\PesertaTim;
+use App\Models\OfficialTim;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -460,35 +462,127 @@ class MasterController extends Controller
      */
     public function klub(Request $request)
     {
-        $query = Klub::with(['pengprov', 'pengkot']);
-
-        if ($request->filled('pengprov_id')) {
-            $query->where('pengprov_id', $request->pengprov_id);
-        }
-
-        if ($request->filled('status_verifikasi')) {
-            $query->where('status_verifikasi', $request->status_verifikasi);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_klub', 'like', "%{$search}%")
-                  ->orWhere('kode_klub', 'like', "%{$search}%")
-                  ->orWhere('pemilik_klub', 'like', "%{$search}%")
-                  ->orWhere('sekretaris_klub', 'like', "%{$search}%");
-            });
-        }
-
+        $tipe = $request->get('tipe', 'klub'); // 'klub' | 'pengprov'
         $perPage = (int) $request->get('per_page', 15);
         if (!in_array($perPage, [10, 15, 25, 50, 100])) {
             $perPage = 15;
         }
 
-        $klub = $query->latest()->paginate($perPage)->withQueryString();
         $pengprovList = Pengprov::where('status_aktif', 'AKTIF')->orderBy('nama_pengprov')->get();
+        $totalKlubCount = Klub::count();
+        $totalPengprovCount = Pengprov::whereHas('pesertaKontingen')->count();
 
-        return view('master.klub', compact('klub', 'pengprovList'));
+        if ($tipe === 'pengprov') {
+            $query = Pengprov::whereHas('pesertaKontingen')
+                ->withCount('pesertaKontingen')
+                ->with(['provinsi']);
+
+            if ($request->filled('pengprov_id')) {
+                $query->where('id', $request->pengprov_id);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_pengprov', 'like', "%{$search}%")
+                      ->orWhere('ketum', 'like', "%{$search}%")
+                      ->orWhere('sekum', 'like', "%{$search}%");
+                });
+            }
+
+            $pengprovTeams = $query->paginate($perPage)->withQueryString();
+            $klub = null;
+        } else {
+            $query = Klub::with(['pengprov', 'pengkot'])
+                ->withCount('pesertaTurnamen');
+
+            if ($request->filled('pengprov_id')) {
+                $query->where('pengprov_id', $request->pengprov_id);
+            }
+
+            if ($request->filled('status_verifikasi')) {
+                $query->where('status_verifikasi', $request->status_verifikasi);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_klub', 'like', "%{$search}%")
+                      ->orWhere('kode_klub', 'like', "%{$search}%")
+                      ->orWhere('pemilik_klub', 'like', "%{$search}%")
+                      ->orWhere('sekretaris_klub', 'like', "%{$search}%");
+                });
+            }
+
+            $klub = $query->latest()->paginate($perPage)->withQueryString();
+            $pengprovTeams = null;
+        }
+
+        return view('master.klub', compact(
+            'klub',
+            'pengprovTeams',
+            'pengprovList',
+            'tipe',
+            'totalKlubCount',
+            'totalPengprovCount'
+        ));
+    }
+
+    /**
+     * Detail Riwayat Turnamen, Roster Pemain, dan Official Tim/Klub
+     */
+    public function detailTim(Request $request, $tipe, $id)
+    {
+        if ($tipe === 'pengprov') {
+            $tim = Pengprov::with(['provinsi'])->findOrFail($id);
+            $namaTim = $tim->nama_pengprov;
+            $kodeTim = 'PENGPROV-' . ($tim->provinsi_id ?? $tim->id);
+            $asalWilayah = $tim->nama_pengprov;
+            $isKlub = false;
+
+            $turnamenList = PesertaTim::where('pengprov_id', $id)
+                ->whereNull('klub_id')
+                ->with([
+                    'edisi.turnamen',
+                    'roster.pemain',
+                    'officials',
+                ])
+                ->get()
+                ->sortByDesc(fn($p) => $p->edisi?->tahun ?? 0);
+        } else {
+            $tim = Klub::with(['pengprov', 'pengkot'])->findOrFail($id);
+            $namaTim = $tim->nama_klub;
+            $kodeTim = $tim->kode_klub ?? ('KLUB-' . str_pad($tim->id, 5, '0', STR_PAD_LEFT));
+            $asalWilayah = ($tim->pengprov?->nama_pengprov ?? '-') . ($tim->pengkot ? ' / ' . $tim->pengkot->nama_pengkot : '');
+            $isKlub = true;
+
+            $turnamenList = PesertaTim::where('klub_id', $id)
+                ->with([
+                    'edisi.turnamen',
+                    'roster.pemain',
+                    'officials',
+                ])
+                ->get()
+                ->sortByDesc(fn($p) => $p->edisi?->tahun ?? 0);
+        }
+
+        $allPlayerIds = $turnamenList->flatMap(fn($t) => $t->roster->pluck('pemain_id'))->unique();
+        $totalPemainUnik = $allPlayerIds->count();
+
+        $allOfficialNames = $turnamenList->flatMap(fn($t) => $t->officials->pluck('nama_lengkap'))->unique();
+        $totalOfficialUnik = $allOfficialNames->count();
+
+        return view('master.klub_detail', compact(
+            'tim',
+            'namaTim',
+            'kodeTim',
+            'asalWilayah',
+            'isKlub',
+            'tipe',
+            'turnamenList',
+            'totalPemainUnik',
+            'totalOfficialUnik'
+        ));
     }
 
     public function storeKlub(Request $request)
