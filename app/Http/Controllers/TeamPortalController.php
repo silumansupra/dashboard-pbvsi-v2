@@ -7,7 +7,9 @@ use App\Models\Roster;
 use App\Models\OfficialTim;
 use App\Models\Pemain;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Services\AuditLogService;
+use App\Services\BunnyCDNService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -481,15 +483,16 @@ class TeamPortalController extends Controller
     public function akun(Request $request)
     {
         $user = Auth::user();
+        $profile = $user->profile ?: new UserProfile();
         [$teams, $activeTeam] = $this->resolveTeamContext($request);
 
-        return view('tim.akun', compact('user', 'teams', 'activeTeam'));
+        return view('tim.akun', compact('user', 'profile', 'teams', 'activeTeam'));
     }
 
     /**
      * Update Akun Saya & Password
      */
-    public function updateAkun(Request $request)
+    public function updateAkun(Request $request, BunnyCDNService $bunnyService)
     {
         $user = Auth::user();
 
@@ -497,8 +500,25 @@ class TeamPortalController extends Controller
             'name' => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'required|email|unique:core_users,email,' . $user->id,
+            'avatar' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $bunnyService->uploadOptimizedImage(
+                $request->file('avatar'),
+                'uploads/avatars',
+                maxWidth: 800,
+                maxHeight: 800,
+                quality: 85
+            );
+            if ($avatarPath) {
+                if (!empty($user->avatar_path)) {
+                    $bunnyService->delete($user->avatar_path);
+                }
+                $user->avatar_path = $avatarPath;
+            }
+        }
 
         $user->name = $request->name;
         $user->phone = $request->phone;
@@ -506,7 +526,9 @@ class TeamPortalController extends Controller
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
-            $user->raw_password = $request->password;
+            if (array_key_exists('raw_password', $user->getAttributes())) {
+                $user->raw_password = $request->password;
+            }
         }
 
         $user->save();

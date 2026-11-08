@@ -37,9 +37,15 @@
     <!-- INFO KARTU USER -->
     <div class="col-lg-4">
         <div class="card border-0 shadow-sm text-center p-4">
-            <div class="card-body">
-                <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; font-size: 2.2rem; font-weight: bold;">
-                    <i class="fa-solid fa-user-shield"></i>
+            <div class="card-body p-0">
+                <div class="position-relative d-inline-block mb-3">
+                    @if(!empty($user->avatar_path))
+                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="rounded-circle shadow-sm border border-3 border-primary-subtle" style="width: 92px; height: 92px; object-fit: cover;">
+                    @else
+                        <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 92px; height: 92px; font-size: 2.3rem; font-weight: bold;">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                    @endif
                 </div>
                 <h5 class="fw-bold text-dark mb-1">{{ $user->name }}</h5>
                 <span class="badge bg-primary px-3 py-1 mb-2">
@@ -47,10 +53,62 @@
                 </span>
                 <div class="text-muted small">Username: <code>{{ $user->username }}</code></div>
                 <div class="text-muted small">Email: {{ $user->email }}</div>
+
+                <!-- STATUS VERIFIKASI AKUN & KYC -->
                 <hr class="my-3">
-                <div class="small text-muted text-start">
-                    <div><i class="fa-solid fa-check text-success me-2"></i>Status: <strong>Aktif</strong></div>
-                    <div><i class="fa-solid fa-calendar me-2 text-info"></i>Terdaftar: {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}</div>
+                <div class="text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small text-muted fw-semibold">Status Akun:</span>
+                        @php
+                            $status = $profile?->verification_status ?? 'UNVERIFIED';
+                        @endphp
+                        @if($status === 'VERIFIED')
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                <i class="fa-solid fa-circle-check me-1"></i> Terverifikasi
+                            </span>
+                        @elseif($status === 'PENDING')
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
+                                <i class="fa-solid fa-clock me-1"></i> Menunggu Verifikasi
+                            </span>
+                        @elseif($status === 'REJECTED')
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Perlu Perbaikan
+                            </span>
+                        @else
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                <i class="fa-solid fa-circle-question me-1"></i> Belum Lengkap
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2 small">
+                        <span class="text-muted">NIK KTP:</span>
+                        <span class="fw-bold text-dark">
+                            {{ $profile?->nik ? substr($profile->nik, 0, 6) . '******' . substr($profile->nik, -4) : 'Belum Terisi' }}
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2 small">
+                        <span class="text-muted">Berkas KTP:</span>
+                        @if(!empty($profile?->ktp_path))
+                            <span class="text-success fw-semibold"><i class="fa-solid fa-check me-1"></i> Terunggah</span>
+                        @else
+                            <span class="text-danger fw-semibold"><i class="fa-solid fa-xmark me-1"></i> Belum Diunggah</span>
+                        @endif
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 small">
+                        <span class="text-muted">Selfie KTP:</span>
+                        @if(!empty($profile?->selfie_ktp_path))
+                            <span class="text-success fw-semibold"><i class="fa-solid fa-check me-1"></i> Terunggah</span>
+                        @else
+                            <span class="text-danger fw-semibold"><i class="fa-solid fa-xmark me-1"></i> Belum Diunggah</span>
+                        @endif
+                    </div>
+
+                    <a href="{{ route('profil.lengkapi') }}" class="btn btn-sm btn-outline-primary w-100 fw-semibold">
+                        <i class="fa-solid fa-id-card me-1"></i> Kelola Berkas Identitas (KYC)
+                    </a>
                 </div>
             </div>
         </div>
@@ -65,7 +123,7 @@
                 </h5>
             </div>
             <div class="card-body p-4">
-                <form action="{{ route('akun.saya.update') }}" method="POST">
+                <form action="{{ route('akun.saya.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -91,9 +149,14 @@
                             <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label class="form-label fw-semibold">Nomor WhatsApp / HP Aktif</label>
                             <input type="text" name="phone" class="form-control" placeholder="Contoh: 08123456789" value="{{ old('phone', $user->phone) }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Ganti Foto Profil (Opsional)</label>
+                            <input type="file" name="avatar" class="form-control" accept="image/jpeg,image/png,image/webp">
                         </div>
                     </div>
 

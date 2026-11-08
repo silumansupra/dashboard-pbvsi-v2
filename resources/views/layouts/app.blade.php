@@ -647,11 +647,22 @@
                         @if($authUser)
                             <li class="nav-item dropdown">
                                 <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
-                                    <i class="align-middle" data-feather="settings"></i>
+                                    @if($authUser && !empty($authUser->avatar_path))
+                                        <img src="{{ $authUser->avatar_url }}" alt="{{ $userName }}" class="avatar img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                                    @else
+                                        <i class="align-middle" data-feather="settings"></i>
+                                    @endif
                                 </a>
 
-                                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                                    <span class="badge {{ $isAdminTim ? 'bg-warning text-dark' : ($isSuperadmin ? 'bg-primary' : 'bg-info text-dark') }} me-2">{{ $userRole }}</span>
+                                <a class="nav-link dropdown-toggle d-none d-sm-inline-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                                    @if($authUser && !empty($authUser->avatar_path))
+                                        <img src="{{ $authUser->avatar_url }}" alt="{{ $userName }}" class="avatar img-fluid rounded-circle border shadow-xs" style="width: 32px; height: 32px; object-fit: cover;">
+                                    @else
+                                        <div class="avatar-sm bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                            {{ strtoupper(substr($userName, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                    <span class="badge {{ $isAdminTim ? 'bg-warning text-dark' : ($isSuperadmin ? 'bg-primary' : 'bg-info text-dark') }}">{{ $userRole }}</span>
                                     <span class="text-dark fw-bold">{{ $userName }}</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end shadow border-0">

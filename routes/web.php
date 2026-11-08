@@ -9,6 +9,7 @@ use App\Http\Controllers\PersonelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TeamPortalController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\ProfileCompletionController;
 
 // Auth Routes (Login, Logout, & Lupa/Reset Password)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -23,6 +24,12 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 // Verifikasi & Aktivasi Akun (Registrasi Anggota / Wasit)
 Route::get('/verifikasi-akun', [AuthController::class, 'verifikasiAkun'])->name('verifikasi.akun');
+
+// Pelengkapan Profil Wajib Pengguna (Auth)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/lengkapi-profil', [ProfileCompletionController::class, 'showForm'])->name('profil.lengkapi');
+    Route::post('/lengkapi-profil', [ProfileCompletionController::class, 'store'])->name('profil.lengkapi.store');
+});
 
 // Dashboard Utama Terproteksi Auth
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware(['auth']);

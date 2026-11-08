@@ -28,6 +28,7 @@ class User extends Authenticatable
         'raw_password',
         'is_active',
         'avatar_path',
+        'is_profile_completed',
     ];
 
     protected $hidden = [
@@ -41,6 +42,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_profile_completed' => 'boolean',
         ];
     }
 
@@ -73,6 +75,30 @@ class User extends Authenticatable
     public function hasRole(string $roleName): bool
     {
         return $this->roles->contains('name', $roleName);
+    }
+
+    public function isProfileComplete(): bool
+    {
+        if ($this->is_profile_completed) {
+            return true;
+        }
+
+        // Pengecekan riil pada data akun & profil
+        $hasAvatar = !empty($this->avatar_path);
+        $hasName = !empty($this->name);
+        $hasEmail = !empty($this->email);
+        $hasPhone = !empty($this->phone);
+
+        $profile = $this->profile;
+        $hasKtp = $profile && !empty($profile->nik) && !empty($profile->ktp_path) && !empty($profile->selfie_ktp_path);
+        $hasAgreedTerms = $profile && !empty($profile->terms_agreed_at);
+
+        if ($hasAvatar && $hasName && $hasEmail && $hasPhone && $hasKtp && $hasAgreedTerms) {
+            $this->forceFill(['is_profile_completed' => true])->saveQuietly();
+            return true;
+        }
+
+        return false;
     }
 
     public function teams()

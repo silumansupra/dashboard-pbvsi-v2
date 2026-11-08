@@ -86,6 +86,135 @@ class BunnyCDNService
     }
 
     /**
+     * Upload dan kompres gambar secara optimal (Resize proporsional + WebP compression) ke BunnyCDN.
+     * Mengurangi ukuran file dari 5-10MB menjadi ~150-300KB dengan kualitas visual tetap tajam.
+     *
+     * @param UploadedFile|string $file
+     * @param string $remoteDir e.g. 'uploads/kyc' atau 'uploads/avatars'
+     * @param int $maxWidth
+     * @param int $maxHeight
+     * @param int $quality (1-100)
+     * @return string|null Path relatif di BunnyCDN atau null jika gagal
+     */
+    public function uploadOptimizedImage(
+        $file,
+        string $remoteDir = 'uploads/kyc',
+        int $maxWidth = 1600,
+        int $maxHeight = 1600,
+        int $quality = 82
+    ): ?string {
+        $realPath = null;
+        if ($file instanceof UploadedFile) {
+            $realPath = $file->getRealPath();
+        } elseif (is_string($file) && file_exists($file)) {
+            $realPath = $file;
+        }
+
+        if (!$realPath || !file_exists($realPath)) {
+            Log::error("BunnyCDN uploadOptimizedImage failed: invalid source file.");
+            return null;
+        }
+
+        // Jika ekstensi GD tidak aktif, fallback langsung ke upload biasa
+        if (!extension_loaded('gd')) {
+            return $this->upload($file, $remoteDir);
+        }
+
+        $imageInfo = @getimagesize($realPath);
+        if (!$imageInfo) {
+            return $this->upload($file, $remoteDir);
+        }
+
+        [$origW, $origH, $imageType] = $imageInfo;
+
+        $sourceImage = match ($imageType) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($realPath),
+            IMAGETYPE_PNG  => @imagecreatefrompng($realPath),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($realPath) : null,
+            default => null,
+        };
+
+        if (!$sourceImage) {
+            return $this->upload($file, $remoteDir);
+        }
+
+        // Perbaiki orientasi EXIF untuk foto kamera smartphone
+        if ($imageType === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+            try {
+                $exif = @exif_read_data($realPath);
+                if (!empty($exif['Orientation'])) {
+                    $sourceImage = match ((int) $exif['Orientation']) {
+                        3 => imagerotate($sourceImage, 180, 0),
+                        6 => imagerotate($sourceImage, -90, 0),
+                        8 => imagerotate($sourceImage, 90, 0),
+                        default => $sourceImage,
+                    };
+                    $origW = imagesx($sourceImage);
+                    $origH = imagesy($sourceImage);
+                }
+            } catch (\Throwable $e) {
+                // Abaikan kesalahan pembacaan EXIF jika metadata rusak
+            }
+        }
+
+        // Hitung skala proporsional gambar
+        $targetW = $origW;
+        $targetH = $origH;
+        if ($origW > $maxWidth || $origH > $maxHeight) {
+            $scale = min($maxWidth / $origW, $maxHeight / $origH);
+            $targetW = (int) max(1, round($origW * $scale));
+            $targetH = (int) max(1, round($origH * $scale));
+        }
+
+        $destImage = imagecreatetruecolor($targetW, $targetH);
+
+        // Pertahankan transparansi alpha channel
+        imagealphablending($destImage, false);
+        imagesavealpha($destImage, true);
+        $transparent = imagecolorallocatealpha($destImage, 0, 0, 0, 127);
+        imagefilledrectangle($destImage, 0, 0, $targetW, $targetH, $transparent);
+
+        imagecopyresampled($destImage, $sourceImage, 0, 0, 0, 0, $targetW, $targetH, $origW, $origH);
+
+        // Simpan file terkompresi sementara di direktori temp lokal
+        $tempDir = storage_path('app/temp');
+        if (!is_dir($tempDir)) {
+            @mkdir($tempDir, 0755, true);
+        }
+
+        $randomHash = Str::random(32);
+        $tempFile = $tempDir . '/' . $randomHash . '.webp';
+        $customFilename = $randomHash . '.webp';
+
+        $saved = false;
+        if (function_exists('imagewebp')) {
+            $saved = @imagewebp($destImage, $tempFile, $quality);
+        }
+
+        if (!$saved) {
+            // Fallback ke JPEG jika format WebP bermasalah
+            $tempFile = $tempDir . '/' . $randomHash . '.jpg';
+            $customFilename = $randomHash . '.jpg';
+            $saved = @imagejpeg($destImage, $tempFile, $quality);
+        }
+
+        imagedestroy($sourceImage);
+        imagedestroy($destImage);
+
+        if (!$saved || !file_exists($tempFile)) {
+            return $this->upload($file, $remoteDir);
+        }
+
+        // Upload file hasil optimasi ke BunnyCDN
+        $remotePath = $this->upload($tempFile, $remoteDir, $customFilename);
+
+        // Hapus file sementara
+        @unlink($tempFile);
+
+        return $remotePath;
+    }
+
+    /**
      * Delete a file from BunnyCDN Storage.
      *
      * @param string $remotePath

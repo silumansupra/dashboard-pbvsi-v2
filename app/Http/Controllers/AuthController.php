@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Services\AuditLogService;
+use App\Services\BunnyCDNService;
 use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
@@ -365,15 +367,16 @@ class AuthController extends Controller
     public function profilSaya(Request $request)
     {
         $user = Auth::user();
+        $profile = $user->profile ?: new UserProfile();
         $role = $user->roles->first();
 
-        return view('auth.profil_saya', compact('user', 'role'));
+        return view('auth.profil_saya', compact('user', 'profile', 'role'));
     }
 
     /**
      * Update Profil Akun Pengguna Terdaftar
      */
-    public function updateProfilSaya(Request $request)
+    public function updateProfilSaya(Request $request, BunnyCDNService $bunnyService)
     {
         $user = Auth::user();
 
@@ -381,8 +384,25 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'required|email|unique:core_users,email,' . $user->id,
+            'avatar' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $bunnyService->uploadOptimizedImage(
+                $request->file('avatar'),
+                'uploads/avatars',
+                maxWidth: 800,
+                maxHeight: 800,
+                quality: 85
+            );
+            if ($avatarPath) {
+                if (!empty($user->avatar_path)) {
+                    $bunnyService->delete($user->avatar_path);
+                }
+                $user->avatar_path = $avatarPath;
+            }
+        }
 
         $oldValues = [
             'name' => $user->name,
