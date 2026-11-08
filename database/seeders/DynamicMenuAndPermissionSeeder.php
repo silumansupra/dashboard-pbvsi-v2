@@ -50,6 +50,16 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                 'display_name' => 'Audit Log Sistem PBVSI',
                 'description' => 'Melihat rekaman jejak audit aktivitas pengguna dan keamanan sistem.',
             ],
+            [
+                'name' => 'sertifikat.view',
+                'display_name' => 'Akses Sertifikat & Lisensi PBVSI',
+                'description' => 'Akses sertifikat lisensi kepelatihan, perwasitan, dan sertifikasi resmi PBVSI (dalam persiapan).',
+            ],
+            [
+                'name' => 'tim.manage',
+                'display_name' => 'Manajemen Data Tim & Roster O-2',
+                'description' => 'Akses pendaftaran pemain, official, profil tim, dan berkas roster O-2 kontingen.',
+            ],
         ];
 
         foreach ($permissions as $perm) {
@@ -71,6 +81,42 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                 'permission_id' => $kycPerm->id,
                 'role_id' => $verifikatorRole->id,
             ]);
+        }
+
+        // Assign sertifikat.view to wasit and pelatih roles
+        $certPerm = Permission::where('name', 'sertifikat.view')->first();
+        if ($certPerm) {
+            foreach (['wasit', 'pelatih'] as $roleName) {
+                $targetRole = Role::where('name', $roleName)->first();
+                if ($targetRole) {
+                    DB::table('core_role_has_permissions')->updateOrInsert([
+                        'permission_id' => $certPerm->id,
+                        'role_id' => $targetRole->id,
+                    ]);
+                }
+            }
+        }
+
+        // Assign tim.manage to admin_tim role
+        $timPerm = Permission::where('name', 'tim.manage')->first();
+        $adminTimRole = Role::where('name', 'admin_tim')->first();
+        if ($timPerm && $adminTimRole) {
+            DB::table('core_role_has_permissions')->updateOrInsert([
+                'permission_id' => $timPerm->id,
+                'role_id' => $adminTimRole->id,
+            ]);
+        }
+
+        // Assign all permissions to superadmin role
+        $superadminRole = Role::where('name', 'superadmin')->first();
+        if ($superadminRole) {
+            $allPerms = Permission::all();
+            foreach ($allPerms as $p) {
+                DB::table('core_role_has_permissions')->updateOrInsert([
+                    'permission_id' => $p->id,
+                    'role_id' => $superadminRole->id,
+                ]);
+            }
         }
 
         // 2. Seed Default Core Menus
@@ -104,7 +150,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                 'route_name' => null,
                 'url' => '#!',
                 'icon' => 'fa-solid fa-volleyball',
-                'permission_key' => null,
+                'permission_key' => 'kejuaraan.manage',
                 'order' => 3,
                 'is_active' => true,
                 'children' => [
@@ -113,7 +159,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/kejurnas-u16',
                         'icon' => 'fa-solid fa-circle-dot text-info',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 1,
                         'is_active' => true,
                     ],
@@ -122,7 +168,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/kejurnas-u17',
                         'icon' => 'fa-solid fa-circle-dot text-success',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 2,
                         'is_active' => true,
                     ],
@@ -131,7 +177,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/kejurnas-u18',
                         'icon' => 'fa-solid fa-circle-dot text-warning',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 3,
                         'is_active' => true,
                     ],
@@ -140,7 +186,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/kejurnas-u19',
                         'icon' => 'fa-solid fa-circle-dot text-danger',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 4,
                         'is_active' => true,
                     ],
@@ -151,7 +197,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                 'route_name' => null,
                 'url' => '#!',
                 'icon' => 'fa-solid fa-trophy',
-                'permission_key' => null,
+                'permission_key' => 'kejuaraan.manage',
                 'order' => 4,
                 'is_active' => true,
                 'children' => [
@@ -160,7 +206,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/livoli-divisi-utama',
                         'icon' => 'fa-solid fa-trophy text-warning',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 1,
                         'is_active' => true,
                     ],
@@ -169,7 +215,7 @@ class DynamicMenuAndPermissionSeeder extends Seeder
                         'route_name' => null,
                         'url' => '/kejuaraan/livoli-divisi-1',
                         'icon' => 'fa-solid fa-medal text-primary',
-                        'permission_key' => null,
+                        'permission_key' => 'kejuaraan.manage',
                         'order' => 2,
                         'is_active' => true,
                     ],

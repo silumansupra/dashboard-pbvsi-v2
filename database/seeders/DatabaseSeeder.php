@@ -13,9 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolesAndPermissionsSeeder::class,
+            DynamicMenuAndPermissionSeeder::class,
             MasterWilayahSeeder::class,
             MasterTurnamenSeeder::class,
             MasterJabatanAndPosisiSeeder::class,
+            UserAccountsSeeder::class,
         ]);
     }
 }
