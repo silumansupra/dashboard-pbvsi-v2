@@ -15,6 +15,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ['name' => 'admin_pengprov', 'guard_name' => 'web', 'display_name' => 'Pengurus Provinsi PBVSI', 'description' => 'Akses verifikasi klub, pemain, dan rekomendasi daerah'],
             ['name' => 'admin_pengkot', 'guard_name' => 'web', 'display_name' => 'Pengurus Kota/Kabupaten PBVSI', 'description' => 'Akses administrasi tingkat kota/kabupaten'],
             ['name' => 'admin_klub', 'guard_name' => 'web', 'display_name' => 'Manajemen Tim / Klub Voli', 'description' => 'Akses registrasi roster dan dokumen tim'],
+            ['name' => 'admin_tim', 'guard_name' => 'web', 'display_name' => 'Administrator Tim / Kontingen', 'description' => 'Akses pendaftaran tim, berkas atlet, official, dan susunan roster O-2 Kejurnas'],
             ['name' => 'pemain', 'guard_name' => 'web', 'display_name' => 'Pemain Bola Voli', 'description' => 'Akses atlet PBVSI'],
             ['name' => 'official', 'guard_name' => 'web', 'display_name' => 'Official Tim', 'description' => 'Manajer, pelatih fisik, medis, dsb.'],
             ['name' => 'wasit', 'guard_name' => 'web', 'display_name' => 'Wasit Resmi PBVSI', 'description' => 'Akses profil perwasitan, penugasan, dan sertifikat'],
