@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Dokumen Resmi Legalitas, Regulasi & Kebijakan Platform Persatuan Bola Voli Seluruh Indonesia">
+    <meta name="description" content="Dokumen Resmi Legalitas, Regulasi & Kebijakan Platform Persatuan Bolavoli Seluruh Indonesia">
     <meta name="author" content="PP PBVSI">
     <title>@yield('title', 'Legalitas & Regulasi') - Platform PBVSI</title>
 
@@ -158,7 +158,7 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <a href="{{ auth()->check() ? route('dashboard.index') : route('login') }}" class="legal-brand">
-                        <img src="{{ asset('assets/images/logo_pbvsi_64px.png') }}" 
+                        <img src="{{ asset('assets/images/logo_pbvsi_64px.png') }}"
                              alt="Logo PBVSI"
                              onerror="this.onerror=null; this.src='{{ asset('assets/images/logo_pbvsi.png') }}';">
                         <div class="d-flex flex-column">
@@ -207,10 +207,10 @@
             <div class="row align-items-center gy-3">
                 <div class="col-md-6 text-center text-md-start">
                     <p class="mb-1 fw-semibold text-dark small">
-                        Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (PP PBVSI)
+                        Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (PP PBVSI)
                     </p>
                     <p class="mb-0 text-muted small">
-                        &copy; {{ date('Y') }} Platform Terpadu Bola Voli Indonesia. Hak Cipta Dilindungi Undang-Undang.
+                        &copy; {{ date('Y') }} Platform Terpadu Bolavoli Indonesia. Hak Cipta Dilindungi Undang-Undang.
                     </p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">

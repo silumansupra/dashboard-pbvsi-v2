@@ -66,8 +66,8 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Kategori Perwasitan <span class="text-danger">*</span></label>
                             <select name="kategori_wasit" class="form-select @error('kategori_wasit') is-invalid @enderror" required>
-                                <option value="INDOOR" {{ old('kategori_wasit', $wasit->kategori_wasit) === 'INDOOR' ? 'selected' : '' }}>Bola Voli Indoor</option>
-                                <option value="VOLI_PANTAI" {{ old('kategori_wasit', $wasit->kategori_wasit) === 'VOLI_PANTAI' ? 'selected' : '' }}>Bola Voli Pantai</option>
+                                <option value="INDOOR" {{ old('kategori_wasit', $wasit->kategori_wasit) === 'INDOOR' ? 'selected' : '' }}>Bolavoli Indoor</option>
+                                <option value="VOLI_PANTAI" {{ old('kategori_wasit', $wasit->kategori_wasit) === 'VOLI_PANTAI' ? 'selected' : '' }}>Bolavoli Pantai</option>
                             </select>
                             @error('kategori_wasit')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

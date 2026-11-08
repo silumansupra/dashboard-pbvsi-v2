@@ -109,9 +109,9 @@
     <div class="d-flex align-items-center gap-4 text-center justify-content-center">
         <img src="{{ asset('assets/images/logo_pbvsi_64px.png') }}" alt="PBVSI" class="header-logo">
         <div class="title-kop text-center">
-            <h2>PENGURUS PUSAT PERSATUAN BOLA VOLI SELURUH INDONESIA</h2>
+            <h2>PENGURUS PUSAT PERSATUAN BOLAVOLI SELURUH INDONESIA</h2>
             <h3>FORMULIR PENDAFTARAN SKUAD TIM & ROSTER (FORM O-2)</h3>
-            <p>{{ $activeTeam->edisi?->turnamen?->nama_turnamen ?? 'KEJUARAAN NASIONAL BOLA VOLI' }} {{ $activeTeam->edisi?->tahun_edisi ? 'TAHUN ' . $activeTeam->edisi->tahun_edisi : '' }}</p>
+            <p>{{ $activeTeam->edisi?->turnamen?->nama_turnamen ?? 'KEJUARAAN NASIONAL Bolavoli' }} {{ $activeTeam->edisi?->tahun_edisi ? 'TAHUN ' . $activeTeam->edisi->tahun_edisi : '' }}</p>
         </div>
     </div>
     <div class="divider-thick"></div>

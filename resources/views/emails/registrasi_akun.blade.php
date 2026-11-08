@@ -139,7 +139,7 @@
         <div class="header">
             <div style="font-size: 28px; line-height: 1;">🏐</div>
             <h1>PLATFORM PBVSI</h1>
-            <p>Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia</p>
+            <p>Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia</p>
         </div>
 
         <!-- CONTENT -->
@@ -215,10 +215,10 @@
         <!-- FOOTER -->
         <div class="footer">
             <p style="margin: 0 0 6px 0;">
-                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (PP PBVSI).
+                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (PP PBVSI).
             </p>
             <p style="margin: 0;">
-                Email verifikasi pendaftaran akun resmi sistem administrasi bola voli nasional.
+                Email verifikasi pendaftaran akun resmi sistem administrasi Bolavoli nasional.
             </p>
         </div>
     </div>

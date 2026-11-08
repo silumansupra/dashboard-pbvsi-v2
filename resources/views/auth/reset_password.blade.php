@@ -155,8 +155,8 @@
             <!-- BRAND HEADER -->
             <div class="text-center">
                 <div class="brand-badge">
-                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}" 
-                         alt="Logo PBVSI" 
+                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}"
+                         alt="Logo PBVSI"
                          onerror="this.onerror=null; this.src='{{ asset('assets/images/logo_pbvsi_64px.png') }}';">
                 </div>
                 <h1 class="brand-title">Atur Ulang Kata Sandi</h1>
@@ -190,8 +190,8 @@
                         <span class="input-group-text">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" id="newPassword" name="password" 
-                               class="form-control @error('password') is-invalid @enderror" 
+                        <input type="password" id="newPassword" name="password"
+                               class="form-control @error('password') is-invalid @enderror"
                                placeholder="Minimal 6 karakter" required autofocus autocomplete="new-password">
                         <button class="btn-toggle" type="button" id="btnToggleNewPassword" aria-label="Tampilkan password">
                             <i class="fa-solid fa-eye" id="toggleIcon1"></i>
@@ -205,8 +205,8 @@
                         <span class="input-group-text">
                             <i class="fa-solid fa-shield-check"></i>
                         </span>
-                        <input type="password" id="confirmPassword" name="password_confirmation" 
-                               class="form-control" 
+                        <input type="password" id="confirmPassword" name="password_confirmation"
+                               class="form-control"
                                placeholder="Ulangi kata sandi baru" required autocomplete="new-password">
                         <button class="btn-toggle" type="button" id="btnToggleConfirmPassword" aria-label="Tampilkan konfirmasi password">
                             <i class="fa-solid fa-eye" id="toggleIcon2"></i>
@@ -235,7 +235,7 @@
                 <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">Syarat & Ketentuan</a>
             </div>
             <p class="footer-text mb-0">
-                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia
+                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia
             </p>
         </div>
     </div>

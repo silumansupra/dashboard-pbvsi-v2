@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Posisi Pemain Bola Voli')
+@section('title', 'Master Posisi Pemain Bolavoli')
 
 @section('content')
 <!-- NOTIFIKASI SUKSES / ERROR -->
@@ -112,8 +112,8 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('master.posisi.edit', $pos->encrypted_id) }}" 
-                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                    <a href="{{ route('master.posisi.edit', $pos->encrypted_id) }}"
+                                       class="btn btn-sm btn-outline-secondary me-1"
                                        title="Edit Posisi">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>

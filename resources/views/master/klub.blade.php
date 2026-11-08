@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Tim & Klub Bola Voli')
+@section('title', 'Master Tim & Klub Bolavoli')
 
 @section('content')
 <!-- NOTIFIKASI SUKSES / ERROR -->
@@ -55,12 +55,12 @@
 
 <!-- TOGGLE TIPE: KLUB VS KONTINGEN PENGPROV -->
 <div class="d-flex gap-2 mb-3">
-    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'klub'])) }}" 
+    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'klub'])) }}"
        class="btn btn-sm rounded-pill px-3 py-2 {{ $tipe === 'klub' ? 'btn-primary shadow-sm' : 'btn-outline-secondary bg-white' }}">
-        <i class="fa-solid fa-shield-halved me-1"></i> Klub Bola Voli PBVSI 
+        <i class="fa-solid fa-shield-halved me-1"></i> Klub Bolavoli PBVSI
         <span class="badge {{ $tipe === 'klub' ? 'bg-white text-primary' : 'bg-secondary' }} ms-1">{{ $totalKlubCount }} Klub</span>
     </a>
-    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'pengprov'])) }}" 
+    <a href="{{ route('master.klub', array_merge(request()->except(['page']), ['tipe' => 'pengprov'])) }}"
        class="btn btn-sm rounded-pill px-3 py-2 {{ $tipe === 'pengprov' ? 'btn-primary shadow-sm' : 'btn-outline-secondary bg-white' }}">
         <i class="fa-solid fa-flag me-1"></i> Kontingen Daerah (Pengprov)
         <span class="badge {{ $tipe === 'pengprov' ? 'bg-white text-primary' : 'bg-secondary' }} ms-1">{{ $totalPengprovCount }} Provinsi</span>
@@ -74,7 +74,7 @@
             <div class="card-header bg-white py-3 border-bottom">
                 <form action="{{ route('master.klub') }}" method="GET" class="row g-2 align-items-center">
                     <input type="hidden" name="tipe" value="{{ $tipe }}">
-                    
+
                     <div class="col-md-4">
                         <select name="pengprov_id" class="form-select form-select-sm" onchange="this.form.submit()">
                             <option value="">Semua Pengprov Induk</option>
@@ -178,8 +178,8 @@
                                     <div class="small text-muted"><strong>Sekum:</strong> {{ $p->sekum ?: '-' }}</div>
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('master.klub.detail', ['tipe' => 'pengprov', 'id' => $p->encrypted_id]) }}" 
-                                       class="btn btn-sm btn-primary shadow-sm" 
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'pengprov', 'id' => $p->encrypted_id]) }}"
+                                       class="btn btn-sm btn-primary shadow-sm"
                                        title="Lihat Riwayat Turnamen & Roster Pemain">
                                         <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
                                     </a>
@@ -196,7 +196,7 @@
                         </tbody>
                     </table>
                     @else
-                    <!-- TABEL KLUB BOLA VOLI PBVSI -->
+                    <!-- TABEL KLUB Bolavoli PBVSI -->
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
@@ -265,14 +265,14 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('master.klub.detail', ['tipe' => 'klub', 'id' => $k->encrypted_id]) }}" 
-                                       class="btn btn-sm btn-primary me-1 shadow-sm" 
+                                    <a href="{{ route('master.klub.detail', ['tipe' => 'klub', 'id' => $k->encrypted_id]) }}"
+                                       class="btn btn-sm btn-primary me-1 shadow-sm"
                                        title="Lihat Riwayat Turnamen & Roster">
                                         <i class="fa-solid fa-eye me-1"></i> Riwayat & Roster
                                     </a>
 
-                                    <a href="{{ route('master.klub.edit', $k->encrypted_id) }}" 
-                                       class="btn btn-sm btn-outline-secondary me-1" 
+                                    <a href="{{ route('master.klub.edit', $k->encrypted_id) }}"
+                                       class="btn btn-sm btn-outline-secondary me-1"
                                        title="Edit Data Klub">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>

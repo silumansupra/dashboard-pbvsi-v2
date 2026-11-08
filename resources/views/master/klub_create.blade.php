@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Klub / Tim Bola Voli Baru')
+@section('title', 'Tambah Klub / Tim Bolavoli Baru')
 
 @section('content')
 @if($errors->any())

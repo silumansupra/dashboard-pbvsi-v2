@@ -114,7 +114,7 @@
 
         <div class="text-center mt-3">
             <p class="small text-white-50 mb-0">
-                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia
+                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia
             </p>
         </div>
     </div>

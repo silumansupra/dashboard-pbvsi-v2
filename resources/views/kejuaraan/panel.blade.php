@@ -54,7 +54,7 @@
                         @elseif($turnamen->kategori == 'KAPOLRI_CUP')
                             Piala Kapolri
                         @elseif($turnamen->kategori == 'VOLI_PANTAI')
-                            Bola Voli Pantai
+                            Bolavoli Pantai
                         @else
                             Kompetisi Nasional
                         @endif
@@ -78,7 +78,7 @@
                         <li class="dropdown-header small text-uppercase text-muted">Pilih Edisi Tahun</li>
                         @forelse($edisiList as $item)
                         <li>
-                            <a class="dropdown-item d-flex justify-content-between align-items-center {{ $item->tahun == $tahun ? 'active fw-bold' : '' }}" 
+                            <a class="dropdown-item d-flex justify-content-between align-items-center {{ $item->tahun == $tahun ? 'active fw-bold' : '' }}"
                                href="{{ route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $item->tahun]) }}">
                                 <span>Tahun {{ $item->tahun }}</span>
                                 <span class="badge {{ $item->status_edisi == 'REGISTRASI' ? 'bg-success' : ($item->status_edisi == 'FINISHED' ? 'bg-secondary' : 'bg-warning') }} ms-2" style="font-size: 0.65rem;">
@@ -109,7 +109,7 @@
         <div class="d-flex gap-2 mb-3 overflow-auto pb-1 align-items-center">
             <span class="small text-muted me-1 fw-semibold text-nowrap"><i class="fa-solid fa-clock-rotate-left me-1"></i>Riwayat Edisi:</span>
             @foreach($edisiList as $item)
-                <a href="{{ route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $item->tahun]) }}" 
+                <a href="{{ route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $item->tahun]) }}"
                    class="badge text-decoration-none px-3 py-2 rounded-pill border {{ $item->tahun == $tahun ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-dark border-light-subtle hover-shadow' }}">
                     {{ $item->tahun }}
                     @if($item->status_edisi == 'REGISTRASI' || $item->status_edisi == 'RUNNING')
@@ -148,7 +148,7 @@
                         </div>
                         <h2 class="text-white fw-bold mb-1">{{ $edisi->nama_edisi }}</h2>
                         <p class="mb-0 text-white-50 small">
-                            <i class="fa-solid fa-location-dot me-1"></i> {{ $edisi->kota_tuan_rumah ?? 'Indonesia' }} &bull; 
+                            <i class="fa-solid fa-location-dot me-1"></i> {{ $edisi->kota_tuan_rumah ?? 'Indonesia' }} &bull;
                             <i class="fa-solid fa-building me-1 ms-2"></i> {{ $edisi->venue_utama ?? 'GOR Resmi PBVSI' }} &bull;
                             <i class="fa-solid fa-calendar me-1 ms-2"></i> {{ $edisi->tanggal_mulai ? date('d M Y', strtotime($edisi->tanggal_mulai)) : '-' }} s/d {{ $edisi->tanggal_selesai ? date('d M Y', strtotime($edisi->tanggal_selesai)) : '-' }}
                         </p>

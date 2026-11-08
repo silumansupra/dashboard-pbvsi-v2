@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Wasit Bola Voli PBVSI')
+@section('title', 'Data Wasit Bolavoli PBVSI')
 
 @section('content')
 <!-- NOTIFIKASI -->
@@ -73,7 +73,7 @@
             <div class="card-body p-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="text-muted small fw-semibold">Wasit Bola Voli Indoor</div>
+                        <div class="text-muted small fw-semibold">Wasit Bolavoli Indoor</div>
                         <div class="fs-4 fw-bold text-primary">{{ number_format($stats['indoor']) }}</div>
                     </div>
                     <div class="bg-primary-subtle text-primary p-2 rounded-3">

@@ -79,7 +79,7 @@
                     <span class="text-primary me-1">1.</span> Pendahuluan & Komitmen Organisasi
                 </h4>
                 <p class="text-muted leading-relaxed">
-                    Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (<strong>PP PBVSI</strong>) sebagai otoritas tunggal cabang olahraga bola voli dan bola voli pantai di Indonesia yang berafiliasi dengan Federasi Bola Voli Internasional (<strong>FIVB</strong>), Konfederasi Bola Voli Asia (<strong>AVC</strong>), dan Komite Olahraga Nasional Indonesia (<strong>KONI</strong>), memiliki komitmen tertinggi dalam menjaga kerahasiaan, keutuhan, dan keamanan data pribadi seluruh pihak yang terdaftar di dalam platform sistem informasi terpadu ini.
+                    Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (<strong>PP PBVSI</strong>) sebagai otoritas tunggal cabang olahraga Bolavoli dan Bolavoli pantai di Indonesia yang berafiliasi dengan Federasi Bolavoli Internasional (<strong>FIVB</strong>), Konfederasi Bolavoli Asia (<strong>AVC</strong>), dan Komite Olahraga Nasional Indonesia (<strong>KONI</strong>), memiliki komitmen tertinggi dalam menjaga kerahasiaan, keutuhan, dan keamanan data pribadi seluruh pihak yang terdaftar di dalam platform sistem informasi terpadu ini.
                 </p>
                 <p class="text-muted leading-relaxed">
                     Kebijakan Privasi ini disusun berlandaskan ketentuan <strong>Undang-Undang Republik Indonesia Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)</strong> serta regulasi administrasi olahraga nasional. Dengan menggunakan layanan platform ini, setiap Pengprov, Pengkot/Pengkab, Klub, Atlet, Pelatih, Wasit, dan Official menyatakan memahami dan menyetujui pemrosesan data sebagaimana dijabarkan di bawah ini.
@@ -91,8 +91,8 @@
                 <h4 class="fw-bold text-dark mb-3 border-bottom pb-2">
                     <span class="text-primary me-1">2.</span> Kategori Data Pribadi yang Dikumpulkan
                 </h4>
-                <p class="text-muted">Dalam rangka tata kelola kompetisi bola voli terpadu, sistem memproses beberapa kategori data berikut:</p>
-                
+                <p class="text-muted">Dalam rangka tata kelola kompetisi Bolavoli terpadu, sistem memproses beberapa kategori data berikut:</p>
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded-3 h-100 border">
@@ -252,7 +252,7 @@
                 </p>
                 <div class="card border bg-light">
                     <div class="card-body p-3">
-                        <div class="fw-bold text-dark mb-1">PENGURUS PUSAT PERSATUAN BOLA VOLI SELURUH INDONESIA (PP PBVSI)</div>
+                        <div class="fw-bold text-dark mb-1">PENGURUS PUSAT PERSATUAN Bolavoli SELURUH INDONESIA (PP PBVSI)</div>
                         <div class="small text-muted mb-1"><i class="fa-solid fa-location-dot me-2 text-danger"></i>Kantor Sekretariat: Gedung Graha Pemuda Senayan / Padepokan Voli Jenderal Polisi Kunarto, Sentul, Bogor, Jawa Barat.</div>
                         <div class="small text-muted mb-1"><i class="fa-solid fa-envelope me-2 text-primary"></i>Email Resmi: <a href="mailto:sekretariat@pbvsi.or.id" class="text-primary text-decoration-none">sekretariat@pbvsi.or.id</a></div>
                         <div class="small text-muted"><i class="fa-solid fa-globe me-2 text-success"></i>Website Resmi: <a href="https://pbvsi.or.id" target="_blank" class="text-success text-decoration-none">https://pbvsi.or.id</a></div>

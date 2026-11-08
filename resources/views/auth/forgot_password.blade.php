@@ -145,8 +145,8 @@
             <!-- BRAND HEADER -->
             <div class="text-center">
                 <div class="brand-badge">
-                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}" 
-                         alt="Logo PBVSI" 
+                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}"
+                         alt="Logo PBVSI"
                          onerror="this.onerror=null; this.src='{{ asset('assets/images/logo_pbvsi_64px.png') }}';">
                 </div>
                 <h1 class="brand-title">Lupa Kata Sandi?</h1>
@@ -179,9 +179,9 @@
                         <span class="input-group-text">
                             <i class="fa-solid fa-envelope"></i>
                         </span>
-                        <input type="text" id="identityInput" name="identity" 
-                               class="form-control @error('identity') is-invalid @enderror" 
-                               placeholder="Contoh: silumansupra atau email@domain.com" 
+                        <input type="text" id="identityInput" name="identity"
+                               class="form-control @error('identity') is-invalid @enderror"
+                               placeholder="Contoh: silumansupra atau email@domain.com"
                                value="{{ old('identity') }}" required autofocus autocomplete="username">
                     </div>
                     <div class="form-text small text-muted mt-1">
@@ -210,7 +210,7 @@
                 <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">Syarat & Ketentuan</a>
             </div>
             <p class="footer-text mb-0">
-                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia
+                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia
             </p>
         </div>
     </div>

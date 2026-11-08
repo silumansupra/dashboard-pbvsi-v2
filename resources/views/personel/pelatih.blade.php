@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Pelatih Bola Voli PBVSI')
+@section('title', 'Data Pelatih Bolavoli PBVSI')
 
 @section('content')
 <!-- NOTIFIKASI -->

@@ -6,7 +6,7 @@
 <div class="row mb-3">
     <div class="col-12">
         <h1 class="h3 mb-1"><strong>Dashboard Utama</strong> PBVSI Platform</h1>
-        <p class="text-muted">Pusat kendali master data, verifikasi organisasi, dan seluruh turnamen bola voli nasional.</p>
+        <p class="text-muted">Pusat kendali master data, verifikasi organisasi, dan seluruh turnamen Bolavoli nasional.</p>
     </div>
 </div>
 
@@ -117,7 +117,7 @@
 
     @foreach($kejurnasEdisi as $ed)
     <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100 shadow-sm border-0 border-top border-4 
+        <div class="card h-100 shadow-sm border-0 border-top border-4
             @if($ed->turnamen->kelompok_umur == 'U16') border-info
             @elseif($ed->turnamen->kelompok_umur == 'U17') border-success
             @elseif($ed->turnamen->kelompok_umur == 'U18') border-warning
@@ -125,7 +125,7 @@
             @endif">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="badge 
+                    <span class="badge
                         @if($ed->turnamen->kelompok_umur == 'U16') bg-info
                         @elseif($ed->turnamen->kelompok_umur == 'U17') bg-success
                         @elseif($ed->turnamen->kelompok_umur == 'U18') bg-warning text-dark
@@ -140,8 +140,8 @@
                 <h5 class="card-title fw-bold">{{ $ed->nama_edisi }}</h5>
                 <p class="card-text text-muted small mb-3">
                     <i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ $ed->kota_tuan_rumah ?? 'Lokasi Terpusat' }}<br>
-                    <i class="fa-solid fa-calendar me-1 text-primary"></i> 
-                    {{ $ed->tanggal_mulai ? date('d M Y', strtotime($ed->tanggal_mulai)) : 'Jadwal Reguler' }} 
+                    <i class="fa-solid fa-calendar me-1 text-primary"></i>
+                    {{ $ed->tanggal_mulai ? date('d M Y', strtotime($ed->tanggal_mulai)) : 'Jadwal Reguler' }}
                     @if($ed->tanggal_selesai) s/d {{ date('d M Y', strtotime($ed->tanggal_selesai)) }} @endif
                 </p>
 
@@ -179,14 +179,14 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Liga Bola Voli Indonesia (Livoli) Divisi Utama</strong></td>
+                                <td><strong>Liga Bolavoli Indonesia (Livoli) Divisi Utama</strong></td>
                                 <td><span class="badge bg-secondary">Senior Indoor</span></td>
                                 <td>2026</td>
                                 <td><span class="badge bg-primary">Persiapan</span></td>
                                 <td class="text-end"><button class="btn btn-sm btn-outline-primary" disabled>Panel Livoli</button></td>
                             </tr>
                             <tr>
-                                <td><strong>Sirkuit Nasional Bola Voli Pantai</strong></td>
+                                <td><strong>Sirkuit Nasional Bolavoli Pantai</strong></td>
                                 <td><span class="badge bg-info">Pantai / Pasir</span></td>
                                 <td>2026</td>
                                 <td><span class="badge bg-primary">Persiapan</span></td>

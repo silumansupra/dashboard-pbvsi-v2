@@ -56,7 +56,7 @@
                 <div class="d-flex flex-wrap align-items-center gap-3 text-white-50 small">
                     <div><i class="fa-solid fa-fingerprint text-info me-1"></i> ID PBVSI: <strong>{{ $user->username }}</strong></div>
                     <div><i class="fa-solid fa-envelope text-warning me-1"></i> {{ $user->email }}</div>
-                    <div><i class="fa-solid fa-building-flag text-success me-1"></i> Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia</div>
+                    <div><i class="fa-solid fa-building-flag text-success me-1"></i> Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia</div>
                 </div>
             </div>
             <div class="col-md-auto text-md-end">
@@ -76,7 +76,7 @@
         </div>
         <h3 class="fw-bold text-dark mb-2">Portal Khusus {{ $role?->display_name ?? 'Anggota' }} Sedang Dalam Pengembangan</h3>
         <p class="text-muted lead fs-6 mb-4">
-            Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (<strong>PP PBVSI</strong>) sedang mempersiapkan portal mandiri khusus untuk <strong>{{ $role?->display_name ?? 'Anggota' }}</strong>. 
+            Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (<strong>PP PBVSI</strong>) sedang mempersiapkan portal mandiri khusus untuk <strong>{{ $role?->display_name ?? 'Anggota' }}</strong>.
             Modul pengelolaan data pusat (Master Data, Pengaturan Wilayah, dan RBAC) saat ini dikunci dan dibatasi khusus untuk Administrator PP PBVSI.
         </p>
 
@@ -194,7 +194,7 @@
                     Jika Anda memiliki pertanyaan mengenai keabsahan data, jadwal penugasan pertandingan, atau kebutuhan administrasi kompetisi resmi, silakan menghubungi narahubung Sekretariat PP PBVSI:
                 </p>
                 <div class="p-3 bg-light rounded-3 small border">
-                    <div class="fw-bold text-dark mb-1">PENGURUS PUSAT PERSATUAN BOLA VOLI SELURUH INDONESIA</div>
+                    <div class="fw-bold text-dark mb-1">PENGURUS PUSAT PERSATUAN Bolavoli SELURUH INDONESIA</div>
                     <div class="text-muted mb-1"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Padepokan Voli Jenderal Polisi Kunarto, Sentul, Bogor, Jawa Barat.</div>
                     <div class="text-muted mb-1"><i class="fa-solid fa-envelope me-1 text-primary"></i> Email: <a href="mailto:sekretariat@pbvsi.or.id" class="text-decoration-none">sekretariat@pbvsi.or.id</a></div>
                     <div class="text-muted"><i class="fa-solid fa-globe me-1 text-success"></i> Website: <a href="https://pbvsi.or.id" target="_blank" class="text-decoration-none">pbvsi.or.id</a></div>

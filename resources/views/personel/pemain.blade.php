@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bank Pemain Bola Voli PBVSI')
+@section('title', 'Bank Pemain Bolavoli PBVSI')
 
 @section('content')
 <!-- NOTIFIKASI -->
@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detail_pengprov').innerText = this.getAttribute('data-pengprov');
             document.getElementById('detail_nik').innerText = this.getAttribute('data-nik') || '-';
             document.getElementById('detail_nisn').innerText = this.getAttribute('data-nisn') || '-';
-            
+
             const status = this.getAttribute('data-status');
             const statusEl = document.getElementById('detail_status');
             statusEl.innerText = status;

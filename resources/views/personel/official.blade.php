@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Official Tim Bola Voli PBVSI')
+@section('title', 'Data Official Tim Bolavoli PBVSI')
 
 @section('content')
 <!-- NOTIFIKASI -->

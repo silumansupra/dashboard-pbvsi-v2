@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Platform Resmi Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (PP PBVSI)">
+    <meta name="description" content="Platform Resmi Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (PP PBVSI)">
     <meta name="author" content="PP PBVSI">
     <title>Masuk ke Akun &bull; Platform PBVSI</title>
 
@@ -163,12 +163,12 @@
             <!-- BRAND HEADER -->
             <div class="text-center">
                 <div class="brand-badge">
-                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}" 
-                         alt="Logo PBVSI" 
+                    <img src="{{ asset('assets/images/logo_pbvsi.png') }}"
+                         alt="Logo PBVSI"
                          onerror="this.onerror=null; this.src='{{ asset('assets/images/logo_pbvsi_64px.png') }}';">
                 </div>
                 <h1 class="brand-title">Platform PBVSI</h1>
-                <p class="brand-subtitle">Sistem Terpadu Bola Voli Seluruh Indonesia</p>
+                <p class="brand-subtitle">Sistem Terpadu Bolavoli Seluruh Indonesia</p>
             </div>
 
             <!-- NOTIFICATIONS -->
@@ -197,9 +197,9 @@
                         <span class="input-group-text">
                             <i class="fa-solid fa-user"></i>
                         </span>
-                        <input type="text" id="loginInput" name="login" 
-                               class="form-control @error('login') is-invalid @enderror" 
-                               placeholder="Username atau alamat email" 
+                        <input type="text" id="loginInput" name="login"
+                               class="form-control @error('login') is-invalid @enderror"
+                               placeholder="Username atau alamat email"
                                value="{{ old('login') }}" required autofocus autocomplete="username">
                     </div>
                 </div>
@@ -210,8 +210,8 @@
                         <span class="input-group-text">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" id="loginPassword" name="password" 
-                               class="form-control @error('password') is-invalid @enderror" 
+                        <input type="password" id="loginPassword" name="password"
+                               class="form-control @error('password') is-invalid @enderror"
                                placeholder="Masukkan kata sandi Anda" required autocomplete="current-password">
                         <button class="btn-toggle" type="button" id="btnTogglePassword" aria-label="Tampilkan atau sembunyikan kata sandi">
                             <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
@@ -246,7 +246,7 @@
                 <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">Syarat & Ketentuan</a>
             </div>
             <p class="footer-text mb-0">
-                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia
+                &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia
             </p>
         </div>
     </div>

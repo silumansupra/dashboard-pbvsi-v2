@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Dashboard Terpadu PBVSI & Kejurnas Bola Voli">
+    <meta name="description" content="Dashboard Terpadu PBVSI & Kejurnas Bolavoli">
     <meta name="author" content="PP PBVSI">
     <title>@yield('title', 'Dashboard Terpadu') - PBVSI</title>
 
@@ -721,7 +721,7 @@
                     <div class="row text-muted align-items-center">
                         <div class="col-md-6 text-start">
                             <p class="mb-0">
-                                <strong>PBVSI Platform</strong> &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia
+                                <strong>PBVSI Platform</strong> &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia
                             </p>
                         </div>
                         <div class="col-md-6 text-end d-flex align-items-center justify-content-end gap-2 flex-wrap mt-2 mt-md-0">

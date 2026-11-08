@@ -40,7 +40,7 @@
                     <h5 class="card-title fw-bold text-dark mb-0">
                         <i class="fa-solid fa-volleyball text-primary me-2"></i> Data Master Posisi Pemain
                     </h5>
-                    <small class="text-muted">Masukkan kode singkatan dan nama resmi posisi bermain bola voli.</small>
+                    <small class="text-muted">Masukkan kode singkatan dan nama resmi posisi bermain Bolavoli.</small>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-3">

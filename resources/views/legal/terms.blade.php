@@ -33,7 +33,7 @@
                 </span>
                 <h2 class="fw-bold text-white mb-2">Syarat & Ketentuan Platform Terpadu PBVSI</h2>
                 <p class="text-white-50 mb-0 lead fs-6">
-                    Ketentuan hukum, integritas pendaftaran atlet, regulasi susunan roster O-2, lisensi kepelatihan, dan sanksi disiplin kompetisi bola voli nasional.
+                    Ketentuan hukum, integritas pendaftaran atlet, regulasi susunan roster O-2, lisensi kepelatihan, dan sanksi disiplin kompetisi Bolavoli nasional.
                 </p>
                 <div class="small text-white-50 mt-3">
                     <i class="fa-regular fa-clock me-1 text-warning"></i> Berlaku Efektif: <strong>1 Januari 2025</strong> &bull; Terakhir Diperbarui: <strong>{{ date('d F Y') }}</strong>
@@ -79,10 +79,10 @@
                     <span class="text-info me-1">Pasal 1.</span> Ketentuan Umum & Ruang Lingkup
                 </h4>
                 <p class="text-muted leading-relaxed">
-                    1. Syarat dan Ketentuan ini mengatur hak, kewajiban, tata tertib, dan sanksi bagi seluruh pengguna Sistem Informasi dan Database Terpadu Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (<strong>PP PBVSI</strong>), yang meliputi Pengurus Provinsi (Pengprov), Pengurus Kota/Kabupaten (Pengkot/Pengkab), Pengurus Klub, Manajer Tim, Administrator Kontingen, Pelatih, Wasit, dan Atlet di seluruh wilayah Negara Kesatuan Republik Indonesia.
+                    1. Syarat dan Ketentuan ini mengatur hak, kewajiban, tata tertib, dan sanksi bagi seluruh pengguna Sistem Informasi dan Database Terpadu Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (<strong>PP PBVSI</strong>), yang meliputi Pengurus Provinsi (Pengprov), Pengurus Kota/Kabupaten (Pengkot/Pengkab), Pengurus Klub, Manajer Tim, Administrator Kontingen, Pelatih, Wasit, dan Atlet di seluruh wilayah Negara Kesatuan Republik Indonesia.
                 </p>
                 <p class="text-muted leading-relaxed">
-                    2. Pendaftaran partisipasi pada setiap kejuaraan resmi yang diselenggarakan atau direkomendasikan oleh PBVSI (seperti Kejuaraan Nasional Kelompok Umur U-16, U-17, U-18, U-19, Livoli Divisi Utama, Livoli Divisi 1, Piala Kapolri, dan Sirkuit Nasional Bola Voli Pantai) wajib dilakukan melalui platform ini dengan tunduk pada Petunjuk Pelaksanaan (Juklak) dan Petunjuk Teknis (Juknis) kejuaraan yang berlaku.
+                    2. Pendaftaran partisipasi pada setiap kejuaraan resmi yang diselenggarakan atau direkomendasikan oleh PBVSI (seperti Kejuaraan Nasional Kelompok Umur U-16, U-17, U-18, U-19, Livoli Divisi Utama, Livoli Divisi 1, Piala Kapolri, dan Sirkuit Nasional Bolavoli Pantai) wajib dilakukan melalui platform ini dengan tunduk pada Petunjuk Pelaksanaan (Juklak) dan Petunjuk Teknis (Juknis) kejuaraan yang berlaku.
                 </p>
             </section>
 
@@ -123,7 +123,7 @@
                 </p>
                 <ol class="text-muted ps-3 small leading-relaxed">
                     <li><strong>Diskualifikasi Tim:</strong> Pembatalan kepesertaan dan/atau pencabutan gelar juara tim kontingen bersangkutan serta penyerahan medali/trofi kepada tim urutan berikutnya.</li>
-                    <li><strong>Skorsing Atlet:</strong> Larangan berpartisipasi dalam seluruh kegiatan bola voli resmi nasional selama minimal 2 (dua) tahun hingga seumur hidup.</li>
+                    <li><strong>Skorsing Atlet:</strong> Larangan berpartisipasi dalam seluruh kegiatan Bolavoli resmi nasional selama minimal 2 (dua) tahun hingga seumur hidup.</li>
                     <li><strong>Sanksi Manajer & Pelatih:</strong> Pencabutan lisensi kepelatihan dan larangan mendampingi tim bagi pelatih dan manajer yang terbukti mengetahui atau merekayasa dokumen.</li>
                     <li><strong>Tindakan Pidana:</strong> PP PBVSI berhak melimpahkan bukti-bukti pemalsuan kepada Kepolisian Negara Republik Indonesia untuk proses hukum pidana.</li>
                 </ol>
@@ -232,7 +232,7 @@
                     2. PP PBVSI berhak memperbarui atau merevisi ketentuan ini sewaktu-waktu sesuai perkembangan regulasi keolahragaan nasional dan internasional. Setiap perubahan akan diumumkan secara transparan melalui portal resmi ini.
                 </p>
                 <div class="mt-4 pt-3 border-top text-center text-muted small">
-                    Ditetapkan di Jakarta &bull; Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia (PP PBVSI)
+                    Ditetapkan di Jakarta &bull; Pengurus Pusat Persatuan Bolavoli Seluruh Indonesia (PP PBVSI)
                 </div>
             </section>
         </div>
