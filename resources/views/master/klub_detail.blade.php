@@ -268,7 +268,7 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
                                                 @if($roster->pemain?->foto_url)
-                                                    <img src="{{ $roster->pemain->foto_url }}" alt="{{ $roster->pemain->nama_lengkap }}" class="rounded-circle object-fit-cover border" style="width: 32px; height: 32px; min-width: 32px;">
+                                                    <img src="{{ $roster->pemain->foto_url }}" alt="{{ $roster->pemain->nama_lengkap }}" class="rounded-circle object-fit-cover border" style="width: 32px; height: 32px; min-width: 32px;" onerror="this.onerror=null; this.src='{{ asset('images/no-user.svg') }}';">
                                                 @else
                                                     <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-muted" style="width: 32px; height: 32px; min-width: 32px; font-size: 0.8rem;">
                                                         <i class="fa-solid fa-user"></i>

@@ -74,4 +74,11 @@ class User extends Authenticatable
     {
         return $this->roles->contains('name', $roleName);
     }
+
+    public function teams()
+    {
+        return $this->belongsToMany(PesertaTim::class, 'trn_user_tim', 'user_id', 'peserta_tim_id')
+            ->withPivot('role_tim', 'status_aktif')
+            ->withTimestamps();
+    }
 }

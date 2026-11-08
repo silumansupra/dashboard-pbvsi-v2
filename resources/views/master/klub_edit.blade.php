@@ -117,7 +117,7 @@
                     <div class="d-flex justify-content-center mb-3">
                         <div class="border rounded-4 p-2 bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 120px; height: 120px;">
                             @if($klub->logo_url)
-                                <img id="logo_preview" src="{{ $klub->logo_url }}" alt="Logo {{ $klub->nama_klub }}" class="img-fluid object-fit-contain" style="max-height: 104px; max-width: 104px;">
+                                <img id="logo_preview" src="{{ $klub->logo_url }}" alt="Logo {{ $klub->nama_klub }}" class="img-fluid object-fit-contain" style="max-height: 104px; max-width: 104px;" onerror="this.onerror=null; this.src='{{ asset('images/no-logo.svg') }}';">
                                 <i id="logo_placeholder" class="fa-solid fa-shield-halved text-secondary opacity-50 fa-4x d-none"></i>
                             @else
                                 <img id="logo_preview" src="" alt="Preview Logo" class="img-fluid object-fit-contain d-none" style="max-height: 104px; max-width: 104px;">

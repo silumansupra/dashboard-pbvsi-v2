@@ -54,13 +54,20 @@ class PesertaTim extends Model
         return $this->belongsTo(Pengprov::class, 'pengprov_id');
     }
 
+    public function admins()
+    {
+        return $this->belongsToMany(User::class, 'trn_user_tim', 'peserta_tim_id', 'user_id')
+            ->withPivot('role_tim', 'status_aktif')
+            ->withTimestamps();
+    }
+
     public function getLogoUrlAttribute(): ?string
     {
         $path = $this->logo_tim_path ?: ($this->klub ? $this->klub->logo_path : null);
         if (empty($path)) {
-            return null;
+            return asset('images/no-logo.svg');
         }
 
-        return app(\App\Services\BunnyCDNService::class)->getUrl($path);
+        return app(\App\Services\BunnyCDNService::class)->getUrl($path, fallback: asset('images/no-logo.svg'));
     }
 }

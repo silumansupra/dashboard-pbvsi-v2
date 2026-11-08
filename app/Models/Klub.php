@@ -29,10 +29,10 @@ class Klub extends Model
     public function getLogoUrlAttribute(): ?string
     {
         if (empty($this->logo_path)) {
-            return null;
+            return asset('images/no-logo.svg');
         }
 
-        return app(\App\Services\BunnyCDNService::class)->getUrl($this->logo_path);
+        return app(\App\Services\BunnyCDNService::class)->getUrl($this->logo_path, fallback: asset('images/no-logo.svg'));
     }
 
     public function pengprov()

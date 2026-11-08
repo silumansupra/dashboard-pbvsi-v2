@@ -145,6 +145,14 @@
                                 <td>
                                     <div><code class="text-primary">{{ $u->username }}</code></div>
                                     <small class="text-muted"><i class="fa-regular fa-envelope me-1"></i>{{ $u->email }}</small>
+                                    @if($u->hasRole('admin_tim') && $u->teams->count() > 0)
+                                    <div class="mt-1">
+                                        <a href="{{ route('master.admin_tim', ['search' => $u->username]) }}" class="badge bg-warning-subtle text-dark border text-decoration-none" style="font-size: 0.7rem;" title="Klik untuk lihat di menu Admin Tim">
+                                            <i class="fa-solid fa-shield-halved text-warning me-1"></i>
+                                            {{ $u->teams->pluck('nama_tim')->implode(', ') }}
+                                        </a>
+                                    </div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">

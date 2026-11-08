@@ -1130,10 +1130,80 @@ class MasterController extends Controller
      * 7. MANAJEMEN USER & USER AKSES (RBAC)
      * =========================================================================
      */
+
+    /**
+     * Halaman Khusus Manajemen Administrator Tim / Kontingen
+     */
+    public function adminTim(Request $request)
+    {
+        $query = User::whereHas('roles', function ($q) {
+            $q->where('name', 'admin_tim');
+        })->with(['teams.edisi.turnamen', 'teams.pengprov', 'profile']);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhereHas('teams', function ($tq) use ($search) {
+                      $tq->where('nama_tim', 'like', "%{$search}%")
+                         ->orWhere('kode_tim', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter status tim (sudah mapping / belum)
+        if ($request->filled('has_team')) {
+            if ($request->has_team === '1') {
+                $query->has('teams');
+            } elseif ($request->has_team === '0') {
+                $query->doesntHave('teams');
+            }
+        }
+
+        // Filter gender tim
+        if ($request->filled('gender')) {
+            $gender = $request->gender;
+            $query->whereHas('teams', function ($tq) use ($gender) {
+                $tq->where('kategori_gender', $gender);
+            });
+        }
+
+        // Filter status aktif
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active);
+        }
+
+        $perPage = (int) $request->get('per_page', 15);
+        if (!in_array($perPage, [10, 15, 25, 50, 100])) {
+            $perPage = 15;
+        }
+
+        $adminUsers = $query->latest('id')->paginate($perPage)->withQueryString();
+
+        // Calculate statistics for the top cards
+        $totalAdmin = User::whereHas('roles', fn($q) => $q->where('name', 'admin_tim'))->count();
+        $totalWithTeam = User::whereHas('roles', fn($q) => $q->where('name', 'admin_tim'))->has('teams')->count();
+        $totalManagedTeams = DB::table('trn_user_tim')->count();
+        $totalActive = User::whereHas('roles', fn($q) => $q->where('name', 'admin_tim'))->where('is_active', 1)->count();
+
+        $stats = [
+            'total_admin' => $totalAdmin,
+            'total_with_team' => $totalWithTeam,
+            'total_managed_teams' => $totalManagedTeams,
+            'total_active' => $totalActive,
+        ];
+
+        return view('master.admin_tim', compact('adminUsers', 'stats'));
+    }
+
     public function users(Request $request)
     {
         $roles = Role::orderBy('name')->get();
-        $query = User::with(['roles', 'profile']);
+        $query = User::with(['roles', 'profile', 'teams']);
 
         if ($request->filled('role')) {
             $query->whereHas('roles', function ($q) use ($request) {

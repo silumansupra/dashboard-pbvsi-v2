@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Shield Shape -->
+  <path d="M64 8 L108 26 C108 72 82 108 64 120 C46 108 20 72 20 26 Z" fill="url(#shieldGrad)" stroke="#3b82f6" stroke-width="3"/>
+  <!-- Volleyball Circle -->
+  <circle cx="64" cy="58" r="28" fill="#ffffff" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <!-- Volleyball Seam Lines -->
+  <path d="M64 30 C64 45 52 58 36 58" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M64 30 C64 45 76 58 92 58" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M36 58 C50 66 60 78 64 86" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M92 58 C78 66 68 78 64 86" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M43 40 C56 50 72 50 85 40" fill="none" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M43 76 C56 66 72 66 85 76" fill="none" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Stars / Accent -->
+  <path d="M64 94 L66 99 L71 99 L67 102 L69 107 L64 104 L59 107 L61 102 L57 99 L62 99 Z" fill="url(#goldGrad)"/>
+</svg>

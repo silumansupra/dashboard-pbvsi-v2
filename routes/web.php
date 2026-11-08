@@ -6,9 +6,44 @@ use App\Http\Controllers\KejurnasController;
 use App\Http\Controllers\KejuaraanController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PersonelController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TeamPortalController;
+
+// Auth Routes (Login & Logout)
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Modul Portal Tim & Kontingen (Admin Tim)
+Route::prefix('tim')->name('tim.')->middleware(['auth'])->group(function () {
+    Route::get('/switch/{id}', [TeamPortalController::class, 'switchTeam'])->name('switch');
+    Route::get('/profil', [TeamPortalController::class, 'profil'])->name('profil');
+    Route::post('/profil', [TeamPortalController::class, 'updateProfil'])->name('profil.update');
+    Route::get('/pemain', [TeamPortalController::class, 'pemain'])->name('pemain');
+    Route::post('/pemain', [TeamPortalController::class, 'storePemain'])->name('pemain.store');
+    Route::delete('/pemain/{id}', [TeamPortalController::class, 'destroyPemain'])->name('pemain.destroy');
+    Route::get('/official', [TeamPortalController::class, 'official'])->name('official');
+    Route::post('/official', [TeamPortalController::class, 'storeOfficial'])->name('official.store');
+    Route::delete('/official/{id}', [TeamPortalController::class, 'destroyOfficial'])->name('official.destroy');
+    Route::get('/roster', [TeamPortalController::class, 'roster'])->name('roster');
+    Route::post('/roster', [TeamPortalController::class, 'updateRoster'])->name('roster.update');
+    Route::get('/roster/print-o2', [TeamPortalController::class, 'printO2'])->name('roster.print_o2');
+    Route::get('/akun', [TeamPortalController::class, 'akun'])->name('akun');
+    Route::put('/akun', [TeamPortalController::class, 'updateAkun'])->name('akun.update');
+});
+
+// Halaman Publik Legalitas PBVSI (Kebijakan Privasi & Syarat Ketentuan)
+Route::get('/kebijakan-privasi', function () {
+    return view('legal.privacy');
+})->name('legal.privacy');
+
+Route::get('/syarat-ketentuan', function () {
+    return view('legal.terms');
+})->name('legal.terms');
 
 // Modul Universal Kompetisi & Kejuaraan Nasional PBVSI
 Route::prefix('kejuaraan')->name('kejuaraan.')->group(function () {
@@ -92,6 +127,7 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::delete('/posisi/{id}', [MasterController::class, 'destroyPosisi'])->name('posisi.destroy');
 
     // 7. Master User & RBAC
+    Route::get('/admin-tim', [MasterController::class, 'adminTim'])->name('admin_tim');
     Route::get('/users', [MasterController::class, 'users'])->name('users');
     Route::get('/users/create', [MasterController::class, 'createUser'])->name('users.create');
     Route::post('/users', [MasterController::class, 'storeUser'])->name('users.store');
