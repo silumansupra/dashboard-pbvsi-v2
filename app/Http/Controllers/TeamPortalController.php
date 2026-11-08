@@ -7,6 +7,7 @@ use App\Models\Roster;
 use App\Models\OfficialTim;
 use App\Models\Pemain;
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -59,6 +60,13 @@ class TeamPortalController extends Controller
         session(['active_team_id' => $team->id]);
 
         $genderLabel = $team->kategori_gender == 'PA' ? 'Putra (PA)' : 'Putri (PI)';
+
+        AuditLogService::log(
+            'team.switch',
+            "Pengguna {$user->name} beralih ke pengelolaan tim {$team->nama_tim} ({$genderLabel}).",
+            ['user' => $user, 'metadata' => ['team_id' => $team->id, 'team_name' => $team->nama_tim]]
+        );
+
         return redirect()->back()->with('success', "Berhasil beralih ke tim {$team->nama_tim} - {$genderLabel}.");
     }
 
@@ -118,6 +126,12 @@ class TeamPortalController extends Controller
         }
 
         $activeTeam->save();
+
+        AuditLogService::log(
+            'team.update_profile',
+            "Pengguna {$user->name} memperbarui profil dan identitas jersey tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'team_name' => $activeTeam->nama_tim]]
+        );
 
         return redirect()->back()->with('success', 'Profil dan identitas jersey tim berhasil diperbarui!');
     }
@@ -236,6 +250,12 @@ class TeamPortalController extends Controller
             'status_verifikasi' => 'SUBMITTED',
         ]);
 
+        AuditLogService::log(
+            'team.add_player',
+            "Mendaftarkan pemain {$pemain->nama_lengkap} (No. #{$request->nomor_punggung}) ke tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'pemain_id' => $pemain->id, 'nomor_punggung' => $request->nomor_punggung]]
+        );
+
         return redirect()->back()->with('success', "Pemain {$pemain->nama_lengkap} (No. #{$request->nomor_punggung}) berhasil didaftarkan ke roster!");
     }
 
@@ -244,6 +264,7 @@ class TeamPortalController extends Controller
      */
     public function destroyPemain(Request $request, $id)
     {
+        $user = Auth::user();
         [$teams, $activeTeam] = $this->resolveTeamContext($request);
 
         if (!$activeTeam) {
@@ -253,6 +274,12 @@ class TeamPortalController extends Controller
         $roster = Roster::where('peserta_tim_id', $activeTeam->id)->where('id', $id)->firstOrFail();
         $namaPemain = $roster->pemain ? $roster->pemain->nama_lengkap : 'Pemain';
         $roster->delete();
+
+        AuditLogService::log(
+            'team.remove_player',
+            "Menghapus pemain {$namaPemain} dari roster tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'pemain_name' => $namaPemain]]
+        );
 
         return redirect()->back()->with('success', "Pemain {$namaPemain} telah dihapus dari susunan roster.");
     }
@@ -302,6 +329,12 @@ class TeamPortalController extends Controller
             'status_verifikasi' => 'SUBMITTED',
         ]);
 
+        AuditLogService::log(
+            'team.add_official',
+            "Mendaftarkan official {$request->nama_lengkap} ({$request->jabatan}) ke tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'official_name' => $request->nama_lengkap, 'jabatan' => $request->jabatan]]
+        );
+
         return redirect()->back()->with('success', "Official {$request->nama_lengkap} berhasil ditambahkan!");
     }
 
@@ -310,6 +343,7 @@ class TeamPortalController extends Controller
      */
     public function destroyOfficial(Request $request, $id)
     {
+        $user = Auth::user();
         [$teams, $activeTeam] = $this->resolveTeamContext($request);
 
         if (!$activeTeam) {
@@ -319,6 +353,12 @@ class TeamPortalController extends Controller
         $official = OfficialTim::where('peserta_tim_id', $activeTeam->id)->where('id', $id)->firstOrFail();
         $nama = $official->nama_lengkap;
         $official->delete();
+
+        AuditLogService::log(
+            'team.remove_official',
+            "Menghapus official {$nama} dari kontingen tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'official_name' => $nama]]
+        );
 
         return redirect()->back()->with('success', "Official {$nama} berhasil dihapus dari kontingen.");
     }
@@ -398,6 +438,13 @@ class TeamPortalController extends Controller
                 ]);
         }
 
+        $user = Auth::user();
+        AuditLogService::log(
+            'team.update_roster',
+            "Memperbarui penetapan kapten dan libero pada susunan roster O-2 tim {$activeTeam->nama_tim}.",
+            ['user' => $user, 'metadata' => ['team_id' => $activeTeam->id, 'captain_id' => $captainId, 'libero_ids' => $liberoIds]]
+        );
+
         return redirect()->back()->with('success', 'Penugasan Kapten dan Libero untuk Roster O-2 berhasil disimpan!');
     }
 
@@ -463,6 +510,12 @@ class TeamPortalController extends Controller
         }
 
         $user->save();
+
+        AuditLogService::log(
+            'profile.update',
+            "Admin tim {$user->name} ({$user->username}) memperbarui profil akun / kata sandi.",
+            ['user' => $user]
+        );
 
         return redirect()->back()->with('success', 'Data profil akun Anda berhasil diperbarui!');
     }

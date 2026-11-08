@@ -14,6 +14,7 @@ use App\Models\OfficialTim;
 use App\Models\User;
 use App\Models\Role;
 use App\Services\SecureId;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -1300,6 +1301,12 @@ class MasterController extends Controller
             ]);
         }
 
+        AuditLogService::log(
+            'master.user_create',
+            "Superadmin menambahkan pengguna baru {$user->name} ({$user->username}) ke sistem.",
+            ['user' => auth()->user(), 'metadata' => ['target_user_id' => $user->id, 'username' => $user->username]]
+        );
+
         return redirect()->route('master.users')
             ->with('success', "Pengguna {$user->name} ({$user->username}) berhasil didaftarkan!");
     }
@@ -1353,6 +1360,12 @@ class MasterController extends Controller
             ]);
         }
 
+        AuditLogService::log(
+            'master.user_update',
+            "Superadmin memperbarui profil pengguna {$user->name} ({$user->username}).",
+            ['user' => auth()->user(), 'metadata' => ['target_user_id' => $user->id, 'username' => $user->username]]
+        );
+
         return redirect()->route('master.users')
             ->with('success', "Data pengguna {$user->name} berhasil diperbarui!");
     }
@@ -1371,6 +1384,7 @@ class MasterController extends Controller
 
         $user = User::findOrFail($realId);
         $name = $user->name;
+        $username = $user->username;
 
         DB::table('core_model_has_roles')
             ->where('model_type', 'App\\Models\\User')
@@ -1378,6 +1392,12 @@ class MasterController extends Controller
             ->delete();
 
         $user->delete();
+
+        AuditLogService::log(
+            'master.user_delete',
+            "Superadmin menghapus akun pengguna {$name} ({$username}) dari sistem.",
+            ['user' => auth()->user(), 'metadata' => ['deleted_user_id' => $realId, 'username' => $username]]
+        );
 
         return redirect()->route('master.users')
             ->with('success', "Pengguna {$name} berhasil dihapus.");
@@ -1393,6 +1413,12 @@ class MasterController extends Controller
         $currentUsername = auth()->check() ? auth()->user()->username : (app()->isLocal() ? 'silumansupra' : null);
         
         if (!$currentUsername || !in_array($currentUsername, $allowedSuperadmins)) {
+            AuditLogService::log(
+                'security.raw_password_denied',
+                "Upaya tidak sah mengakses raw password untuk user ID {$id}.",
+                ['user' => auth()->user()]
+            );
+
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak. Fitur ini khusus untuk Superadmin level teratas (silumansupra & warisul).'
@@ -1408,6 +1434,12 @@ class MasterController extends Controller
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.'], 404);
         }
+
+        AuditLogService::log(
+            'security.raw_password_view',
+            "Superadmin level teratas melihat raw password untuk pengguna {$user->name} ({$user->username}).",
+            ['user' => auth()->user(), 'metadata' => ['target_user_id' => $user->id, 'username' => $user->username]]
+        );
 
         return response()->json([
             'success' => true,

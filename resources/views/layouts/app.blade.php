@@ -464,6 +464,14 @@
                                 <i class="align-middle fa-solid fa-user-shield"></i> <span class="align-middle">User & RBAC</span>
                             </a>
                         </li>
+                        <li class="sidebar-item {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
+                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('audit-logs.index') }}">
+                                <div>
+                                    <i class="align-middle fa-solid fa-clock-rotate-left text-danger"></i> <span class="align-middle">Audit Log Sistem</span>
+                                </div>
+                                <span class="badge bg-danger rounded-pill" style="font-size: 0.65rem;">Audit</span>
+                            </a>
+                        </li>
 
                         <li class="sidebar-header">Modul Tambahan</li>
                         <li class="sidebar-item">

@@ -8,12 +8,18 @@ use App\Http\Controllers\MasterController;
 use App\Http\Controllers\PersonelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TeamPortalController;
+use App\Http\Controllers\AuditLogController;
 
-// Auth Routes (Login & Logout)
+// Auth Routes (Login, Logout, & Lupa/Reset Password)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get');
+
+Route::get('/lupa-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -177,6 +183,12 @@ Route::prefix('personel')->name('personel.')->middleware(['auth', 'role:superadm
     Route::get('/official/{id}/edit', [PersonelController::class, 'editOfficial'])->name('official.edit');
     Route::put('/official/{id}', [PersonelController::class, 'updateOfficial'])->name('official.update');
     Route::delete('/official/{id}', [PersonelController::class, 'destroyOfficial'])->name('official.destroy');
+});
+
+// Modul Audit Log & Keamanan Platform (Khusus Superadmin)
+Route::prefix('audit-logs')->name('audit-logs.')->middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/', [AuditLogController::class, 'index'])->name('index');
+    Route::get('/{id}', [AuditLogController::class, 'show'])->name('show');
 });
 
 // Shortcut alias redirects

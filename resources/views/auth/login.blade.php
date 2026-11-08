@@ -223,9 +223,12 @@
                     <div class="form-check mb-0">
                         <input class="form-check-input" type="checkbox" name="remember" id="rememberMe" {{ old('remember') ? 'checked' : '' }}>
                         <label class="form-check-label small text-muted user-select-none" for="rememberMe">
-                            Ingat saya di perangkat ini
+                            Ingat saya
                         </label>
                     </div>
+                    <a href="{{ route('password.request') }}" class="small text-primary text-decoration-none fw-semibold">
+                        Lupa kata sandi?
+                    </a>
                 </div>
 
                 <button type="submit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2">
