@@ -115,8 +115,30 @@
             position: relative;
             width: auto;
             margin: 1.75rem auto;
-            max-width: 500px;
             pointer-events: none;
+        }
+        @media (min-width: 576px) {
+            .modal-dialog {
+                max-width: 500px;
+            }
+            .modal-dialog.modal-sm {
+                max-width: 300px;
+            }
+        }
+        @media (min-width: 992px) {
+            .modal-dialog.modal-lg {
+                max-width: 800px;
+            }
+        }
+        @media (min-width: 1200px) {
+            .modal-dialog.modal-xl {
+                max-width: 1140px;
+            }
+        }
+        @media (min-width: 1400px) {
+            .modal-dialog.modal-xl {
+                max-width: 1320px;
+            }
         }
         .modal.show .modal-dialog {
             transform: none;
@@ -229,6 +251,8 @@
                 $teamOfficialCount = \App\Models\OfficialTim::where('peserta_tim_id', $activeNavTeam->id)->count();
             }
         }
+
+        $dynamicMenus = $authUser ? app(\App\Services\MenuService::class)->getMenusForUser($authUser) : [];
     @endphp
 
     <div class="wrapper">
@@ -318,6 +342,59 @@
                             </a>
                         </li>
 
+                        @php
+                            $extraTimMenus = collect($dynamicMenus)->filter(function($m) {
+                                return !str_starts_with($m['route_name'] ?? '', 'tim.') && $m['route_name'] !== 'dashboard.index';
+                            });
+                        @endphp
+                        @if($extraTimMenus->isNotEmpty())
+                            <li class="sidebar-header mt-3 text-warning">
+                                <i class="fa-solid fa-key me-1"></i> Wewenang Khusus
+                            </li>
+                            @foreach($extraTimMenus as $em)
+                                @if(!empty($em['children']) && count($em['children']) > 0)
+                                    <li class="sidebar-header mt-2">{{ $em['title'] }}</li>
+                                    @foreach($em['children'] as $child)
+                                        @php
+                                            $isChildActive = (!empty($child['route_name']) && request()->routeIs($child['route_name'])) ||
+                                                            (!empty($child['url']) && $child['url'] !== '#!' && request()->is(ltrim($child['url'], '/') . '*'));
+                                        @endphp
+                                        <li class="sidebar-item {{ $isChildActive ? 'active' : '' }}">
+                                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $child['url'] }}" target="{{ $child['target'] ?? '_self' }}">
+                                                <div>
+                                                    <i class="align-middle {{ $child['icon'] ?: 'fa-regular fa-circle' }}"></i>
+                                                    <span class="align-middle">{{ $child['title'] }}</span>
+                                                </div>
+                                                @if(!empty($child['badge_text']))
+                                                    <span class="badge {{ $child['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                        {{ $child['badge_text'] }}
+                                                    </span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    @php
+                                        $isRootActive = (!empty($em['route_name']) && request()->routeIs($em['route_name'])) ||
+                                                        (!empty($em['url']) && $em['url'] !== '#!' && request()->is(ltrim($em['url'], '/') . '*'));
+                                    @endphp
+                                    <li class="sidebar-item {{ $isRootActive ? 'active' : '' }}">
+                                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $em['url'] }}" target="{{ $em['target'] ?? '_self' }}">
+                                            <div>
+                                                <i class="align-middle {{ $em['icon'] ?: 'fa-solid fa-circle-dot' }}"></i>
+                                                <span class="align-middle">{{ $em['title'] }}</span>
+                                            </div>
+                                            @if(!empty($em['badge_text']))
+                                                <span class="badge {{ $em['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                    {{ $em['badge_text'] }}
+                                                </span>
+                                            @endif
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        @endif
+
                         <li class="sidebar-header mt-3">Pengaturan Akun</li>
                         <li class="sidebar-item {{ request()->routeIs('tim.akun*') ? 'active' : '' }}">
                             <a class="sidebar-link" href="{{ route('tim.akun') }}">
@@ -334,156 +411,59 @@
                         </li>
                     </ul>
                 @elseif($isSuperadmin)
-                    <!-- TAMPILAN SIDEBAR RESMI SUPERADMIN / PP PBVSI -->
+                    <!-- TAMPILAN SIDEBAR RESMI DINAMIS SUPERADMIN / PP PBVSI (CACHED) -->
                     <ul class="sidebar-nav">
-                        <li class="sidebar-header">Pusat Platform</li>
-                        <li class="sidebar-item {{ request()->routeIs('dashboard*') && !request()->routeIs('kejurnas*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('dashboard.index') }}">
-                                <i class="align-middle fa-solid fa-house"></i> <span class="align-middle">Dashboard Utama</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Kejuaraan Kelompok Umur</li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u16*') || request()->is('kejurnas/u16*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u16']) }}">
-                                <i class="align-middle fa-solid fa-volleyball text-info"></i> <span class="align-middle">Kejurnas U-16</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u17*') || request()->is('kejurnas/u17*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u17']) }}">
-                                <i class="align-middle fa-solid fa-volleyball text-success"></i> <span class="align-middle">Kejurnas U-17</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u18*') || request()->is('kejurnas/u18*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u18']) }}">
-                                <i class="align-middle fa-solid fa-volleyball text-warning"></i> <span class="align-middle">Kejurnas U-18</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u19*') || request()->is('kejurnas/u19*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u19']) }}">
-                                <i class="align-middle fa-solid fa-volleyball text-danger"></i> <span class="align-middle">Kejurnas U-19</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Liga Voli (Livoli)</li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-utama*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-utama']) }}">
-                                <i class="align-middle fa-solid fa-trophy text-warning"></i> <span class="align-middle">Livoli Divisi Utama</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-1*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-1']) }}">
-                                <i class="align-middle fa-solid fa-medal text-primary"></i> <span class="align-middle">Livoli Divisi I</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Turnamen Nasional Lainnya</li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/kapolri-cup*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kapolri-cup']) }}">
-                                <i class="align-middle fa-solid fa-award text-danger"></i> <span class="align-middle">Piala Kapolri (Kapolri Cup)</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->is('kejuaraan/sirkuit-nasional-voli-pantai*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'sirkuit-nasional-voli-pantai']) }}">
-                                <i class="align-middle fa-solid fa-umbrella-beach text-warning"></i> <span class="align-middle">Voli Pantai Nasional</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Database Personel PBVSI</li>
-                        <li class="sidebar-item {{ request()->routeIs('personel.pemain*') ? 'active' : '' }}">
-                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.pemain') }}">
-                                <div>
-                                    <i class="align-middle fa-solid fa-id-card-clip text-primary"></i> <span class="align-middle">Bank Pemain</span>
-                                </div>
-                                <span class="badge bg-primary rounded-pill">7.5k</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('personel.pelatih*') ? 'active' : '' }}">
-                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.pelatih') }}">
-                                <div>
-                                    <i class="align-middle fa-solid fa-chalkboard-user text-warning"></i> <span class="align-middle">Data Pelatih</span>
-                                </div>
-                                <span class="badge bg-warning text-dark rounded-pill">222</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('personel.wasit*') ? 'active' : '' }}">
-                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.wasit') }}">
-                                <div>
-                                    <i class="align-middle fa-solid fa-flag text-danger"></i> <span class="align-middle">Data Wasit</span>
-                                </div>
-                                <span class="badge bg-danger rounded-pill">119</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('personel.official*') ? 'active' : '' }}">
-                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('personel.official') }}">
-                                <div>
-                                    <i class="align-middle fa-solid fa-user-tie text-info"></i> <span class="align-middle">Official Tim</span>
-                                </div>
-                                <span class="badge bg-info text-dark rounded-pill">594</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Pengaturan & Master Data</li>
-                        <li class="sidebar-item {{ request()->routeIs('master.wilayah') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.wilayah') }}">
-                                <i class="align-middle fa-solid fa-map-location-dot"></i> <span class="align-middle">Master Wilayah</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.pengprov') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.pengprov') }}">
-                                <i class="align-middle fa-solid fa-building-flag"></i> <span class="align-middle">Data Pengprov</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.pengkot') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.pengkot') }}">
-                                <i class="align-middle fa-solid fa-city"></i> <span class="align-middle">Data Pengkot/Pengkab</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.klub*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.klub') }}">
-                                <i class="align-middle fa-solid fa-shield-halved"></i> <span class="align-middle">Data Tim / Klub</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.admin_tim*') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.admin_tim') }}">
-                                <i class="align-middle fa-solid fa-id-badge text-warning"></i> <span class="align-middle">Admin Tim / Kontingen</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.jabatan') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.jabatan') }}">
-                                <i class="align-middle fa-solid fa-user-tag"></i> <span class="align-middle">Master Jabatan</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.posisi') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.posisi') }}">
-                                <i class="align-middle fa-solid fa-arrows-down-to-people"></i> <span class="align-middle">Posisi Pemain</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('master.users') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('master.users') }}">
-                                <i class="align-middle fa-solid fa-user-shield"></i> <span class="align-middle">User & RBAC</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
-                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ route('audit-logs.index') }}">
-                                <div>
-                                    <i class="align-middle fa-solid fa-clock-rotate-left text-danger"></i> <span class="align-middle">Audit Log Sistem</span>
-                                </div>
-                                <span class="badge bg-danger rounded-pill" style="font-size: 0.65rem;">Audit</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-header">Modul Tambahan</li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="#!">
-                                <i class="align-middle fa-solid fa-certificate"></i> <span class="align-middle">Sertifikasi & QR</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="#!">
-                                <i class="align-middle fa-solid fa-ticket"></i> <span class="align-middle">Tiket Online</span>
-                            </a>
-                        </li>
+                        @if(!empty($dynamicMenus) && count($dynamicMenus) > 0)
+                            @foreach($dynamicMenus as $item)
+                                @if(!empty($item['children']) && count($item['children']) > 0)
+                                    <li class="sidebar-header mt-3">{{ $item['title'] }}</li>
+                                    @foreach($item['children'] as $child)
+                                        @php
+                                            $isChildActive = (!empty($child['route_name']) && request()->routeIs($child['route_name'])) ||
+                                                            (!empty($child['url']) && $child['url'] !== '#!' && request()->is(ltrim($child['url'], '/') . '*'));
+                                        @endphp
+                                        <li class="sidebar-item {{ $isChildActive ? 'active' : '' }}">
+                                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $child['url'] }}" target="{{ $child['target'] ?? '_self' }}">
+                                                <div>
+                                                    <i class="align-middle {{ $child['icon'] ?: 'fa-regular fa-circle' }}"></i>
+                                                    <span class="align-middle">{{ $child['title'] }}</span>
+                                                </div>
+                                                @if(!empty($child['badge_text']))
+                                                    <span class="badge {{ $child['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                        {{ $child['badge_text'] }}
+                                                    </span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    @php
+                                        $isRootActive = (!empty($item['route_name']) && request()->routeIs($item['route_name'])) ||
+                                                        (!empty($item['url']) && $item['url'] !== '#!' && request()->is(ltrim($item['url'], '/') . '*'));
+                                    @endphp
+                                    <li class="sidebar-item {{ $isRootActive ? 'active' : '' }}">
+                                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $item['url'] }}" target="{{ $item['target'] ?? '_self' }}">
+                                            <div>
+                                                <i class="align-middle {{ $item['icon'] ?: 'fa-solid fa-circle-dot' }}"></i>
+                                                <span class="align-middle">{{ $item['title'] }}</span>
+                                            </div>
+                                            @if(!empty($item['badge_text']))
+                                                <span class="badge {{ $item['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                    {{ $item['badge_text'] }}
+                                                </span>
+                                            @endif
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        @else
+                            <li class="sidebar-header">Pusat Platform</li>
+                            <li class="sidebar-item {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
+                                <a class="sidebar-link" href="{{ route('dashboard.index') }}">
+                                    <i class="align-middle fa-solid fa-house"></i> <span class="align-middle">Dashboard Utama</span>
+                                </a>
+                            </li>
+                        @endif
 
                         <li class="sidebar-header mt-3">Akun & Sesi</li>
                         <li class="sidebar-item">
@@ -519,6 +499,59 @@
                                 <i class="align-middle fa-solid fa-user-gear text-info"></i> <span class="align-middle">Profil & Akun Saya</span>
                             </a>
                         </li>
+
+                        @php
+                            $extraOtherMenus = collect($dynamicMenus)->filter(function($m) {
+                                return !in_array($m['route_name'] ?? '', ['dashboard.index', 'akun.saya']);
+                            });
+                        @endphp
+                        @if($extraOtherMenus->isNotEmpty())
+                            <li class="sidebar-header mt-3 text-warning">
+                                <i class="fa-solid fa-key me-1"></i> Wewenang Khusus
+                            </li>
+                            @foreach($extraOtherMenus as $em)
+                                @if(!empty($em['children']) && count($em['children']) > 0)
+                                    <li class="sidebar-header mt-2">{{ $em['title'] }}</li>
+                                    @foreach($em['children'] as $child)
+                                        @php
+                                            $isChildActive = (!empty($child['route_name']) && request()->routeIs($child['route_name'])) ||
+                                                            (!empty($child['url']) && $child['url'] !== '#!' && request()->is(ltrim($child['url'], '/') . '*'));
+                                        @endphp
+                                        <li class="sidebar-item {{ $isChildActive ? 'active' : '' }}">
+                                            <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $child['url'] }}" target="{{ $child['target'] ?? '_self' }}">
+                                                <div>
+                                                    <i class="align-middle {{ $child['icon'] ?: 'fa-regular fa-circle' }}"></i>
+                                                    <span class="align-middle">{{ $child['title'] }}</span>
+                                                </div>
+                                                @if(!empty($child['badge_text']))
+                                                    <span class="badge {{ $child['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                        {{ $child['badge_text'] }}
+                                                    </span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    @php
+                                        $isRootActive = (!empty($em['route_name']) && request()->routeIs($em['route_name'])) ||
+                                                        (!empty($em['url']) && $em['url'] !== '#!' && request()->is(ltrim($em['url'], '/') . '*'));
+                                    @endphp
+                                    <li class="sidebar-item {{ $isRootActive ? 'active' : '' }}">
+                                        <a class="sidebar-link d-flex justify-content-between align-items-center" href="{{ $em['url'] }}" target="{{ $em['target'] ?? '_self' }}">
+                                            <div>
+                                                <i class="align-middle {{ $em['icon'] ?: 'fa-solid fa-circle-dot' }}"></i>
+                                                <span class="align-middle">{{ $em['title'] }}</span>
+                                            </div>
+                                            @if(!empty($em['badge_text']))
+                                                <span class="badge {{ $em['badge_class'] ?: 'bg-secondary' }} rounded-pill" style="font-size: 0.65rem;">
+                                                    {{ $em['badge_text'] }}
+                                                </span>
+                                            @endif
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        @endif
 
                         <li class="sidebar-header mt-3">Kompetisi Nasional</li>
                         <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u16*') ? 'active' : '' }}">

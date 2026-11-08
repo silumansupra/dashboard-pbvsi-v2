@@ -10,6 +10,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TeamPortalController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ProfileCompletionController;
+use App\Http\Controllers\KycVerificationController;
+use App\Http\Controllers\MenuManagerController;
 
 // Auth Routes (Login, Logout, & Lupa/Reset Password)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -160,6 +162,24 @@ Route::prefix('master')->name('master.')->middleware(['auth', 'role:superadmin']
     Route::get('/users/{id}/raw-password', [MasterController::class, 'getRawPassword'])->name('users.raw_password');
     Route::put('/users/{id}', [MasterController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [MasterController::class, 'destroyUser'])->name('users.destroy');
+    Route::post('/permissions', [MasterController::class, 'storePermission'])->name('permissions.store');
+});
+
+// Modul Verifikasi KYC & Manajemen Menu Dinamis (Bisa diakses Superadmin atau User dengan Permission Khusus)
+Route::prefix('master')->name('master.')->middleware(['auth'])->group(function () {
+    // Verifikasi KYC & KTP Pengguna
+    Route::get('/kyc', [KycVerificationController::class, 'index'])->name('kyc.index');
+    Route::get('/kyc/{id}', [KycVerificationController::class, 'show'])->name('kyc.show');
+    Route::post('/kyc/{id}/approve', [KycVerificationController::class, 'approve'])->name('kyc.approve');
+    Route::post('/kyc/{id}/reject', [KycVerificationController::class, 'reject'])->name('kyc.reject');
+
+    // Manajemen Menu & Submenu Navigasi
+    Route::get('/menus', [MenuManagerController::class, 'index'])->name('menus.index');
+    Route::post('/menus', [MenuManagerController::class, 'store'])->name('menus.store');
+    Route::get('/menus/{id}', [MenuManagerController::class, 'show'])->name('menus.show');
+    Route::put('/menus/{id}', [MenuManagerController::class, 'update'])->name('menus.update');
+    Route::delete('/menus/{id}', [MenuManagerController::class, 'destroy'])->name('menus.destroy');
+    Route::post('/menus/{id}/toggle', [MenuManagerController::class, 'toggle'])->name('menus.toggle');
 });
 
 // Modul Database Personel & Anggota PBVSI Pusat (Khusus Superadmin)

@@ -20,6 +20,12 @@ class ProfileCompletionController extends Controller
             return redirect()->route('login');
         }
 
+        // Superadmin dikecualikan dari kewajiban melengkapi profil
+        if ($user->hasRole('superadmin')) {
+            return redirect()->route('dashboard.index')
+                ->with('info', 'Akun Superadmin memiliki akses penuh dan dikecualikan dari kewajiban verifikasi kelengkapan profil.');
+        }
+
         $profile = $user->profile ?: new UserProfile();
 
         return view('auth.lengkapi_profil', compact('user', 'profile'));

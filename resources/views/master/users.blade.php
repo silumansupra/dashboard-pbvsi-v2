@@ -164,6 +164,15 @@
                                             <span class="badge bg-light text-muted border">Belum ada role</span>
                                         @endforelse
                                     </div>
+                                    @if($u->directPermissions && $u->directPermissions->isNotEmpty())
+                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                            @foreach($u->directPermissions as $dp)
+                                                <span class="badge bg-warning text-dark border border-warning" style="font-size: 0.68rem;" title="Izin Khusus: {{ $dp->description }}">
+                                                    <i class="fa-solid fa-key me-1"></i>{{ $dp->display_name ?: $dp->name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($u->phone)

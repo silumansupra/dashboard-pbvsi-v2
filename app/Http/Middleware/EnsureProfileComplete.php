@@ -23,6 +23,11 @@ class EnsureProfileComplete
             return $next($request);
         }
 
+        // Pengguna dengan role Superadmin dikecualikan dari validasi kelengkapan data & KYC
+        if ($user->hasRole('superadmin')) {
+            return $next($request);
+        }
+
         // Daftar rute yang dikecualikan agar tidak terjadi infinite redirect loop
         $exemptPatterns = [
             'lengkapi-profil*',

@@ -13,6 +13,9 @@ class UserProfile extends Model
         'ktp_path',
         'selfie_ktp_path',
         'verification_status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason',
         'terms_agreed_at',
         'terms_agreed_ip',
         'terms_agreed_version',
@@ -30,6 +33,7 @@ class UserProfile extends Model
     protected $casts = [
         'tanggal_lahir' => 'date',
         'terms_agreed_at' => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
     public function getKtpUrlAttribute(): ?string
@@ -45,6 +49,11 @@ class UserProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function verifiedByUser()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     public function provinsi()

@@ -72,13 +72,61 @@ class User extends Authenticatable
             ->wherePivot('model_type', 'App\\Models\\User');
     }
 
+    public function directPermissions()
+    {
+        return $this->belongsToMany(Permission::class, 'core_model_has_permissions', 'model_id', 'permission_id')
+            ->wherePivot('model_type', 'App\\Models\\User');
+    }
+
     public function hasRole(string $roleName): bool
     {
         return $this->roles->contains('name', $roleName);
     }
 
+    /**
+     * Cek hak akses granular: Superadmin bypass, Direct User Permission, atau Role Permission
+     */
+    public function hasPermissionTo(string $permissionName): bool
+    {
+        // 1. Superadmin selalu memiliki bypass hak akses penuh
+        if ($this->hasRole('superadmin')) {
+            return true;
+        }
+
+        // 2. Cek permission direct user (individual permission)
+        if ($this->directPermissions->contains('name', $permissionName)) {
+            return true;
+        }
+
+        // 3. Cek permission turunan dari roles yang dimiliki user
+        foreach ($this->roles as $role) {
+            if ($role->permissions->contains('name', $permissionName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Cek apakah user memiliki hak akses membuka menu tertentu
+     */
+    public function canAccessMenu(Menu $menu): bool
+    {
+        if (empty($menu->permission_key)) {
+            return true;
+        }
+
+        return $this->hasPermissionTo($menu->permission_key);
+    }
+
     public function isProfileComplete(): bool
     {
+        // Pengguna dengan peran Superadmin dikecualikan dari validasi kelengkapan profil & KYC
+        if ($this->hasRole('superadmin')) {
+            return true;
+        }
+
         if ($this->is_profile_completed) {
             return true;
         }

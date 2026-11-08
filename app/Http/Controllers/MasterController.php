@@ -13,6 +13,8 @@ use App\Models\PesertaTim;
 use App\Models\OfficialTim;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Permission;
+use App\Services\MenuService;
 use App\Services\SecureId;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
@@ -1204,7 +1206,7 @@ class MasterController extends Controller
     public function users(Request $request)
     {
         $roles = Role::orderBy('name')->get();
-        $query = User::with(['roles', 'profile', 'teams']);
+        $query = User::with(['roles', 'profile', 'teams', 'directPermissions']);
 
         if ($request->filled('role')) {
             $query->whereHas('roles', function ($q) use ($request) {
@@ -1239,7 +1241,8 @@ class MasterController extends Controller
     public function createUser()
     {
         $roles = Role::orderBy('name')->get();
-        return view('master.users_create', compact('roles'));
+        $permissions = Permission::orderBy('name')->get();
+        return view('master.users_create', compact('roles', 'permissions'));
     }
 
     public function editUser($id)
@@ -1257,10 +1260,11 @@ class MasterController extends Controller
             abort(404, 'Parameter tautan tidak valid atau telah dimodifikasi.');
         }
 
-        $user = User::with('roles')->findOrFail($realId);
+        $user = User::with(['roles', 'directPermissions'])->findOrFail($realId);
         $roles = Role::orderBy('name')->get();
+        $permissions = Permission::orderBy('name')->get();
 
-        return view('master.users_edit', compact('user', 'roles'));
+        return view('master.users_edit', compact('user', 'roles', 'permissions'));
     }
 
     public function storeUser(Request $request)
@@ -1273,6 +1277,8 @@ class MasterController extends Controller
             'password' => 'required|string|min:6',
             'roles' => 'required|array|min:1',
             'roles.*' => 'exists:core_roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:core_permissions,id',
             'is_active' => 'required|in:0,1',
         ], [
             'username.unique' => 'Username ini sudah digunakan.',
@@ -1301,6 +1307,19 @@ class MasterController extends Controller
             ]);
         }
 
+        // Attach individual permissions
+        if ($request->filled('permissions') && is_array($request->permissions)) {
+            foreach ($request->permissions as $permId) {
+                DB::table('core_model_has_permissions')->insert([
+                    'permission_id' => $permId,
+                    'model_type' => 'App\\Models\\User',
+                    'model_id' => $user->id,
+                ]);
+            }
+        }
+
+        MenuService::clearCache();
+
         AuditLogService::log(
             'master.user_create',
             "Superadmin menambahkan pengguna baru {$user->name} ({$user->username}) ke sistem.",
@@ -1328,6 +1347,8 @@ class MasterController extends Controller
             'password' => 'nullable|string|min:6',
             'roles' => 'required|array|min:1',
             'roles.*' => 'exists:core_roles,id',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:core_permissions,id',
             'is_active' => 'required|in:0,1',
         ]);
 
@@ -1359,6 +1380,24 @@ class MasterController extends Controller
                 'model_id' => $user->id,
             ]);
         }
+
+        // Sync individual permissions
+        DB::table('core_model_has_permissions')
+            ->where('model_type', 'App\\Models\\User')
+            ->where('model_id', $user->id)
+            ->delete();
+
+        if ($request->has('permissions') && is_array($request->permissions)) {
+            foreach ($request->permissions as $permId) {
+                DB::table('core_model_has_permissions')->insert([
+                    'permission_id' => $permId,
+                    'model_type' => 'App\\Models\\User',
+                    'model_id' => $user->id,
+                ]);
+            }
+        }
+
+        MenuService::clearCache();
 
         AuditLogService::log(
             'master.user_update',
@@ -1449,5 +1488,47 @@ class MasterController extends Controller
             'phone' => $user->phone,
             'raw_password' => $user->raw_password ?: '(Belum tercatat raw password)'
         ]);
+    }
+
+    /**
+     * Tambah izin baru (Permission) secara dinamis via CMS
+     */
+    public function storePermission(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100|unique:core_permissions,name|regex:/^[a-z0-9_.-]+$/',
+            'display_name' => 'required|string|max:150',
+            'description' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Slug izin (permission key) wajib diisi.',
+            'name.unique' => 'Slug izin ini sudah terdaftar.',
+            'name.regex' => 'Slug hanya boleh menggunakan huruf kecil, angka, titik (.), strip (-), dan garis bawah (_).',
+            'display_name.required' => 'Nama tampilan izin wajib diisi.',
+        ]);
+
+        $permission = Permission::create([
+            'name' => strtolower(trim($validated['name'])),
+            'guard_name' => 'web',
+            'display_name' => trim($validated['display_name']),
+            'description' => $validated['description'] ? trim($validated['description']) : null,
+        ]);
+
+        MenuService::clearCache();
+
+        AuditLogService::log(
+            'master.permission_create',
+            "Menambahkan izin baru '{$permission->display_name}' ({$permission->name}) ke sistem.",
+            ['user' => auth()->user(), 'metadata' => $permission->toArray()]
+        );
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'permission' => $permission,
+                'message' => "Izin baru '{$permission->display_name}' berhasil ditambahkan ke CMS!",
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Izin '{$permission->display_name}' berhasil ditambahkan.");
     }
 }
