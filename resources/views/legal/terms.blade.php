@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.legal')
 
 @section('title', 'Syarat & Ketentuan - PBVSI Platform')
 
@@ -7,7 +7,11 @@
 <div class="breadcrumb-custom">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
+            @auth
             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"><i class="fa-solid fa-house me-1"></i> Dashboard</a></li>
+            @else
+            <li class="breadcrumb-item"><a href="{{ route('login') }}"><i class="fa-solid fa-house me-1"></i> Beranda Platform</a></li>
+            @endauth
             <li class="breadcrumb-item"><a href="#!">Legalitas & Kepatuhan</a></li>
             <li class="breadcrumb-item active" aria-current="page">Syarat & Ketentuan</li>
         </ol>

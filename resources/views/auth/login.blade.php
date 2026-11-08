@@ -238,9 +238,9 @@
         <!-- FOOTER LINKS -->
         <div class="text-center mt-4">
             <div class="legal-links mb-2">
-                <a href="{{ route('legal.privacy') }}">Kebijakan Privasi</a>
+                <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer">Kebijakan Privasi</a>
                 <span class="text-muted mx-2">&bull;</span>
-                <a href="{{ route('legal.terms') }}">Syarat & Ketentuan</a>
+                <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">Syarat & Ketentuan</a>
             </div>
             <p class="footer-text mb-0">
                 &copy; {{ date('Y') }} Pengurus Pusat Persatuan Bola Voli Seluruh Indonesia

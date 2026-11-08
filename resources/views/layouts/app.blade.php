@@ -531,13 +531,15 @@
 
                         <li class="sidebar-header mt-3">Legalitas & Ketentuan</li>
                         <li class="sidebar-item {{ request()->routeIs('legal.privacy') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('legal.privacy') }}">
+                            <a class="sidebar-link" href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="align-middle fa-solid fa-shield-halved text-success"></i> <span class="align-middle">Kebijakan Privasi</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-white-50"></i>
                             </a>
                         </li>
                         <li class="sidebar-item {{ request()->routeIs('legal.terms') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('legal.terms') }}">
+                            <a class="sidebar-link" href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="align-middle fa-solid fa-file-contract text-warning"></i> <span class="align-middle">Syarat & Ketentuan</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-white-50"></i>
                             </a>
                         </li>
 
@@ -577,13 +579,15 @@
                         </li>
                         <li class="sidebar-header mt-3">Legalitas</li>
                         <li class="sidebar-item {{ request()->routeIs('legal.privacy') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('legal.privacy') }}">
+                            <a class="sidebar-link" href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="align-middle fa-solid fa-shield-halved text-success"></i> <span class="align-middle">Kebijakan Privasi</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-white-50"></i>
                             </a>
                         </li>
                         <li class="sidebar-item {{ request()->routeIs('legal.terms') ? 'active' : '' }}">
-                            <a class="sidebar-link" href="{{ route('legal.terms') }}">
+                            <a class="sidebar-link" href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer">
                                 <i class="align-middle fa-solid fa-file-contract text-warning"></i> <span class="align-middle">Syarat & Ketentuan</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-white-50"></i>
                             </a>
                         </li>
                         <li class="sidebar-header mt-3">Akses Akun</li>
@@ -713,11 +717,11 @@
                             </p>
                         </div>
                         <div class="col-md-6 text-end d-flex align-items-center justify-content-end gap-2 flex-wrap mt-2 mt-md-0">
-                            <a href="{{ route('legal.privacy') }}" class="text-muted text-decoration-none small">
+                            <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none small">
                                 <i class="fa-solid fa-shield-halved me-1 text-primary"></i>Kebijakan Privasi
                             </a>
                             <span class="text-muted small">&bull;</span>
-                            <a href="{{ route('legal.terms') }}" class="text-muted text-decoration-none small">
+                            <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none small">
                                 <i class="fa-solid fa-file-contract me-1 text-info"></i>Syarat & Ketentuan
                             </a>
                             <span class="badge bg-secondary ms-2">{{ date('Ymd') }}</span>

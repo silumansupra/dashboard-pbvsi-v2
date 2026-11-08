@@ -126,10 +126,10 @@
             <a href="{{ route('akun.saya') }}" class="btn btn-primary px-4 fw-semibold shadow-sm">
                 <i class="fa-solid fa-user-pen me-1"></i> Kelola Profil Akun Saya
             </a>
-            <a href="{{ route('legal.privacy') }}" class="btn btn-outline-secondary px-3 fw-semibold">
+            <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary px-3 fw-semibold">
                 <i class="fa-solid fa-shield-halved me-1"></i> Kebijakan Privasi
             </a>
-            <a href="{{ route('legal.terms') }}" class="btn btn-outline-secondary px-3 fw-semibold">
+            <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary px-3 fw-semibold">
                 <i class="fa-solid fa-file-contract me-1"></i> Syarat & Ketentuan
             </a>
         </div>
