@@ -11,9 +11,9 @@ return new class extends Migration
         if (!Schema::hasTable('member_official')) {
             Schema::create('member_official', function (Blueprint $table) {
                 $table->id();
-                $table->bigInteger('user_id');
-                $table->integer('pengprov_id')->nullable();
-                $table->integer('klub_id')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->unsignedInteger('pengprov_id')->nullable();
+                $table->unsignedInteger('klub_id')->nullable();
                 $table->string('nama_lengkap', 150);
                 $table->string('nik', 30)->nullable();
                 $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
