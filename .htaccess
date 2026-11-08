@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. KEAMANAN: Blokir mutlak akses ke file sensitif (.env, .git, dll)
+    <FilesMatch "^\.(env|git|editorconfig|env\.example)">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # 2. KEAMANAN: Blokir akses langsung ke folder sistem Laravel
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(\/|$) - [F,L,NC]
+    RewriteRule ^(artisan|composer\.(json|lock)|package\.json|phpunit\.xml)$ - [F,L,NC]
+
+    # 3. ROUTING: Teruskan semua request web langsung ke folder public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
