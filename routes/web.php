@@ -21,6 +21,9 @@ Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->na
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+// Verifikasi & Aktivasi Akun (Registrasi Anggota / Wasit)
+Route::get('/verifikasi-akun', [AuthController::class, 'verifikasiAkun'])->name('verifikasi.akun');
+
 // Dashboard Utama Terproteksi Auth
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware(['auth']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth']);

@@ -420,6 +420,63 @@ class AuthController extends Controller
     }
 
     /**
+     * Verifikasi dan Aktivasi Akun Pengguna Baru (Kompatibel dengan Tautan CI3 & Platform PBVSI v2)
+     */
+    public function verifikasiAkun(Request $request)
+    {
+        $sessionParam = $request->query('session');
+        $token = $request->query('token');
+
+        if (!$sessionParam && !$token) {
+            return redirect()->route('login')->withErrors(['login' => 'Tautan aktivasi tidak valid. Parameter tidak lengkap.']);
+        }
+
+        // Resolusi User ID (mendukung format hash encrypt_id maupun deurl/base64 CI3)
+        $userId = decrypt_id($sessionParam, 'user');
+        if (!$userId && function_exists('deurl')) {
+            $rawDecoded = deurl($sessionParam);
+            if (is_numeric($rawDecoded)) {
+                $userId = (int)$rawDecoded;
+            }
+        }
+        if (!$userId && is_numeric($sessionParam)) {
+            $userId = (int)$sessionParam;
+        }
+
+        $user = null;
+        if ($userId) {
+            $user = User::find($userId);
+        }
+
+        // Fallback cari berdasarkan token jika belum ditemukan
+        if (!$user && $token) {
+            $user = User::where('remember_token', $token)->first();
+        }
+
+        if (!$user) {
+            AuditLogService::log(
+                'auth.verification_failed',
+                "Upaya verifikasi akun gagal: Pengguna tidak ditemukan untuk session={$sessionParam}."
+            );
+
+            return redirect()->route('login')->withErrors(['login' => 'Data pengguna untuk verifikasi akun tidak ditemukan.']);
+        }
+
+        // Aktivasi akun
+        $user->is_active = true;
+        $user->email_verified_at = now();
+        $user->save();
+
+        AuditLogService::log(
+            'auth.account_verified',
+            "Akun {$user->name} ({$user->username}) berhasil diverifikasi dan diaktifkan melalui tautan email registrasi.",
+            ['user' => $user]
+        );
+
+        return view('auth.verifikasi_sukses', compact('user'));
+    }
+
+    /**
      * Helper masking email untuk privasi (contoh: ha****@gmail.com)
      */
     private static function maskEmail(string $email): string
