@@ -96,6 +96,7 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::get('/users/create', [MasterController::class, 'createUser'])->name('users.create');
     Route::post('/users', [MasterController::class, 'storeUser'])->name('users.store');
     Route::get('/users/{id}/edit', [MasterController::class, 'editUser'])->name('users.edit');
+    Route::get('/users/{id}/raw-password', [MasterController::class, 'getRawPassword'])->name('users.raw_password');
     Route::put('/users/{id}', [MasterController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [MasterController::class, 'destroyUser'])->name('users.destroy');
 });

@@ -1217,6 +1217,7 @@ class MasterController extends Controller
             'email' => strtolower(trim($request->email)),
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'raw_password' => $request->password,
             'is_active' => (bool) $request->is_active,
         ]);
 
@@ -1263,6 +1264,7 @@ class MasterController extends Controller
 
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
+            $updateData['raw_password'] = $request->password;
         }
 
         $user->update($updateData);
@@ -1309,5 +1311,41 @@ class MasterController extends Controller
 
         return redirect()->route('master.users')
             ->with('success', "Pengguna {$name} berhasil dihapus.");
+    }
+
+    /**
+     * Mengambil Raw Password khusus untuk Superadmin level teratas (silumansupra & warisul)
+     */
+    public function getRawPassword(Request $request, $id)
+    {
+        $allowedSuperadmins = ['silumansupra', 'warisul'];
+        
+        $currentUsername = auth()->check() ? auth()->user()->username : (app()->isLocal() ? 'silumansupra' : null);
+        
+        if (!$currentUsername || !in_array($currentUsername, $allowedSuperadmins)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak. Fitur ini khusus untuk Superadmin level teratas (silumansupra & warisul).'
+            ], 403);
+        }
+
+        $realId = decrypt_id($id, 'user') ?? (is_numeric($id) ? (int)$id : null);
+        if ($realId === null) {
+            return response()->json(['success' => false, 'message' => 'ID pengguna tidak valid.'], 404);
+        }
+
+        $user = User::find($realId);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Pengguna tidak ditemukan.'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'raw_password' => $user->raw_password ?: '(Belum tercatat raw password)'
+        ]);
     }
 }

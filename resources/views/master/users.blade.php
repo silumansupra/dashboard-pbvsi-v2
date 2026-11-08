@@ -3,6 +3,11 @@
 @section('title', 'Manajemen Pengguna & Hak Akses (User RBAC)')
 
 @section('content')
+@php
+    $canViewRawPass = auth()->check() 
+        ? in_array(auth()->user()->username, ['silumansupra', 'warisul']) 
+        : app()->isLocal();
+@endphp
 <!-- NOTIFIKASI SUKSES / ERROR -->
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
@@ -170,7 +175,18 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end text-nowrap">
+                                    @if($canViewRawPass)
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-warning text-dark me-1 btn-view-raw-pass" 
+                                            data-id="{{ $u->encrypted_id }}"
+                                            data-name="{{ $u->name }}"
+                                            data-username="{{ $u->username }}"
+                                            title="Lihat Raw Password (Khusus Superadmin)">
+                                        <i class="fa-solid fa-key"></i>
+                                    </button>
+                                    @endif
+
                                     <a href="{{ route('master.users.edit', $u->encrypted_id) }}" 
                                        class="btn btn-sm btn-outline-secondary me-1" 
                                        title="Edit User">
@@ -209,4 +225,171 @@
         </div>
     </div>
 </div>
+
+@if($canViewRawPass)
+<!-- MODAL LIHAT RAW PASSWORD (KHUSUS SUPERADMIN: silumansupra & warisul) -->
+<div class="modal fade" id="modalRawPassword" tabindex="-1" aria-labelledby="modalRawPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-dark text-white py-3">
+                <h6 class="modal-title d-flex align-items-center gap-2 mb-0" id="modalRawPasswordLabel">
+                    <i class="fa-solid fa-shield-halved text-warning"></i>
+                    <span>Informasi Kredensial Pengguna</span>
+                    <span class="badge bg-danger ms-auto" style="font-size: 0.65rem;">SUPERADMIN ONLY</span>
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="modalRawPassLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted small mt-2 mb-0">Mengambil data password dari server...</p>
+                </div>
+
+                <div id="modalRawPassContent" style="display: none;">
+                    <div class="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                        <i class="fa-solid fa-triangle-exclamation text-warning fa-lg"></i>
+                        <div>
+                            Akses rahasia khusus <strong>silumansupra</strong> & <strong>warisul</strong> untuk keperluan pemulihan akun atau pengujian sistem.
+                        </div>
+                    </div>
+
+                    <table class="table table-sm table-borderless mb-3">
+                        <tr>
+                            <td class="text-muted" style="width: 110px;">Nama User</td>
+                            <td>: <strong id="rawModalName" class="text-dark"></strong></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Username</td>
+                            <td>: <code id="rawModalUsername" class="text-primary fw-bold"></code></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Email</td>
+                            <td>: <span id="rawModalEmail" class="text-secondary"></span></td>
+                        </tr>
+                    </table>
+
+                    <div class="mb-2">
+                        <label class="form-label fw-bold text-dark small mb-1">
+                            <i class="fa-solid fa-key text-warning me-1"></i> Raw Password:
+                        </label>
+                        <div class="input-group">
+                            <input type="password" id="rawModalInput" class="form-control font-monospace fw-bold bg-light" readonly value="">
+                            <button class="btn btn-outline-secondary" type="button" id="btnToggleMask" title="Tampilkan/Sembunyikan">
+                                <i class="fa-solid fa-eye" id="toggleMaskIcon"></i>
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btnCopyPass" title="Salin ke Clipboard">
+                                <i class="fa-solid fa-copy me-1"></i> Salin
+                            </button>
+                        </div>
+                        <div id="copySuccessMsg" class="text-success small mt-1" style="display: none;">
+                            <i class="fa-solid fa-check-circle me-1"></i> Password berhasil disalin ke clipboard!
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 @endsection
+
+@if($canViewRawPass)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalEl = document.getElementById('modalRawPassword');
+    if (!modalEl) return;
+    
+    const bsModal = new bootstrap.Modal(modalEl);
+    const loadingEl = document.getElementById('modalRawPassLoading');
+    const contentEl = document.getElementById('modalRawPassContent');
+    const rawInput = document.getElementById('rawModalInput');
+    const toggleBtn = document.getElementById('btnToggleMask');
+    const toggleIcon = document.getElementById('toggleMaskIcon');
+    const copyBtn = document.getElementById('btnCopyPass');
+    const copyMsg = document.getElementById('copySuccessMsg');
+
+    document.querySelectorAll('.btn-view-raw-pass').forEach(button => {
+        button.addEventListener('click', function() {
+            const encryptedId = this.getAttribute('data-id');
+            const fallbackName = this.getAttribute('data-name') || '';
+            const fallbackUsername = this.getAttribute('data-username') || '';
+
+            // Reset modal state
+            loadingEl.style.display = 'block';
+            contentEl.style.display = 'none';
+            copyMsg.style.display = 'none';
+            rawInput.type = 'password';
+            toggleIcon.className = 'fa-solid fa-eye';
+
+            document.getElementById('rawModalName').textContent = fallbackName;
+            document.getElementById('rawModalUsername').textContent = fallbackUsername;
+            document.getElementById('rawModalEmail').textContent = 'Memuat...';
+
+            bsModal.show();
+
+            const url = "{{ url('/master/users') }}/" + encryptedId + "/raw-password";
+            fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                loadingEl.style.display = 'none';
+                if (data.success) {
+                    contentEl.style.display = 'block';
+                    document.getElementById('rawModalName').textContent = data.name;
+                    document.getElementById('rawModalUsername').textContent = data.username;
+                    document.getElementById('rawModalEmail').textContent = data.email || '-';
+                    rawInput.value = data.raw_password;
+                } else {
+                    alert(data.message || 'Gagal memuat raw password.');
+                    bsModal.hide();
+                }
+            })
+            .catch(err => {
+                loadingEl.style.display = 'none';
+                alert('Terjadi kesalahan saat mengambil data password.');
+                console.error(err);
+                bsModal.hide();
+            });
+        });
+    });
+
+    // Toggle Mask Password
+    toggleBtn.addEventListener('click', function() {
+        if (rawInput.type === 'password') {
+            rawInput.type = 'text';
+            toggleIcon.className = 'fa-solid fa-eye-slash';
+        } else {
+            rawInput.type = 'password';
+            toggleIcon.className = 'fa-solid fa-eye';
+        }
+    });
+
+    // Copy to clipboard
+    copyBtn.addEventListener('click', function() {
+        if (!rawInput.value || rawInput.value.startsWith('(')) return;
+        navigator.clipboard.writeText(rawInput.value).then(() => {
+            copyMsg.style.display = 'block';
+            setTimeout(() => {
+                copyMsg.style.display = 'none';
+            }, 3000);
+        }).catch(err => {
+            rawInput.select();
+            document.execCommand('copy');
+            copyMsg.style.display = 'block';
+            setTimeout(() => {
+                copyMsg.style.display = 'none';
+            }, 3000);
+        });
+    });
+});
+</script>
+@endpush
+@endif

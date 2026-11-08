@@ -25,12 +25,14 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'raw_password',
         'is_active',
         'avatar_path',
     ];
 
     protected $hidden = [
         'password',
+        'raw_password',
         'remember_token',
     ];
 
