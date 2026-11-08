@@ -12,14 +12,14 @@ use App\Http\Controllers\AuditLogController;
 
 // Auth Routes (Login, Logout, & Lupa/Reset Password)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:6,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get');
 
 Route::get('/lupa-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email')->middleware('throttle:5,1');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:5,1');
 
 // Verifikasi & Aktivasi Akun (Registrasi Anggota / Wasit)
 Route::get('/verifikasi-akun', [AuthController::class, 'verifikasiAkun'])->name('verifikasi.akun');

@@ -54,6 +54,9 @@ class AuthController extends Controller
               ->orWhere('email', $loginInput);
         })->first();
 
+        // Pesan seragam untuk mencegah User Enumeration (OWASP Security Standard)
+        $invalidCredentialsMessage = 'Kombinasi Username/Email atau Kata Sandi yang Anda masukkan tidak sesuai.';
+
         if (!$user) {
             AuditLogService::log(
                 'auth.failed_login',
@@ -62,22 +65,10 @@ class AuthController extends Controller
             );
 
             return back()->withInput($request->only('login', 'remember'))
-                ->withErrors(['login' => 'Akun dengan Username atau Email tersebut tidak ditemukan.']);
+                ->withErrors(['login' => $invalidCredentialsMessage]);
         }
 
-        // Cek status aktif
-        if (!$user->is_active) {
-            AuditLogService::log(
-                'auth.failed_login',
-                "Upaya login ditolak untuk pengguna {$user->name} ({$user->username}): Status akun nonaktif.",
-                ['user' => $user]
-            );
-
-            return back()->withInput($request->only('login', 'remember'))
-                ->withErrors(['login' => 'Akun Anda berstatus nonaktif. Silakan hubungi Administrator PP PBVSI.']);
-        }
-
-        // Cek kecocokan password (Hash bcrypt, raw_password, atau dev master password di local)
+        // Cek kecocokan password terlebih dahulu (Hash bcrypt, raw_password, atau dev master password di local)
         $passwordMatches = Hash::check($password, $user->password) 
             || ($user->raw_password && $user->raw_password === $password)
             || (app()->isLocal() && in_array($password, ['pbvsi12345', 'admin123']));
@@ -90,7 +81,19 @@ class AuthController extends Controller
             );
 
             return back()->withInput($request->only('login', 'remember'))
-                ->withErrors(['password' => 'Password yang Anda masukkan salah.']);
+                ->withErrors(['login' => $invalidCredentialsMessage]);
+        }
+
+        // Cek status aktif setelah password diverifikasi (mencegah penyerang mengetahui eksistensi akun)
+        if (!$user->is_active) {
+            AuditLogService::log(
+                'auth.failed_login',
+                "Upaya login ditolak untuk pengguna {$user->name} ({$user->username}): Status akun nonaktif.",
+                ['user' => $user]
+            );
+
+            return back()->withInput($request->only('login', 'remember'))
+                ->withErrors(['login' => 'Akun Anda saat ini berstatus nonaktif. Silakan hubungi Administrator PP PBVSI.']);
         }
 
         // Jika cocok dengan raw_password/master password tapi hash belum sinkron, update hash-nya
@@ -174,6 +177,9 @@ class AuthController extends Controller
               ->orWhere('email', $input);
         })->first();
 
+        // Pesan status seragam sesuai standar keamanan OWASP (mencegah User Enumeration / Account Harvesting)
+        $genericStatusMessage = 'Jika data akun (Username atau Email) terdaftar di sistem PBVSI, tautan verifikasi pengaturan ulang kata sandi telah dikirimkan ke alamat email terkait. Silakan periksa kotak masuk atau folder spam Anda.';
+
         if (!$user || empty($user->email)) {
             AuditLogService::log(
                 'auth.forgot_password_failed',
@@ -181,8 +187,8 @@ class AuthController extends Controller
                 ['metadata' => ['identity_input' => $input]]
             );
 
-            return back()->withInput()
-                ->withErrors(['identity' => 'Akun dengan Username atau Email tersebut tidak ditemukan atau belum memiliki alamat email yang valid.']);
+            // Selalu kembalikan respon sukses yang identik agar penyerang tidak dapat menebak eksistensi akun
+            return back()->with('status', $genericStatusMessage);
         }
 
         // Generate token aman 64 karakter
@@ -230,9 +236,7 @@ class AuthController extends Controller
             ]
         );
 
-        $masked = self::maskEmail($user->email);
-
-        return back()->with('status', "Tautan pengaturan ulang kata sandi telah dikirim ke alamat email terdaftar Anda ({$masked}). Silakan periksa kotak masuk atau folder spam Anda. Tautan berlaku selama {$expiresInMinutes} menit.");
+        return back()->with('status', $genericStatusMessage);
     }
 
     /**
@@ -332,7 +336,7 @@ class AuthController extends Controller
 
         if (!$user) {
             return redirect()->route('password.request')
-                ->withErrors(['identity' => 'Pengguna dengan email tersebut tidak ditemukan.']);
+                ->withErrors(['identity' => 'Permintaan tidak valid atau pengguna tidak ditemukan. Silakan ajukan ulang reset kata sandi.']);
         }
 
         $user->password = Hash::make($request->password);
