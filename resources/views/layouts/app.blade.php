@@ -209,7 +209,11 @@
 <body>
     @php
         $authUser = auth()->user();
-        $isAdminTim = $authUser && $authUser->hasRole('admin_tim') && !$authUser->hasRole('superadmin');
+        $isSuperadmin = $authUser && $authUser->hasRole('superadmin');
+        $isAdminTim = $authUser && $authUser->hasRole('admin_tim') && !$isSuperadmin;
+        $isOtherRole = $authUser && !$isSuperadmin && !$isAdminTim;
+        $userRoleObj = $authUser ? $authUser->roles->first() : null;
+        $userRole = $userRoleObj ? $userRoleObj->display_name : ($authUser ? 'Anggota PBVSI' : 'Tamu');
 
         $userTeams = collect();
         $activeNavTeam = null;
@@ -233,7 +237,15 @@
             <div class="sidebar-content js-simplebar">
                 <a class="sidebar-brand-custom" href="{{ route('dashboard.index') }}">
                     <img src="{{ asset('assets/images/logo_pbvsi_64px.png') }}" alt="PBVSI" height="36">
-                    <span>{{ $isAdminTim ? 'PORTAL TIM PBVSI' : 'PBVSI PUSAT' }}</span>
+                    <span>
+                        @if($isAdminTim)
+                            PORTAL TIM PBVSI
+                        @elseif($isSuperadmin)
+                            PBVSI PUSAT
+                        @else
+                            PBVSI PLATFORM
+                        @endif
+                    </span>
                 </a>
 
                 @if($isAdminTim)
@@ -321,7 +333,7 @@
                             </form>
                         </li>
                     </ul>
-                @else
+                @elseif($isSuperadmin)
                     <!-- TAMPILAN SIDEBAR RESMI SUPERADMIN / PP PBVSI -->
                     <ul class="sidebar-nav">
                         <li class="sidebar-header">Pusat Platform</li>
@@ -475,6 +487,112 @@
                             </form>
                         </li>
                     </ul>
+                @elseif($isOtherRole)
+                    <!-- TAMPILAN SIDEBAR UNTUK ANGGOTA / ROLE LAIN (PEMAIN, WASIT, PELATIH, PENGPROV, KLUB) -->
+                    <div class="px-3 py-3 mx-2 my-2 rounded-3 text-white" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary px-2 py-1 small">
+                                {{ strtoupper($userRole) }}
+                            </span>
+                        </div>
+                        <div class="fw-bold text-white text-truncate fs-6" title="{{ $authUser->name }}">{{ $authUser->name }}</div>
+                        <div class="small text-white-50 text-truncate">ID PBVSI: <code>{{ $authUser->username }}</code></div>
+                    </div>
+
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-header">Area Anggota</li>
+                        <li class="sidebar-item {{ request()->routeIs('dashboard*') && !request()->routeIs('akun.*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('dashboard.index') }}">
+                                <i class="align-middle fa-solid fa-house text-primary"></i> <span class="align-middle">Beranda Portal</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->routeIs('akun.saya*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('akun.saya') }}">
+                                <i class="align-middle fa-solid fa-user-gear text-info"></i> <span class="align-middle">Profil & Akun Saya</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-header mt-3">Kompetisi Nasional</li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u16*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u16']) }}">
+                                <i class="align-middle fa-solid fa-volleyball text-info"></i> <span class="align-middle">Kejurnas U-16</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u17*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u17']) }}">
+                                <i class="align-middle fa-solid fa-volleyball text-success"></i> <span class="align-middle">Kejurnas U-17</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-utama*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-utama']) }}">
+                                <i class="align-middle fa-solid fa-trophy text-warning"></i> <span class="align-middle">Livoli Divisi Utama</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-header mt-3">Legalitas & Ketentuan</li>
+                        <li class="sidebar-item {{ request()->routeIs('legal.privacy') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('legal.privacy') }}">
+                                <i class="align-middle fa-solid fa-shield-halved text-success"></i> <span class="align-middle">Kebijakan Privasi</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->routeIs('legal.terms') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('legal.terms') }}">
+                                <i class="align-middle fa-solid fa-file-contract text-warning"></i> <span class="align-middle">Syarat & Ketentuan</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-header mt-3">Sesi Login</li>
+                        <li class="sidebar-item">
+                            <form action="{{ route('logout') }}" method="POST" class="px-3 py-2">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                                    <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                @else
+                    <!-- TAMPILAN SIDEBAR UNTUK TAMU (GUEST) -->
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-header">Menu Publik</li>
+                        <li class="sidebar-item {{ request()->routeIs('dashboard*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('dashboard.index') }}">
+                                <i class="align-middle fa-solid fa-house text-primary"></i> <span class="align-middle">Beranda Utama</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u16*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u16']) }}">
+                                <i class="align-middle fa-solid fa-volleyball text-info"></i> <span class="align-middle">Kejurnas U-16</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/kejurnas-u17*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'kejurnas-u17']) }}">
+                                <i class="align-middle fa-solid fa-volleyball text-success"></i> <span class="align-middle">Kejurnas U-17</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->is('kejuaraan/livoli-divisi-utama*') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('kejuaraan.index', ['slug' => 'livoli-divisi-utama']) }}">
+                                <i class="align-middle fa-solid fa-trophy text-warning"></i> <span class="align-middle">Livoli Divisi Utama</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-header mt-3">Legalitas</li>
+                        <li class="sidebar-item {{ request()->routeIs('legal.privacy') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('legal.privacy') }}">
+                                <i class="align-middle fa-solid fa-shield-halved text-success"></i> <span class="align-middle">Kebijakan Privasi</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ request()->routeIs('legal.terms') ? 'active' : '' }}">
+                            <a class="sidebar-link" href="{{ route('legal.terms') }}">
+                                <i class="align-middle fa-solid fa-file-contract text-warning"></i> <span class="align-middle">Syarat & Ketentuan</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-header mt-3">Akses Akun</li>
+                        <li class="sidebar-item px-3 py-2">
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-sm w-100 fw-semibold shadow-sm">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk / Login
+                            </a>
+                        </li>
+                    </ul>
                 @endif
             </div>
         </nav>
@@ -488,8 +606,7 @@
                 </a>
 
                 @php
-                    $userName = $authUser ? $authUser->name : 'Superadmin PBVSI';
-                    $userRole = ($authUser && $authUser->roles->first()) ? $authUser->roles->first()->display_name : 'PP PBVSI';
+                    $userName = $authUser ? $authUser->name : 'Pengunjung Tamu';
                 @endphp
 
                 <div class="navbar-collapse collapse">
@@ -522,13 +639,13 @@
                                 </a>
 
                                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                                    <span class="badge {{ $isAdminTim ? 'bg-warning text-dark' : 'bg-primary' }} me-2">{{ $isAdminTim ? 'ADMIN TIM' : $userRole }}</span>
+                                    <span class="badge {{ $isAdminTim ? 'bg-warning text-dark' : ($isSuperadmin ? 'bg-primary' : 'bg-info text-dark') }} me-2">{{ $userRole }}</span>
                                     <span class="text-dark fw-bold">{{ $userName }}</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end shadow border-0">
                                     <div class="px-3 py-2 border-bottom">
                                         <div class="fw-bold text-dark">{{ $userName }}</div>
-                                        <small class="text-muted">{{ $isAdminTim ? 'Administrator Tim / Kontingen' : $userRole }}</small>
+                                        <small class="text-muted">{{ $userRole }}</small>
                                     </div>
                                     @if($isAdminTim)
                                         <a class="dropdown-item py-2" href="{{ route('tim.akun') }}">
@@ -537,9 +654,16 @@
                                         <a class="dropdown-item py-2" href="{{ route('tim.profil') }}">
                                             <i class="fa-solid fa-shield-halved me-2 text-info"></i> Profil Tim
                                         </a>
-                                    @else
+                                    @elseif($isSuperadmin)
                                         <a class="dropdown-item py-2" href="{{ route('master.users') }}">
                                             <i class="fa-solid fa-user-shield me-2 text-primary"></i> User RBAC
+                                        </a>
+                                        <a class="dropdown-item py-2" href="{{ route('akun.saya') }}">
+                                            <i class="fa-solid fa-user-gear me-2 text-info"></i> Profil Akun Saya
+                                        </a>
+                                    @else
+                                        <a class="dropdown-item py-2" href="{{ route('akun.saya') }}">
+                                            <i class="fa-solid fa-user-gear me-2 text-primary"></i> Profil Akun Saya
                                         </a>
                                     @endif
                                     <div class="dropdown-divider my-1"></div>

@@ -24,6 +24,11 @@ class DashboardController extends Controller
             return $this->dashboardAdminTim($request, $user);
         }
 
+        // Jika user login dan BUKAN Superadmin (Pemain, Wasit, Pelatih, Pengprov, Klub, dll), arahkan ke Portal Anggota dalam pengembangan
+        if ($user && !$user->hasRole('superadmin')) {
+            return $this->dashboardPortalUnderDev($request, $user);
+        }
+
         // Tampilan Dashboard Superadmin / Pengurus Pusat
         $stats = [
             'total_pemain' => Pemain::count(),
@@ -86,5 +91,15 @@ class DashboardController extends Controller
         ]);
 
         return view('dashboard.admin_tim', compact('user', 'teams', 'activeTeam', 'roster', 'captain', 'liberos', 'officials'));
+    }
+
+    /**
+     * Dashboard Portal Anggota yang Sedang Dalam Tahap Pengembangan (Pemain, Pelatih, Wasit, Pengprov, dll.)
+     */
+    protected function dashboardPortalUnderDev(Request $request, User $user)
+    {
+        $role = $user->roles->first();
+
+        return view('dashboard.portal_under_dev', compact('user', 'role'));
     }
 }

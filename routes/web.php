@@ -68,8 +68,14 @@ Route::get('/kejurnas/{kelompok_umur}/{tahun}/pemain', function ($kelompok_umur,
     return redirect()->route('kejuaraan.players', ['slug' => $slug, 'tahun' => $tahun]);
 });
 
-// Modul Pengaturan & Master Data PBVSI Pusat
-Route::prefix('master')->name('master.')->group(function () {
+// Modul Profil Akun Saya (Semua Pengguna Terautentikasi)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profil-saya', [AuthController::class, 'profilSaya'])->name('akun.saya');
+    Route::put('/profil-saya', [AuthController::class, 'updateProfilSaya'])->name('akun.saya.update');
+});
+
+// Modul Pengaturan & Master Data PBVSI Pusat (Khusus Superadmin)
+Route::prefix('master')->name('master.')->middleware(['auth', 'role:superadmin'])->group(function () {
     Route::get('/wilayah', [MasterController::class, 'wilayah'])->name('wilayah');
     Route::post('/wilayah/provinsi', [MasterController::class, 'storeProvinsi'])->name('wilayah.provinsi.store');
     Route::put('/wilayah/provinsi/{id}', [MasterController::class, 'updateProvinsi'])->name('wilayah.provinsi.update');
@@ -137,8 +143,8 @@ Route::prefix('master')->name('master.')->group(function () {
     Route::delete('/users/{id}', [MasterController::class, 'destroyUser'])->name('users.destroy');
 });
 
-// Modul Database Personel & Anggota PBVSI Pusat
-Route::prefix('personel')->name('personel.')->group(function () {
+// Modul Database Personel & Anggota PBVSI Pusat (Khusus Superadmin)
+Route::prefix('personel')->name('personel.')->middleware(['auth', 'role:superadmin'])->group(function () {
     // 1. Bank Pemain
     Route::get('/pemain', [PersonelController::class, 'pemain'])->name('pemain');
     Route::get('/pemain/create', [PersonelController::class, 'createPemain'])->name('pemain.create');

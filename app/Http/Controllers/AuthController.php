@@ -98,4 +98,43 @@ class AuthController extends Controller
         return redirect('/login')
             ->with('success', 'Anda telah berhasil logout dari sistem PBVSI.');
     }
+
+    /**
+     * Halaman Profil Akun Pengguna Terdaftar (Semua Role)
+     */
+    public function profilSaya(Request $request)
+    {
+        $user = Auth::user();
+        $role = $user->roles->first();
+
+        return view('auth.profil_saya', compact('user', 'role'));
+    }
+
+    /**
+     * Update Profil Akun Pengguna Terdaftar
+     */
+    public function updateProfilSaya(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'required|email|unique:core_users,email,' . $user->id,
+            'password' => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $user->name = $request->name;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+            $user->raw_password = $request->password;
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Data profil akun Anda berhasil diperbarui!');
+    }
 }
