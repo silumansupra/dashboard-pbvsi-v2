@@ -19,6 +19,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        // Guard: Jika pengguna belum login, arahkan langsung ke halaman login
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
         // Jika user adalah Admin Tim (dan bukan Superadmin), arahkan ke Dashboard Tim
         if ($user && $user->hasRole('admin_tim') && !$user->hasRole('superadmin')) {
             return $this->dashboardAdminTim($request, $user);

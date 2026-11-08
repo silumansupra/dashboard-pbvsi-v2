@@ -21,8 +21,9 @@ Route::post('/lupa-password', [AuthController::class, 'sendResetLinkEmail'])->na
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Dashboard Utama Terproteksi Auth
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index')->middleware(['auth']);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth']);
 
 // Modul Portal Tim & Kontingen (Admin Tim)
 Route::prefix('tim')->name('tim.')->middleware(['auth'])->group(function () {
@@ -52,7 +53,7 @@ Route::get('/syarat-ketentuan', function () {
 })->name('legal.terms');
 
 // Modul Universal Kompetisi & Kejuaraan Nasional PBVSI
-Route::prefix('kejuaraan')->name('kejuaraan.')->group(function () {
+Route::prefix('kejuaraan')->name('kejuaraan.')->middleware(['auth'])->group(function () {
     Route::get('/{slug}', [KejuaraanController::class, 'show'])->name('index');
     Route::get('/{slug}/{tahun}', [KejuaraanController::class, 'show'])->name('tahun');
     Route::post('/{slug}/edisi', [KejuaraanController::class, 'storeEdisi'])->name('edisi.store');
@@ -61,17 +62,19 @@ Route::prefix('kejuaraan')->name('kejuaraan.')->group(function () {
 });
 
 // Backward compatibility alias redirects
-Route::get('/kejurnas/{kelompok_umur}/{tahun}', function ($kelompok_umur, $tahun) {
-    $slug = 'kejurnas-' . strtolower($kelompok_umur);
-    return redirect()->route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $tahun]);
-});
-Route::get('/kejurnas/{kelompok_umur}/{tahun}/tim', function ($kelompok_umur, $tahun) {
-    $slug = 'kejurnas-' . strtolower($kelompok_umur);
-    return redirect()->route('kejuaraan.teams', ['slug' => $slug, 'tahun' => $tahun]);
-});
-Route::get('/kejurnas/{kelompok_umur}/{tahun}/pemain', function ($kelompok_umur, $tahun) {
-    $slug = 'kejurnas-' . strtolower($kelompok_umur);
-    return redirect()->route('kejuaraan.players', ['slug' => $slug, 'tahun' => $tahun]);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/kejurnas/{kelompok_umur}/{tahun}', function ($kelompok_umur, $tahun) {
+        $slug = 'kejurnas-' . strtolower($kelompok_umur);
+        return redirect()->route('kejuaraan.tahun', ['slug' => $slug, 'tahun' => $tahun]);
+    });
+    Route::get('/kejurnas/{kelompok_umur}/{tahun}/tim', function ($kelompok_umur, $tahun) {
+        $slug = 'kejurnas-' . strtolower($kelompok_umur);
+        return redirect()->route('kejuaraan.teams', ['slug' => $slug, 'tahun' => $tahun]);
+    });
+    Route::get('/kejurnas/{kelompok_umur}/{tahun}/pemain', function ($kelompok_umur, $tahun) {
+        $slug = 'kejurnas-' . strtolower($kelompok_umur);
+        return redirect()->route('kejuaraan.players', ['slug' => $slug, 'tahun' => $tahun]);
+    });
 });
 
 // Modul Profil Akun Saya (Semua Pengguna Terautentikasi)
