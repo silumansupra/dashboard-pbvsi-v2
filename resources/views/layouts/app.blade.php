@@ -134,19 +134,64 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             outline: 0;
         }
-        /* Pagination styling & safety */
+        /* Modern Clean Pagination Styling */
         .pagination {
-            margin-bottom: 0;
             display: flex;
+            padding-left: 0;
+            list-style: none;
+            margin-bottom: 0;
+            gap: 4px;
             align-items: center;
         }
+        .pagination .page-item {
+            display: inline-block;
+        }
         .pagination .page-link {
-            padding: 0.25rem 0.55rem;
-            font-size: 0.8125rem;
-            line-height: 1.4;
+            position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            line-height: 1;
+            color: #475569;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px !important;
+            text-decoration: none;
+            transition: all 0.15s ease-in-out;
+        }
+        .pagination .page-link:hover {
+            z-index: 2;
+            color: #2563eb;
+            background-color: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .pagination .page-link:focus {
+            z-index: 3;
+            color: #2563eb;
+            background-color: #eff6ff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        }
+        .pagination .page-item.active .page-link {
+            z-index: 3;
+            color: #ffffff !important;
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #94a3b8 !important;
+            pointer-events: none;
+            background-color: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            opacity: 0.8;
+            cursor: not-allowed;
         }
         .pagination .page-link svg,
         .pagination .page-item svg {
@@ -156,12 +201,6 @@
             max-height: 14px !important;
             display: inline-block !important;
             vertical-align: middle !important;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #2563eb;
-            border-color: #2563eb;
-            color: #ffffff;
-            font-weight: 600;
         }
     </style>
     @stack('styles')
@@ -373,8 +412,7 @@
 
     @stack('modals')
 
-    <!-- Bootstrap 5 Bundle JS & AdminKit JS -->
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- AdminKit JS (sudah include Bootstrap 5 Bundle & Popper secara internal) -->
     <script src="{{ asset('assets/adminkit/js/app.js') }}"></script>
     <script>
         // Pindahkan semua modal ke direct child <body> agar tidak terperangkap stacking context di .main / .wrapper
