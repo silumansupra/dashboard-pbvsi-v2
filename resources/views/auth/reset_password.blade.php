@@ -214,9 +214,15 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2 mb-3">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <span>Simpan Kata Sandi Baru</span>
+                <!-- LOADER STATUS (TAMPIL SAAT PROSES RESET) -->
+                <div id="loadingStatus" class="p-2 px-3 mb-3 rounded-3 d-none align-items-center gap-2" style="background: #eff6ff; border: 1px solid #bfdbfe; font-size: 0.825rem; color: #1e40af;">
+                    <div class="spinner-border spinner-border-sm text-primary flex-shrink-0" role="status" aria-hidden="true"></div>
+                    <div>Sedang menyimpan kata sandi baru, mohon tunggu...</div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2 mb-3">
+                    <i class="fa-solid fa-floppy-disk" id="btnIcon"></i>
+                    <span id="btnText">Simpan Kata Sandi Baru</span>
                 </button>
 
                 <div class="text-center">
@@ -262,6 +268,35 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupToggle('btnToggleNewPassword', 'newPassword', 'toggleIcon1');
             setupToggle('btnToggleConfirmPassword', 'confirmPassword', 'toggleIcon2');
+
+            const form = document.querySelector('form');
+            const btn = document.getElementById('btnSubmit');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            const loadingStatus = document.getElementById('loadingStatus');
+
+            if (form && btn) {
+                form.addEventListener('submit', function(e) {
+                    if (!form.checkValidity()) {
+                        return;
+                    }
+                    if (loadingStatus) {
+                        loadingStatus.classList.remove('d-none');
+                        loadingStatus.classList.add('d-flex');
+                    }
+                    if (btnIcon) {
+                        btnIcon.className = 'fa-solid fa-circle-notch fa-spin';
+                    }
+                    if (btnText) {
+                        btnText.textContent = 'Menyimpan...';
+                    }
+                    setTimeout(function() {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.8';
+                        btn.style.cursor = 'not-allowed';
+                    }, 0);
+                });
+            }
         });
     </script>
 </body>

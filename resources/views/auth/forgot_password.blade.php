@@ -171,7 +171,7 @@
             @endif
 
             <!-- FORGOT FORM -->
-            <form action="{{ route('password.email') }}" method="POST">
+            <form id="forgotPasswordForm" action="{{ route('password.email') }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label class="form-label" for="identityInput">Username atau Email Akun</label>
@@ -189,9 +189,15 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2 mb-3">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    <span>Kirim Tautan Reset Kata Sandi</span>
+                <!-- LOADER STATUS (TAMPIL SAAT PROSES KIRIM EMAIL) -->
+                <div id="loadingStatus" class="p-2 px-3 mb-3 rounded-3 d-none align-items-center gap-2" style="background: #eff6ff; border: 1px solid #bfdbfe; font-size: 0.825rem; color: #1e40af;">
+                    <div class="spinner-border spinner-border-sm text-primary flex-shrink-0" role="status" aria-hidden="true"></div>
+                    <div>Sedang memproses & mengirim email verifikasi, mohon tunggu sebentar...</div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn btn-submit w-100 d-flex align-items-center justify-content-center gap-2 mb-3">
+                    <i class="fa-solid fa-paper-plane" id="btnIcon"></i>
+                    <span id="btnText">Kirim Tautan Reset Kata Sandi</span>
                 </button>
 
                 <div class="text-center">
@@ -216,5 +222,43 @@
     </div>
 
     <script src="{{ asset('assets/adminkit/js/app.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('forgotPasswordForm');
+            const btn = document.getElementById('btnSubmit');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            const loadingStatus = document.getElementById('loadingStatus');
+
+            if (form && btn) {
+                form.addEventListener('submit', function(e) {
+                    if (!form.checkValidity()) {
+                        return;
+                    }
+
+                    // Tampilkan loader status box
+                    if (loadingStatus) {
+                        loadingStatus.classList.remove('d-none');
+                        loadingStatus.classList.add('d-flex');
+                    }
+
+                    // Ubah tombol menjadi loading state & disabled
+                    if (btnIcon) {
+                        btnIcon.className = 'fa-solid fa-circle-notch fa-spin';
+                    }
+                    if (btnText) {
+                        btnText.textContent = 'Sedang Mengirim...';
+                    }
+
+                    // Cegah double submit
+                    setTimeout(function() {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.8';
+                        btn.style.cursor = 'not-allowed';
+                    }, 0);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
