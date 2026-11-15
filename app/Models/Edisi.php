@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Edisi extends Model
 {
+    use SoftDeletes;
     protected $table = 'trn_edisi';
     protected $fillable = [
         'turnamen_id',

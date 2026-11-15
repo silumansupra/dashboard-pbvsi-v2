@@ -68,7 +68,24 @@ Route::get('/syarat-ketentuan', function () {
 Route::prefix('kejuaraan')->name('kejuaraan.')->middleware(['auth'])->group(function () {
     Route::get('/{slug}', [KejuaraanController::class, 'show'])->name('index');
     Route::get('/{slug}/{tahun}', [KejuaraanController::class, 'show'])->name('tahun');
+
+    // 1. CRUD Edisi Tahun Kejuaraan
     Route::post('/{slug}/edisi', [KejuaraanController::class, 'storeEdisi'])->name('edisi.store');
+    Route::put('/{slug}/{tahun}/edisi', [KejuaraanController::class, 'updateEdisi'])->name('edisi.update');
+    Route::delete('/{slug}/{tahun}/edisi', [KejuaraanController::class, 'destroyEdisi'])->name('edisi.destroy');
+
+    // 2. Assign & Pengelolaan Kepesertaan Tim di Edisi (Bukan CRUD Master Tim)
+    Route::get('/{slug}/{tahun}/tim/create', [KejuaraanController::class, 'createTeam'])->name('tim.create');
+    Route::post('/{slug}/{tahun}/tim/assign', [KejuaraanController::class, 'assignTeam'])->name('tim.assign');
+    Route::post('/{slug}/{tahun}/tim', [KejuaraanController::class, 'assignTeam'])->name('tim.store');
+    Route::get('/{slug}/{tahun}/tim/{id}', [KejuaraanController::class, 'showTeam'])->name('tim.show');
+    Route::get('/{slug}/{tahun}/tim/{id}/edit', [KejuaraanController::class, 'editTeam'])->name('tim.edit');
+    Route::put('/{slug}/{tahun}/tim/{id}', [KejuaraanController::class, 'updateTeamParticipation'])->name('tim.update');
+    Route::put('/{slug}/{tahun}/tim/{id}/atur-pul', [KejuaraanController::class, 'updateTeamParticipation'])->name('tim.atur_pul');
+    Route::post('/{slug}/{tahun}/tim/{id}/toggle-active', [KejuaraanController::class, 'toggleActiveTeam'])->name('tim.toggle_active');
+    Route::delete('/{slug}/{tahun}/tim/{id}', [KejuaraanController::class, 'destroyTeam'])->name('tim.destroy');
+    Route::post('/{slug}/{tahun}/tim/{id}/restore', [KejuaraanController::class, 'restoreTeam'])->name('tim.restore');
+
     Route::get('/{slug}/{tahun}/tim', [KejuaraanController::class, 'teams'])->name('teams');
     Route::get('/{slug}/{tahun}/pemain', [KejuaraanController::class, 'players'])->name('players');
 });

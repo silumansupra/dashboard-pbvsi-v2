@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PesertaTim extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'trn_peserta_tim';
     protected $fillable = [
         'edisi_id',
@@ -27,7 +30,17 @@ class PesertaTim extends Model
         'foto_skuad_path',
         'status_verifikasi',
         'catatan_verifikasi',
+        'is_active',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function getEncryptedIdAttribute(): string
+    {
+        return encrypt_id($this->id, 'peserta_tim');
+    }
 
     public function edisi()
     {
